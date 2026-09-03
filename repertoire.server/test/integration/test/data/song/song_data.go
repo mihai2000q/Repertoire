@@ -2,6 +2,7 @@ package song
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"time"
@@ -152,7 +153,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		ImageURL:    &[]internal.FilePath{"userId/Some album image path/somewhere.jpeg"}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
@@ -175,7 +176,7 @@ var Songs = []model.Song{
 		ID:            uuid.New(),
 		Title:         "Test Song 1",
 		Description:   "Some description",
-		ReleaseDate:   &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate:   &[]date.Date{date.Date(time.Now())}[0],
 		ImageURL:      &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
 		IsRecorded:    true,
 		Bpm:           &[]uint{123}[0],

@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 
 	"github.com/google/uuid"
@@ -25,7 +25,7 @@ type CreateSongRequest struct {
 	Bpm            *uint   `validate:"omitempty,min=1,max=999"`
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *internal.Date
+	ReleaseDate    *date.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	Sections       []CreateSectionRequest `validate:"dive"`
@@ -60,7 +60,7 @@ type UpdateSongRequest struct {
 	Bpm            *uint   `validate:"omitempty,min=1,max=999"`
 	SongsterrLink  *string `validate:"omitempty,url,contains=songsterr.com"`
 	YoutubeLink    *string `validate:"omitempty,youtube_link"`
-	ReleaseDate    *internal.Date
+	ReleaseDate    *date.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
 	ArtistID       *uuid.UUID

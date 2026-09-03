@@ -2,7 +2,7 @@ package assertion
 
 import (
 	"math"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
@@ -15,8 +15,8 @@ import (
 func AlbumFiltersMetadata(t *testing.T, metadata model.AlbumFiltersMetadata, albums []model.Album) {
 	artistIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *internal.Date
-	var maxReleaseDate *internal.Date
+	var minReleaseDate *date.Date
+	var maxReleaseDate *date.Date
 
 	var minSongsCount *int64
 	var maxSongsCount int64 = 0
@@ -335,8 +335,8 @@ func SongFiltersMetadata(t *testing.T, metadata model.SongFiltersMetadata, songs
 	guitarTuningIDsMap := make(map[uuid.UUID]bool)
 	instrumentIDsMap := make(map[uuid.UUID]bool)
 
-	var minReleaseDate *internal.Date
-	var maxReleaseDate *internal.Date
+	var minReleaseDate *date.Date
+	var maxReleaseDate *date.Date
 
 	var minBpm *uint
 	var maxBpm *uint

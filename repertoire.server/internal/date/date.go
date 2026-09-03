@@ -1,4 +1,4 @@
-package internal
+package date
 
 import (
 	"database/sql/driver"

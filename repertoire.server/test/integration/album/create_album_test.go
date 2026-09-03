@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -28,7 +28,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 			"Minimal",
 			requests.CreateAlbumRequest{
 				Title:       "New Album",
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 			},
 		},
 		{

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -311,7 +311,7 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			&[]model.Song{{ID: songID}},
 			&model.Album{
 				ID:          id,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}},
 			},
 		},
@@ -321,10 +321,10 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				ID:      id,
 				SongIDs: []uuid.UUID{songID},
 			},
-			&[]model.Song{{ID: songID, ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0]}},
+			&[]model.Song{{ID: songID, ReleaseDate: &[]date.Date{date.Date(time.Now())}[0]}},
 			&model.Album{
 				ID:          id,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}},
 				ArtistID:    &artistID,
 			},

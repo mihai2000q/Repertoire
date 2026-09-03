@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/validation"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"strings"
 	"testing"
 	"time"
@@ -267,7 +267,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With Existing Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},
@@ -275,7 +275,7 @@ func TestValidateCreateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			"All Filled With New Arist",
 			requests.CreateAlbumRequest{
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				ArtistName:  &[]string{"New Name"}[0],
 			},
 		},
@@ -480,7 +480,7 @@ func TestValidateUpdateAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 			requests.UpdateAlbumRequest{
 				ID:          uuid.New(),
 				Title:       validAlbumTitle,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

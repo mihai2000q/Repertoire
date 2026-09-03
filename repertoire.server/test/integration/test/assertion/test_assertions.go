@@ -2,7 +2,7 @@ package assertion
 
 import (
 	"encoding/json"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/utils"
 	"slices"
@@ -34,7 +34,7 @@ func Time(t *testing.T, expected *time.Time, actual *time.Time) {
 	}
 }
 
-func Date(t *testing.T, expected *internal.Date, actual *internal.Date) {
+func Date(t *testing.T, expected *date.Date, actual *date.Date) {
 	if expected != nil {
 		assert.NotNil(t, actual)
 		assert.Equal(

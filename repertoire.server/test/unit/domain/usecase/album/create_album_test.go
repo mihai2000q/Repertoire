@@ -127,7 +127,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"With Existing Artist",
 			requests.CreateAlbumRequest{
 				Title:       "Some Album",
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

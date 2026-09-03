@@ -2,6 +2,7 @@ package album
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/model"
 	"time"
 
@@ -46,7 +47,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
 		Songs: []model.Song{
