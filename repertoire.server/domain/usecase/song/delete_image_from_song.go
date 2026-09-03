@@ -39,11 +39,10 @@ func (d DeleteImageFromSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 		return httperror.NotFoundError(errors.New("song not found"))
 	}
 	if song.ImageURL == nil {
-		return httperror.ConflictError(errors.New("song does not have an image"))
+		return nil
 	}
 
-	errCode := d.storageService.DeleteFile(*song.ImageURL)
-	if errCode != nil {
+	if errCode := d.storageService.DeleteFile(*song.ImageURL); errCode != nil {
 		return errCode
 	}
 

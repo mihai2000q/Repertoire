@@ -64,7 +64,7 @@ func TestDeleteImageFromBandMember_WhenMemberIsEmpty_ShouldReturnNotFoundError(t
 	artistRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromBandMember_WhenMemberHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromBandMember_WhenMemberHasNoImage_ShouldReturnNoError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := bandmember.NewDeleteImageFromBandMember(artistRepository, nil)
@@ -81,9 +81,7 @@ func TestDeleteImageFromBandMember_WhenMemberHasNoImage_ShouldReturnConflictErro
 	errCode := _uut.Handle(id)
 
 	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "band member does not have an image", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	artistRepository.AssertExpectations(t)
 }

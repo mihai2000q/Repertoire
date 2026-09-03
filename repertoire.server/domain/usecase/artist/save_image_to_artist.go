@@ -47,8 +47,7 @@ func (s SaveImageToArtist) Handle(file *multipart.FileHeader, id uuid.UUID) *htt
 	}
 
 	if artist.ImageURL != nil {
-		errCode := s.storageService.DeleteFile(*artist.ImageURL)
-		if errCode != nil {
+		if errCode := s.storageService.DeleteFile(*artist.ImageURL); errCode != nil {
 			return errCode
 		}
 	}

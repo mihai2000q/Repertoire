@@ -40,11 +40,10 @@ func (d DeleteImageFromPlaylist) Handle(id uuid.UUID) *httperror.ErrorCode {
 		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 	if playlist.ImageURL == nil {
-		return httperror.ConflictError(errors.New("playlist does not have an image"))
+		return nil
 	}
 
-	errCode := d.storageService.DeleteFile(*playlist.ImageURL)
-	if errCode != nil {
+	if errCode := d.storageService.DeleteFile(*playlist.ImageURL); errCode != nil {
 		return errCode
 	}
 

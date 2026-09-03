@@ -91,7 +91,7 @@ func TestDeleteProfilePictureFromUser_WhenUserIsEmpty_ShouldReturnNotFoundError(
 	userRepository.AssertExpectations(t)
 }
 
-func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnNoError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
@@ -110,9 +110,7 @@ func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnCo
 	errCode := _uut.Handle(token)
 
 	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "user does not have a profile picture", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)

@@ -47,8 +47,7 @@ func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *http
 	}
 
 	if album.ImageURL != nil {
-		errCode := s.storageService.DeleteFile(*album.ImageURL)
-		if errCode != nil {
+		if errCode := s.storageService.DeleteFile(*album.ImageURL); errCode != nil {
 			return errCode
 		}
 	}

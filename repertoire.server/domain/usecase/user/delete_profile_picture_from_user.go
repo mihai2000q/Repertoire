@@ -41,11 +41,10 @@ func (d DeleteProfilePictureFromUser) Handle(token string) *httperror.ErrorCode 
 		return httperror.NotFoundError(errors.New("user not found"))
 	}
 	if user.ProfilePictureURL == nil {
-		return httperror.ConflictError(errors.New("user does not have a profile picture"))
+		return nil
 	}
 
-	errCode = d.storageService.DeleteFile(*user.ProfilePictureURL)
-	if errCode != nil {
+	if errCode = d.storageService.DeleteFile(*user.ProfilePictureURL); errCode != nil {
 		return errCode
 	}
 

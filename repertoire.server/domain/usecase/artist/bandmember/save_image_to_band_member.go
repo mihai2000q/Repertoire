@@ -43,8 +43,7 @@ func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) 
 	}
 
 	if member.ImageURL != nil {
-		errCode := s.storageService.DeleteFile(*member.ImageURL)
-		if errCode != nil {
+		if errCode := s.storageService.DeleteFile(*member.ImageURL); errCode != nil {
 			return errCode
 		}
 	}

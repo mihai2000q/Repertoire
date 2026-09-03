@@ -61,7 +61,7 @@ func TestDeleteImageFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *test
 	albumRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnNoError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil, nil)
@@ -70,15 +70,15 @@ func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *t
 
 	// given - mocking
 	mockAlbum := &model.Album{ID: id}
-	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
+	albumRepository.On("Get", new(model.Album), id).
+		Return(nil, mockAlbum).
+		Once()
 
 	// when
 	errCode := _uut.Handle(id)
 
 	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "album does not have an image", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	albumRepository.AssertExpectations(t)
 }

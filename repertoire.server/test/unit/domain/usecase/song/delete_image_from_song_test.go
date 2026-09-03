@@ -61,7 +61,7 @@ func TestDeleteImageFromSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testin
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnNoError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewDeleteImageFromSong(songRepository, nil, nil)
@@ -76,9 +76,7 @@ func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *tes
 	errCode := _uut.Handle(id)
 
 	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "song does not have an image", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	songRepository.AssertExpectations(t)
 }

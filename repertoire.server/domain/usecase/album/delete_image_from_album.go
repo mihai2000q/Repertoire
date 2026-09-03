@@ -39,7 +39,7 @@ func (d DeleteImageFromAlbum) Handle(id uuid.UUID) *httperror.ErrorCode {
 		return httperror.NotFoundError(errors.New("album not found"))
 	}
 	if album.ImageURL == nil {
-		return httperror.ConflictError(errors.New("album does not have an image"))
+		return nil
 	}
 
 	errCode := d.storageService.DeleteFile(*album.ImageURL)
