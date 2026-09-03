@@ -12,9 +12,15 @@ type StorageServiceMock struct {
 	mock.Mock
 }
 
-func (s *StorageServiceMock) Upload(fileHeader *multipart.FileHeader, filePath string) error {
+func (s *StorageServiceMock) Upload(fileHeader *multipart.FileHeader, filePath string) *httperror.ErrorCode {
 	args := s.Called(fileHeader, filePath)
-	return args.Error(0)
+
+	var errCode *httperror.ErrorCode
+	if a := args.Get(0); a != nil {
+		errCode = a.(*httperror.ErrorCode)
+	}
+
+	return errCode
 }
 
 func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) *httperror.ErrorCode {

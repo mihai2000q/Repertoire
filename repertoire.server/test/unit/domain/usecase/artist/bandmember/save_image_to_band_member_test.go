@@ -119,7 +119,7 @@ func TestSaveImageToBandMember_WhenStorageUploadFails_ShouldReturnInternalServer
 		Return(imagePath).
 		Once()
 
-	internalError := errors.New("internal error")
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
 
 	// when
@@ -127,8 +127,7 @@ func TestSaveImageToBandMember_WhenStorageUploadFails_ShouldReturnInternalServer
 
 	// then
 	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, internalError, errCode)
 
 	artistRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
