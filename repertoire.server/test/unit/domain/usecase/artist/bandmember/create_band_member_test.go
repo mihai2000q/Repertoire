@@ -131,6 +131,38 @@ func TestCreateBandMember_WhenGetBandMemberRolesFails_ShouldReturnInternalServer
 	artistRepository.AssertExpectations(t)
 }
 
+func TestCreateBandMember_WhenRolesLenIsNotTheSameAsTheRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := bandmember.NewCreateBandMember(artistRepository)
+
+	request := requests.CreateBandMemberRequest{
+		ArtistID: uuid.New(),
+		Name:     "Some Artist",
+		RoleIDs:  []uuid.UUID{uuid.New()},
+	}
+
+	artist := &model.Artist{ID: request.ArtistID, IsBand: true}
+	artistRepository.On("GetWithBandMembers", mock.IsType(artist), request.ArtistID).
+		Return(nil, artist).
+		Once()
+
+	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+		Return(nil).
+		Once()
+
+	// when
+	id, errCode := _uut.Handle(request)
+
+	// then
+	assert.Empty(t, id)
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "roles not found", errCode.Error.Error())
+
+	artistRepository.AssertExpectations(t)
+}
+
 func TestCreateBandMember_WhenCreateBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)

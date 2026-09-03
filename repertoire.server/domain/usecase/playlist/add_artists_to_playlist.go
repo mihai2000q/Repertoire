@@ -1,6 +1,7 @@
 package playlist
 
 import (
+	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
@@ -35,6 +36,9 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 	var artists []model.Artist
 	if err := a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs); err != nil {
 		return nil, httperror.DatabaseError(err)
+	}
+	if len(artists) != len(request.ArtistIDs) {
+		return nil, httperror.NotFoundError(errors.New("artists not found"))
 	}
 
 	var duplicateSongIDs []uuid.UUID

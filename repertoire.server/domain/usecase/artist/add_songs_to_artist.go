@@ -30,6 +30,9 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *http
 	if err := a.songRepository.GetAllByIDsWithAlbumSongs(&songs, request.SongIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
+	if len(songs) != len(request.SongIDs) {
+		return httperror.NotFoundError(errors.New("songs not found"))
+	}
 
 	for i, song := range songs {
 		if song.ArtistID != nil {

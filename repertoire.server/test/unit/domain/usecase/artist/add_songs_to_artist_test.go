@@ -43,6 +43,31 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	songRepository.AssertExpectations(t)
 }
 
+func TestAddSongsToArtist_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := artist.NewAddSongsToArtist(songRepository, nil)
+
+	request := requests.AddSongsToArtistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.Anything, request.SongIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "songs not found", errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
 func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)

@@ -47,7 +47,7 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 	}
 
 	if len(songsToDelete) != len(request.PlaylistSongIDs) {
-		return httperror.NotFoundError(errors.New("could not find all songs"))
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
 	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {

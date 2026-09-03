@@ -68,7 +68,7 @@ func TestRemoveSongsFromPlaylist_WhenNotAllSongsFound_ShouldReturnNotFoundError(
 	// then
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "could not find all songs", errCode.Error.Error())
+	assert.Equal(t, "songs not found", errCode.Error.Error())
 
 	playlistRepository.AssertExpectations(t)
 }

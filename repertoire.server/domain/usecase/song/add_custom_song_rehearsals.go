@@ -41,7 +41,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(songs) == 0 {
+	if len(songs) != len(request.Requests) {
 		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 

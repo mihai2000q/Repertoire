@@ -4,7 +4,6 @@ import (
 	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
@@ -62,9 +61,8 @@ func (c CreateSongSection) ensurePartsBelongToSameSong(
 	if err := c.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
-	partIDSet := deduplicate.Deduplicate(request.PartIDs)
-	if len(parts) != len(partIDSet) {
-		return httperror.NotFoundError(errors.New("some parts not found"))
+	if len(parts) != len(request.PartIDs) {
+		return httperror.NotFoundError(errors.New("parts not found"))
 	}
 	for _, p := range parts {
 		if p.SongID != songID {

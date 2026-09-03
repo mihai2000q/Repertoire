@@ -40,7 +40,7 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httper
 	if err := b.songRepository.GetAllByIDsWithAlbumsAndPlaylists(&songs, request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(songs) == 0 {
+	if len(songs) != len(request.IDs) {
 		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 

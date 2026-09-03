@@ -79,6 +79,40 @@ func TestAddAlbumsToPlaylist_WhenGetAlbumsFails_ShouldReturnInternalServerError(
 	albumRepository.AssertExpectations(t)
 }
 
+func TestAddAlbumsToPlaylist_WhenAlbumsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	albumRepository := new(repository.AlbumRepositoryMock)
+	_uut := playlist.NewAddAlbumsToPlaylist(playlistRepository, albumRepository)
+
+	request := requests.AddAlbumsToPlaylistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// given - mocking
+	playlistSongs := &[]model.PlaylistSong{}
+	playlistRepository.On("GetPlaylistSongs", mock.IsType(playlistSongs), request.ID).
+		Return(nil, playlistSongs).
+		Once()
+
+	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(new([]model.Album)), request.AlbumIDs).
+		Return(nil).
+		Once()
+
+	// when
+	res, errCode := _uut.Handle(request)
+
+	// then
+	assert.Nil(t, res)
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "albums not found", errCode.Error.Error())
+
+	playlistRepository.AssertExpectations(t)
+	albumRepository.AssertExpectations(t)
+}
+
 func TestAddAlbumsToPlaylist_WhenAddSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
@@ -96,7 +130,9 @@ func TestAddAlbumsToPlaylist_WhenAddSongsFails_ShouldReturnInternalServerError(t
 		Return(nil, playlistSongs).
 		Once()
 
-	albums := &[]model.Album{}
+	albums := &[]model.Album{
+		{ID: request.AlbumIDs[0]},
+	}
 	albumRepository.On("GetAllByIDsWithSongs", mock.IsType(albums), request.AlbumIDs).
 		Return(nil, albums).
 		Once()

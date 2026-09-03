@@ -42,6 +42,9 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *httper
 	if err := a.songRepository.GetAllByIDs(&songs, request.SongIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
+	if len(songs) != len(request.SongIDs) {
+		return httperror.NotFoundError(errors.New("songs not found"))
+	}
 
 	songsLength := len(album.Songs) + 1
 	for i, song := range songs {

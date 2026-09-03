@@ -45,7 +45,7 @@ func TestCreateSongSection_WhenGetPartsFails_ShouldReturnInternalServerError(t *
 	songPartRepository.AssertExpectations(t)
 }
 
-func TestCreateSongSection_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestCreateSongSection_WhenPartsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songPartRepository := new(repository.SongPartRepositoryMock)
@@ -68,7 +68,7 @@ func TestCreateSongSection_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *tes
 	// then
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "some parts not found", errCode.Error.Error())
+	assert.Equal(t, "parts not found", errCode.Error.Error())
 
 	songSectionRepository.AssertExpectations(t)
 	songPartRepository.AssertExpectations(t)

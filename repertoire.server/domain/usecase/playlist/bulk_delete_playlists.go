@@ -30,7 +30,7 @@ func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest)
 	if err := b.playlistRepository.GetAllByIDs(&playlists, request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(playlists) == 0 {
+	if len(playlists) != len(request.IDs) {
 		return httperror.NotFoundError(errors.New("playlists not found"))
 	}
 

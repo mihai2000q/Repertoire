@@ -30,6 +30,9 @@ func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRe
 	if err := r.albumRepository.GetAllByIDsWithSongs(&albums, request.AlbumIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
+	if len(albums) != len(request.AlbumIDs) {
+		return httperror.NotFoundError(errors.New("albums not found"))
+	}
 
 	for i, album := range albums {
 		if album.ArtistID == nil || *album.ArtistID != request.ID {

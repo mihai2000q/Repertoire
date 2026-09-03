@@ -37,6 +37,9 @@ func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid
 	if err := c.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
 		return uuid.Nil, httperror.DatabaseError(err)
 	}
+	if len(roles) != len(request.RoleIDs) {
+		return uuid.Nil, httperror.NotFoundError(errors.New("roles not found"))
+	}
 
 	member := model.BandMember{
 		ID:       uuid.New(),

@@ -43,6 +43,31 @@ func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerErro
 	albumRepository.AssertExpectations(t)
 }
 
+func TestRemoveAlbumsFromArtist_WhenAlbumsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository, nil)
+
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	albumRepository.On("GetAllByIDsWithSongs", mock.Anything, request.AlbumIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "albums not found", errCode.Error.Error())
+
+	albumRepository.AssertExpectations(t)
+}
+
 func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnConflictError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)

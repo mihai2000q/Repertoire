@@ -35,7 +35,7 @@ func (b BulkDeleteArtists) Handle(request requests.BulkDeleteArtistsRequest) *ht
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(artists) == 0 {
+	if len(artists) != len(request.IDs) {
 		return httperror.NotFoundError(errors.New("artists not found"))
 	}
 

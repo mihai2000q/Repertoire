@@ -50,7 +50,7 @@ func TestAddCustomSongRehearsals_WhenGetSongsFails_ShouldReturnInternalServerErr
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddCustomSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestAddCustomSongRehearsals_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewAddCustomSongRehearsals(songRepository, nil, nil)

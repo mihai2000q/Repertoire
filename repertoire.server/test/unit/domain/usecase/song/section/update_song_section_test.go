@@ -151,7 +151,7 @@ func TestUpdateSongSection_WhenSomePartsNotFound_ShouldReturnNotFoundError(t *te
 	// then
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "some parts not found", errCode.Error.Error())
+	assert.Equal(t, "parts not found", errCode.Error.Error())
 
 	songSectionRepository.AssertExpectations(t)
 	songPartRepository.AssertExpectations(t)

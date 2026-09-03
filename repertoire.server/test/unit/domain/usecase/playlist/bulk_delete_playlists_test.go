@@ -42,7 +42,7 @@ func TestBulkDeletePlaylists_WhenGetPlaylistsFails_ShouldReturnInternalServerErr
 	playlistRepository.AssertExpectations(t)
 }
 
-func TestBulkDeletePlaylists_WhenPlaylistsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeletePlaylists_WhenPlaylistsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
 	_uut := playlist.NewBulkDeletePlaylists(playlistRepository, nil)

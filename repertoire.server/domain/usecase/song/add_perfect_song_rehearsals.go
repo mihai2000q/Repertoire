@@ -6,7 +6,6 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
@@ -35,8 +34,7 @@ func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsa
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
-	ids := deduplicate.Deduplicate(request.IDs)
-	if len(songs) != len(ids) {
+	if len(songs) != len(request.IDs) {
 		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 

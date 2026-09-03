@@ -43,7 +43,7 @@ func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(
 	songRepository.AssertExpectations(t)
 }
 
-func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflictError(t *testing.T) {
+func TestRemoveSongsFromArtist_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := artist.NewRemoveSongsFromArtist(songRepository, nil)
@@ -51,6 +51,31 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflic
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
 		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+	}
+
+	songRepository.On("GetAllByIDs", mock.Anything, request.SongIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "songs not found", errCode.Error.Error())
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflictError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := artist.NewRemoveSongsFromArtist(songRepository, nil)
+
+	request := requests.RemoveSongsFromArtistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
@@ -81,7 +106,7 @@ func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServe
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
@@ -118,7 +143,7 @@ func TestRemoveSongsFromArtist_WhenPublishFails_ShouldReturnInternalServerError(
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
