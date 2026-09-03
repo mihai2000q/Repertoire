@@ -11,11 +11,11 @@ type RestyClient struct {
 	*resty.Client
 }
 
-func NewRestyClient(logger *logger.RestyLogger, env env.Env) RestyClient {
+func NewRestyClient(logger *logger.RestyLogger, e env.Env) RestyClient {
 	return RestyClient{
 		resty.New().
 			SetLogger(logger).
 			SetDebugBodyLimit(1024).
-			SetDebug(env.LogLevel == env.DebugLogLevel),
+			SetDebug(e.LogLevel == env.DebugLogLevel),
 	}
 }
