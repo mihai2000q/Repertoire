@@ -38,13 +38,11 @@ func NewAlbumsDeletedHandler(
 
 func (a AlbumsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var albums []model.Album
-	err := json.Unmarshal(msg.Payload, &albums)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &albums); err != nil {
 		return err
 	}
 
-	err = a.syncWithSearchEngine(albums)
-	if err != nil {
+	if err := a.syncWithSearchEngine(albums); err != nil {
 		return err
 	}
 
@@ -65,8 +63,7 @@ func (a AlbumsDeletedHandler) syncWithSearchEngine(albums []model.Album) error {
 	}
 
 	ids := slices.Concat(albumSearchIDs, songSearchIDs)
-	err := a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
-	if err != nil {
+	if err := a.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids); err != nil {
 		return err
 	}
 

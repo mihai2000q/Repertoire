@@ -25,12 +25,11 @@ func NewPlaylistUpdatedHandler(messagePublisherService service.MessagePublisherS
 
 func (p PlaylistUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	var playlist model.Playlist
-	err := json.Unmarshal(msg.Payload, &playlist)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &playlist); err != nil {
 		return err
 	}
 
-	err = p.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, []any{playlist.ToSearch()})
+	err := p.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, []any{playlist.ToSearch()})
 	if err != nil {
 		return err
 	}
