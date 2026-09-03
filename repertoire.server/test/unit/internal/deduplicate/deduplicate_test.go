@@ -1,4 +1,4 @@
-package internal
+package deduplicate
 
 import (
 	"repertoire/server/internal/deduplicate"
