@@ -208,7 +208,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=9DyxtUCW84o&t=1m3s"}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
-				Sections: []requests.CreateSectionRequest{
+				Parts: []requests.CreatePartRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -227,7 +227,7 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
-				Sections: []requests.CreateSectionRequest{
+				Parts: []requests.CreatePartRequest{
 					{Name: "A section", TypeID: uuid.New()},
 					{Name: "A Second Section", TypeID: uuid.New()},
 				},
@@ -394,7 +394,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has an empty Name",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []requests.CreateSectionRequest{
+				Parts: []requests.CreatePartRequest{
 					{Name: "", TypeID: uuid.New()},
 				},
 			},
@@ -406,7 +406,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has a Name with too many characters",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []requests.CreateSectionRequest{
+				Parts: []requests.CreatePartRequest{
 					{Name: strings.Repeat("a", 31), TypeID: uuid.New()},
 				},
 			},
@@ -418,7 +418,7 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			"Sections are invalid because the first element has an empty Type ID",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
-				Sections: []requests.CreateSectionRequest{
+				Parts: []requests.CreatePartRequest{
 					{Name: "some Name", TypeID: uuid.Nil},
 				},
 			},

@@ -56,7 +56,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		UserID:         userID,
 	}
 
-	c.createSections(&song, request)
+	c.createParts(&song, request)
 	c.createArrangement(&song)
 	c.createArtist(&song, request)
 	c.createAlbum(&song, request)
@@ -77,18 +77,17 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 	return song.ID, nil
 }
 
-func (c CreateSong) createSections(song *model.Song, request requests.CreateSongRequest) {
-	var sections []model.SongSection
-	for i, sectionRequest := range request.Sections {
-		sections = append(sections, model.SongSection{
-			ID:                uuid.New(),
-			Name:              sectionRequest.Name,
-			SongSectionTypeID: sectionRequest.TypeID,
-			Order:             uint(i),
-			SongID:            song.ID,
+func (c CreateSong) createParts(song *model.Song, request requests.CreateSongRequest) {
+	var parts []model.SongPart
+	for i, partRequest := range request.Parts {
+		parts = append(parts, model.SongPart{
+			ID:        uuid.New(),
+			Name:      partRequest.Name,
+			SongOrder: uint(i),
+			SongID:    song.ID,
 		})
 	}
-	song.Sections = sections
+	song.Parts = parts
 }
 
 func (c CreateSong) createArrangement(song *model.Song) {

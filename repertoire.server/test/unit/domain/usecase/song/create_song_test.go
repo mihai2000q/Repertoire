@@ -255,12 +255,12 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			nil,
 		},
 		{
-			"Create song with sections",
+			"Create song with parts",
 			requests.CreateSongRequest{
 				Title: "Some Song",
-				Sections: []requests.CreateSectionRequest{
-					{Name: "First Section", TypeID: uuid.New()},
-					{Name: "Second Section", TypeID: uuid.New()},
+				Parts: []requests.CreatePartRequest{
+					{Name: "First Part"},
+					{Name: "Second Part"},
 				},
 			},
 			nil,
@@ -346,7 +346,7 @@ func assertCreatedSong(
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, userID, song.UserID)
-	assert.Len(t, request.Sections, len(song.Sections))
+	assert.Len(t, request.Parts, len(song.Sections))
 
 	// assert settings
 	assert.NotEmpty(t, song.Settings.ID)
@@ -359,17 +359,13 @@ func assertCreatedSong(
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
 	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
-	for i, section := range request.Sections {
-		assert.NotEmpty(t, song.Sections[i].ID)
-		assert.Equal(t, section.Name, song.Sections[i].Name)
-		assert.Zero(t, song.Sections[i].Rehearsals)
-		assert.Zero(t, song.Sections[i].Confidence)
-		assert.Zero(t, song.Sections[i].Progress)
-		assert.Equal(t, uint(i), song.Sections[i].Order)
-		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
-		assert.Equal(t, song.ID, song.Sections[i].SongID)
+	for i, part := range request.Parts {
+		assert.NotEmpty(t, song.Parts[i].ID)
+		assert.Equal(t, part.Name, song.Parts[i].Name)
+		assert.Equal(t, uint(i), song.Parts[i].SongOrder)
+		assert.Equal(t, song.ID, song.Parts[i].SongID)
 	}
-	assert.Empty(t, song.Parts)
+	assert.Empty(t, song.Sections)
 	if request.AlbumTitle != nil {
 		assert.NotNil(t, song.Album)
 		assert.Equal(t, *song.AlbumID, song.Album.ID)

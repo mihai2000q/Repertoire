@@ -82,17 +82,15 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			},
 		},
 		{
-			"With Sections",
+			"With Parts",
 			requests.CreateSongRequest{
-				Title: "New Song with new Artist and album",
-				Sections: []requests.CreateSectionRequest{
+				Title: "New Song with new parts",
+				Parts: []requests.CreatePartRequest{
 					{
-						Name:   "Song Section 1",
-						TypeID: songData.Users[0].SongSectionTypes[0].ID,
+						Name: "Song Part 1",
 					},
 					{
-						Name:   "Song Section 2",
-						TypeID: songData.Users[0].SongSectionTypes[1].ID,
+						Name: "Song Part 2",
 					},
 				},
 			},
@@ -129,8 +127,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Joins("Album").
 				Joins("GuitarTuning").
 				Preload("Album.Songs").
-				Preload("Sections").
-				Preload("Sections.SongSectionType").
+				Preload("Parts").
 				Preload("Arrangements").
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
@@ -176,19 +173,15 @@ func assertCreatedSong(
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
 	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
-	assert.Len(t, request.Sections, len(song.Sections))
-	for i, sectionRequest := range request.Sections {
-		assert.NotEmpty(t, song.Sections[i].ID)
-		assert.Equal(t, sectionRequest.Name, song.Sections[i].Name)
-		assert.Zero(t, song.Sections[i].Rehearsals)
-		assert.Zero(t, song.Sections[i].Confidence)
-		assert.Zero(t, song.Sections[i].Progress)
-		assert.Equal(t, uint(i), song.Sections[i].Order)
-		assert.Equal(t, sectionRequest.TypeID, song.Sections[i].SongSectionTypeID)
-		assert.Equal(t, song.ID, song.Sections[i].SongID)
+	assert.Len(t, request.Parts, len(song.Sections))
+	for i, partRequest := range request.Parts {
+		assert.NotEmpty(t, song.Parts[i].ID)
+		assert.Equal(t, partRequest.Name, song.Sections[i].Name)
+		assert.Equal(t, uint(i), song.Parts[i].SongOrder)
+		assert.Equal(t, song.ID, song.Parts[i].SongID)
 	}
 
-	assert.Empty(t, song.Parts)
+	assert.Empty(t, song.Sections)
 
 	if request.ArtistID != nil {
 		assert.Equal(t, request.ArtistID, song.ArtistID)

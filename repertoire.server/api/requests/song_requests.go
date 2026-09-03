@@ -28,11 +28,11 @@ type CreateSongRequest struct {
 	ReleaseDate    *date.Date
 	Difficulty     *enums.Difficulty `validate:"omitempty,difficulty_enum"`
 	GuitarTuningID *uuid.UUID
-	Sections       []CreateSectionRequest `validate:"dive"`
-	AlbumID        *uuid.UUID             `validate:"omitempty,excluded_with=AlbumTitle ArtistID ArtistName"`
-	AlbumTitle     *string                `validate:"omitempty,excluded_with=AlbumID,max=100"`
-	ArtistID       *uuid.UUID             `validate:"omitempty,excluded_with=ArtistName"`
-	ArtistName     *string                `validate:"omitempty,excluded_with=ArtistID,max=100"`
+	Parts          []CreatePartRequest `validate:"dive"`
+	AlbumID        *uuid.UUID          `validate:"omitempty,excluded_with=AlbumTitle ArtistID ArtistName"`
+	AlbumTitle     *string             `validate:"omitempty,excluded_with=AlbumID,max=100"`
+	ArtistID       *uuid.UUID          `validate:"omitempty,excluded_with=ArtistName"`
+	ArtistName     *string             `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
 type AddCustomSongRehearsalRequest struct {
@@ -77,7 +77,6 @@ type BulkDeleteSongsRequest struct {
 	IDs []uuid.UUID `validate:"min=1"`
 }
 
-type CreateSectionRequest struct {
-	Name   string    `validate:"required,max=30"`
-	TypeID uuid.UUID `validate:"required"`
+type CreatePartRequest struct {
+	Name string `validate:"required,max=30"`
 }
