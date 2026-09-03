@@ -77,17 +77,21 @@ func TestMoveSongPartInSong_WhenPartIsNotFound_ShouldReturnNotFoundError(t *test
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := part.NewMoveSongPartInSong(songRepository)
 
-	song := &model.Song{ID: uuid.New()}
-
 	request := requests.MoveSongPartInSongRequest{
 		ID:     uuid.New(),
 		OverID: uuid.New(),
-		SongID: song.ID,
+		SongID: uuid.New(),
 	}
 
 	// given - mocking
+	mockSong := &model.Song{
+		ID: request.SongID,
+		Parts: []model.SongPart{
+			{ID: uuid.New()},
+		},
+	}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
-		Return(nil, song).
+		Return(nil, mockSong).
 		Once()
 
 	// when

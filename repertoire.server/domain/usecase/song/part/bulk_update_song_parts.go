@@ -157,6 +157,7 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 		}
 		return httperror.DatabaseError(err)
 	}
+
 	return nil
 }
 
