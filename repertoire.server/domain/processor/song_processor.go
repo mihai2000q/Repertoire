@@ -4,7 +4,6 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
@@ -147,15 +146,20 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
+	// map for easy lookup
+	partIDsMap := make(map[uuid.UUID]bool)
+	for _, iD := range partIDs {
+		partIDsMap[iD] = true
+	}
+
 	// Reorder remaining parts and accumulate deleted stats
 	var totalConfidence, totalRehearsals uint
 	var totalProgress uint64
-	idsSet := deduplicate.Deduplicate(partIDs)
 	partsToDeleteCount := 0
 	remainingPartsCount := 0
 
 	for i, part := range song.Parts {
-		if idsSet[part.ID] {
+		if partIDsMap[part.ID] {
 			partsToDeleteCount++
 			totalConfidence += part.Confidence
 			totalRehearsals += part.Rehearsals
@@ -168,7 +172,7 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 	}
 
 	// Validate that all unique part IDs were found
-	if partsToDeleteCount != len(idsSet) {
+	if partsToDeleteCount != len(partIDsMap) {
 		return httperror.NotFoundError(errors.New("song parts not found"))
 	}
 

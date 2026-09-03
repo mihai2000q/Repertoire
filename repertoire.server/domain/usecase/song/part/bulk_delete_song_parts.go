@@ -36,16 +36,11 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 		txSongRepo := factory.NewSongRepository()
 		txSongPartRepo := factory.NewSongPartRepository()
 
-		idsSet := make(map[uuid.UUID]bool, len(request.IDs))
-		for _, id := range request.IDs {
-			idsSet[id] = true
-		}
-
 		errCode = b.songProcessor.UpdateSongAfterPartsDeletion(txSongRepo, request.SongID, request.IDs)
 		if errCode != nil {
 			return errCode.Error
 		}
-		if errCode = b.reorderSectionParts(idsSet, request); errCode != nil {
+		if errCode = b.reorderSectionParts(request); errCode != nil {
 			return errCode.Error
 		}
 		if err := txSongPartRepo.Delete(request.IDs); err != nil {
@@ -64,7 +59,6 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 }
 
 func (b BulkDeleteSongParts) reorderSectionParts(
-	idsSet map[uuid.UUID]bool,
 	request requests.BulkDeleteSongPartsRequest,
 ) *httperror.ErrorCode {
 	var sections []model.SongSection
@@ -76,11 +70,17 @@ func (b BulkDeleteSongParts) reorderSectionParts(
 		return nil
 	}
 
+	// map for easy lookup
+	idsMap := make(map[uuid.UUID]bool, len(request.IDs))
+	for _, id := range request.IDs {
+		idsMap[id] = true
+	}
+
 	var sectionPartsToUpdate []model.SongSectionPart
 	for _, section := range sections {
 		var shift uint
 		for _, sp := range section.SectionParts {
-			if idsSet[sp.PartID] {
+			if idsMap[sp.PartID] {
 				shift++ // this entry will be deleted; shift subsequent ones down
 				continue
 			}

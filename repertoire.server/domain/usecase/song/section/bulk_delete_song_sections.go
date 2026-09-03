@@ -7,7 +7,6 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
@@ -48,20 +47,24 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 			return errCode.Error
 		}
 
-		idsSet := deduplicate.Deduplicate(request.IDs)
+		// map for easy lookup
+		idsMap := make(map[uuid.UUID]bool)
+		for _, iD := range request.IDs {
+			idsMap[iD] = true
+		}
 
 		// Reorder the remaining sections
-		sectionsFound := uint(0)
+		sectionsFound := 0
 		for i := range song.Sections {
-			if idsSet[song.Sections[i].ID] {
+			if idsMap[song.Sections[i].ID] {
 				sectionsFound++
 				continue
 			}
-			song.Sections[i].Order = song.Sections[i].Order - sectionsFound
+			song.Sections[i].Order = song.Sections[i].Order - uint(sectionsFound)
 		}
 
 		// Validate all requested section IDs were found
-		if int(sectionsFound) != len(idsSet) {
+		if sectionsFound != len(request.IDs) {
 			errCode = httperror.NotFoundError(errors.New("song sections not found"))
 			return errCode.Error
 		}

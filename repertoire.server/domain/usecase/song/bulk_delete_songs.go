@@ -6,7 +6,6 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
@@ -47,6 +46,12 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httper
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		b.txSongRepo = factory.NewSongRepository()
 		b.txPlaylistRepo = factory.NewPlaylistRepository()
+
+		// map for easy lookup
+		idsMap := make(map[uuid.UUID]bool)
+		for _, iD := range request.IDs {
+			idsMap[iD] = true
+		}
 
 		if err := b.reorderAlbums(songs, idsMap); err != nil {
 			return err

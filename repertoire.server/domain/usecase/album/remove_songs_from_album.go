@@ -10,7 +10,8 @@ import (
 	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
-	"slices"
+
+	"github.com/google/uuid"
 )
 
 type RemoveSongsFromAlbum struct {
@@ -40,12 +41,18 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
+	// map for easy lookup
+	songIDsMap := make(map[uuid.UUID]bool)
+	for _, songID := range request.SongIDs {
+		songIDsMap[songID] = true
+	}
+
 	var songsToDelete []model.Song
 	var songsToPreserve []model.Song
-
 	albumTrackNo := uint(1)
+
 	for _, song := range album.Songs {
-		if slices.Contains(request.SongIDs, song.ID) {
+		if songIDsMap[song.ID] {
 			songsToDelete = append(songsToDelete, song)
 		} else {
 			// reorder preserved songs
@@ -56,7 +63,7 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 	}
 
 	if len(songsToDelete) != len(request.SongIDs) {
-		return httperror.NotFoundError(errors.New("could not find all songs"))
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
 	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {

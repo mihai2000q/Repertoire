@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/section"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -587,7 +586,10 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSectionAndParts(t *testing
 			for _, sp := range tt.section.SectionParts {
 				oldMap[sp.PartID] = sp
 			}
-			partIDs := deduplicate.Deduplicate(tt.request.PartIDs)
+			partIDs := make(map[uuid.UUID]bool)
+			for _, id := range tt.request.PartIDs {
+				partIDs[id] = true
+			}
 
 			var expectedPartsToDelete []model.SongSectionPart
 			for pid, sp := range oldMap {

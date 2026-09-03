@@ -7,7 +7,6 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
@@ -102,12 +101,17 @@ func (u UpdateSongSection) updateSectionParts(
 	for _, sp := range section.SectionParts {
 		oldParts[sp.PartID] = sp
 	}
-	newParts := deduplicate.Deduplicate(partIDs)
+
+	// map for easy lookup
+	partIDsMap := make(map[uuid.UUID]bool)
+	for _, id := range partIDs {
+		partIDsMap[id] = true
+	}
 
 	// Identify parts to delete: those in oldMap but not in newSet
 	var partsToDelete []model.SongSectionPart
 	for pid, sp := range oldParts {
-		if !newParts[pid] {
+		if !partIDsMap[pid] {
 			partsToDelete = append(partsToDelete, sp)
 		}
 	}
@@ -121,7 +125,7 @@ func (u UpdateSongSection) updateSectionParts(
 	var partsToUpdate []model.SongSectionPart
 	var partsToCreate []model.SongSectionPart
 	order := 0
-	for pid := range newParts {
+	for pid := range partIDsMap {
 		if sp, exists := oldParts[pid]; exists {
 			sp.Order = uint(order)
 			partsToUpdate = append(partsToUpdate, sp)

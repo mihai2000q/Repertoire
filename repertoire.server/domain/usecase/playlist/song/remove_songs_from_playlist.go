@@ -7,7 +7,8 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
-	"slices"
+
+	"github.com/google/uuid"
 )
 
 type RemoveSongsFromPlaylist struct {
@@ -31,12 +32,18 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 		return httperror.DatabaseError(err)
 	}
 
+	// map for easy lookup
+	idsMap := make(map[uuid.UUID]bool)
+	for _, iD := range request.PlaylistSongIDs {
+		idsMap[iD] = true
+	}
+
 	var songsToDelete []model.PlaylistSong
 	var songsToPreserve []model.PlaylistSong
-
 	songTrackNo := uint(1)
+
 	for _, playlistSong := range playlistSongs {
-		if slices.Contains(request.PlaylistSongIDs, playlistSong.ID) {
+		if idsMap[playlistSong.ID] {
 			songsToDelete = append(songsToDelete, playlistSong)
 		} else {
 			// reorder preserved songs

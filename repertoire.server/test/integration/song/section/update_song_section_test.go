@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal/deduplicate"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
@@ -132,7 +131,7 @@ func assertUpdatedSongSection(
 	assert.Equal(t, request.Name, songSection.Name)
 	assert.Equal(t, request.TypeID, songSection.SongSectionTypeID)
 
-	assert.Len(t, songSection.SectionParts, len(deduplicate.Deduplicate(request.PartIDs)))
+	assert.Len(t, songSection.SectionParts, len(request.PartIDs))
 	for i, sectionPart := range songSection.SectionParts {
 		assert.Equal(t, songSection.ID, sectionPart.SectionID)
 		assert.True(t,

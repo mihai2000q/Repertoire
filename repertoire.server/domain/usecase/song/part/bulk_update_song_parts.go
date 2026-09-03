@@ -31,11 +31,6 @@ func NewBulkUpdateSongParts(
 }
 
 func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest) *httperror.ErrorCode {
-	requestMap := make(map[uuid.UUID]requests.BulkUpdateSongPartRequest, len(request.Requests))
-	for _, req := range request.Requests {
-		requestMap[req.ID] = req
-	}
-
 	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		b.txSongPartRepo = factory.NewSongPartRepository()
@@ -55,6 +50,12 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 		if reflect.ValueOf(song).IsZero() {
 			errCode = httperror.NotFoundError(errors.New("song not found"))
 			return errCode.Error
+		}
+
+		// map for easy lookup
+		requestMap := make(map[uuid.UUID]requests.BulkUpdateSongPartRequest, len(request.Requests))
+		for _, req := range request.Requests {
+			requestMap[req.ID] = req
 		}
 
 		// validate non-decrease rehearsals on parts

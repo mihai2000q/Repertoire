@@ -6,7 +6,6 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
-	"slices"
 
 	"github.com/google/uuid"
 )
@@ -27,13 +26,17 @@ func (a AddSongsToPlaylist) Handle(
 		return nil, httperror.DatabaseError(err)
 	}
 
+	// map for easy lookup
+	songIDsMap := make(map[uuid.UUID]bool)
+	for _, ps := range playlistSongs {
+		songIDsMap[ps.SongID] = true
+	}
+
 	var duplicates []uuid.UUID
 	var newPlaylistSongs []model.PlaylistSong
 	currentTrackNo := uint(len(playlistSongs)) + 1
 	for _, songID := range request.SongIDs {
-		if slices.ContainsFunc(playlistSongs, func(p model.PlaylistSong) bool {
-			return p.SongID == songID
-		}) {
+		if songIDsMap[songID] {
 			duplicates = append(duplicates, songID)
 			if request.ForceAdd != nil && !(*request.ForceAdd) {
 				continue
