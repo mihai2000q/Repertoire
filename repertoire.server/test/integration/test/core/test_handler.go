@@ -5,7 +5,7 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"net/http"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/model"
 	"time"
 
@@ -130,7 +130,7 @@ func (t *testHandler) requestWithAuthentication(req *http.Request) {
 	}
 
 	if t.settings.withMeiliAuth {
-		req.Header.Set("Authorization", internal.NewEnv().MeiliAuthKey)
+		req.Header.Set("Authorization", env.NewEnv().MeiliAuthKey)
 		return
 	}
 

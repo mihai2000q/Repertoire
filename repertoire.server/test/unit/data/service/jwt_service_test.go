@@ -3,7 +3,7 @@ package service
 import (
 	"net/http"
 	"repertoire/server/data/service"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/model"
 	"testing"
 	"time"
@@ -184,7 +184,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			_uut := service.NewJwtService(internal.Env{JwtPublicKey: tt.publicKey})
+			_uut := service.NewJwtService(env.Env{JwtPublicKey: tt.publicKey})
 
 			key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(tt.privateKey))
 			token, _ := tt.claims.SignedString(key)
@@ -202,7 +202,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 
 func TestJwtService_Authorize_WhenTokenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -241,7 +241,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			env := internal.Env{
+			env := env.Env{
 				JwtPublicKey: tt.publicKey,
 			}
 			_uut := service.NewJwtService(env)
@@ -264,7 +264,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 
 func TestJwtService_GetUserIdFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -285,7 +285,7 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError
 
 func TestJwtService_GetUserIdFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -308,7 +308,7 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError
 
 func TestJwtService_GetUserIdFromJwt_WhenSuccessful_ShouldReturnUserId(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
