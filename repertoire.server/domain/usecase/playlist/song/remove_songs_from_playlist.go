@@ -11,23 +11,23 @@ import (
 )
 
 type RemoveSongsFromPlaylist struct {
-	repository  repository.PlaylistRepository
-	transaction transaction.Manager
+	playlistRepository repository.PlaylistRepository
+	transaction        transaction.Manager
 }
 
 func NewRemoveSongsFromPlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	transaction transaction.Manager,
 ) RemoveSongsFromPlaylist {
 	return RemoveSongsFromPlaylist{
-		repository:  repository,
-		transaction: transaction,
+		playlistRepository: playlistRepository,
+		transaction:        transaction,
 	}
 }
 
 func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylistRequest) *httperror.ErrorCode {
 	var playlistSongs []model.PlaylistSong
-	if err := r.repository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+	if err := r.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -51,12 +51,12 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 	}
 
 	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
-		playlistRepo := factory.NewPlaylistRepository()
+		txPlaylistRepo := factory.NewPlaylistRepository()
 
-		if err := playlistRepo.RemoveSongs(&songsToDelete); err != nil {
+		if err := txPlaylistRepo.RemoveSongs(&songsToDelete); err != nil {
 			return err
 		}
-		if err := playlistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
+		if err := txPlaylistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
 			return err
 		}
 		return nil

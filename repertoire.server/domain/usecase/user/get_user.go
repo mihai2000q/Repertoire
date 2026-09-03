@@ -11,15 +11,15 @@ import (
 )
 
 type GetUser struct {
-	repository repository.UserRepository
+	userRepository repository.UserRepository
 }
 
-func NewGetUser(repository repository.UserRepository) GetUser {
-	return GetUser{repository: repository}
+func NewGetUser(userRepository repository.UserRepository) GetUser {
+	return GetUser{userRepository: userRepository}
 }
 
 func (g GetUser) Handle(id uuid.UUID) (user model.User, e *httperror.ErrorCode) {
-	if err := g.repository.Get(&user, id); err != nil {
+	if err := g.userRepository.Get(&user, id); err != nil {
 		return user, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {

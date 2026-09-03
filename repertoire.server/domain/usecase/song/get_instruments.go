@@ -8,14 +8,17 @@ import (
 )
 
 type GetInstruments struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	songRepository repository.SongRepository
+	jwtService     service.JwtService
 }
 
-func NewGetInstruments(repository repository.SongRepository, jwtService service.JwtService) GetInstruments {
+func NewGetInstruments(
+	songRepository repository.SongRepository,
+	jwtService service.JwtService,
+) GetInstruments {
 	return GetInstruments{
-		repository: repository,
-		jwtService: jwtService,
+		songRepository: songRepository,
+		jwtService:     jwtService,
 	}
 }
 
@@ -25,7 +28,7 @@ func (g GetInstruments) Handle(token string) (result []model.Instrument, e *http
 		return result, errCode
 	}
 
-	if err := g.repository.GetInstruments(&result, userID); err != nil {
+	if err := g.songRepository.GetInstruments(&result, userID); err != nil {
 		return result, httperror.DatabaseError(err)
 	}
 

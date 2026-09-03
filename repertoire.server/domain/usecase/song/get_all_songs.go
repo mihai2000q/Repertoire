@@ -10,14 +10,17 @@ import (
 )
 
 type GetAllSongs struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	songRepository repository.SongRepository
+	jwtService     service.JwtService
 }
 
-func NewGetAllSongs(repository repository.SongRepository, jwtService service.JwtService) GetAllSongs {
+func NewGetAllSongs(
+	songRepository repository.SongRepository,
+	jwtService service.JwtService,
+) GetAllSongs {
 	return GetAllSongs{
-		repository: repository,
-		jwtService: jwtService,
+		songRepository: songRepository,
+		jwtService:     jwtService,
 	}
 }
 
@@ -27,7 +30,7 @@ func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (res
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(
+	err := g.songRepository.GetAllByUser(
 		&result.Models,
 		userID,
 		request.CurrentPage,
@@ -40,7 +43,7 @@ func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (res
 		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
+	err = g.songRepository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
 		return result, httperror.DatabaseError(err)
 	}

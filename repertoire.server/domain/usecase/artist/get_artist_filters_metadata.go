@@ -9,17 +9,17 @@ import (
 )
 
 type GetArtistFiltersMetadata struct {
-	jwtService service.JwtService
-	repository repository.ArtistRepository
+	jwtService       service.JwtService
+	artistRepository repository.ArtistRepository
 }
 
 func NewGetArtistFiltersMetadata(
 	jwtService service.JwtService,
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 ) GetArtistFiltersMetadata {
 	return GetArtistFiltersMetadata{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:       jwtService,
+		artistRepository: artistRepository,
 	}
 }
 
@@ -32,7 +32,7 @@ func (g GetArtistFiltersMetadata) Handle(
 		return metadata, errCode
 	}
 
-	if err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy); err != nil {
+	if err := g.artistRepository.GetFiltersMetadata(&metadata, userID, request.SearchBy); err != nil {
 		return metadata, httperror.DatabaseError(err)
 	}
 	return metadata, nil

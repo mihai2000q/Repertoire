@@ -11,18 +11,18 @@ import (
 )
 
 type AddPerfectRehearsalsToPlaylists struct {
-	repository         repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
 func NewAddPerfectRehearsalsToPlaylists(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
 ) AddPerfectRehearsalsToPlaylists {
 	return AddPerfectRehearsalsToPlaylists{
-		repository:         repository,
+		playlistRepository: playlistRepository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
@@ -30,7 +30,7 @@ func NewAddPerfectRehearsalsToPlaylists(
 
 func (a AddPerfectRehearsalsToPlaylists) Handle(request requests.AddPerfectRehearsalsToPlaylistsRequest) *httperror.ErrorCode {
 	var playlists []model.Playlist
-	err := a.repository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&playlists, request.IDs)
+	err := a.playlistRepository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&playlists, request.IDs)
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
@@ -40,13 +40,13 @@ func (a AddPerfectRehearsalsToPlaylists) Handle(request requests.AddPerfectRehea
 
 	var errCode *httperror.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		txSongPartRepository := factory.NewSongPartRepository()
-		txSongRepository := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, playlist := range playlists {
 			for _, playlistSong := range playlist.PlaylistSongs {
-				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&playlistSong.Song, txSongPartRepository)
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&playlistSong.Song, txSongPartRepo)
 				if errC != nil {
 					errCode = errC
 					return errCode.Error
@@ -58,7 +58,7 @@ func (a AddPerfectRehearsalsToPlaylists) Handle(request requests.AddPerfectRehea
 		}
 
 		if len(newSongs) > 0 {
-			err = txSongRepository.UpdateAllWithAssociations(&newSongs)
+			err = txSongRepo.UpdateAllWithAssociations(&newSongs)
 			if err != nil {
 				return err
 			}

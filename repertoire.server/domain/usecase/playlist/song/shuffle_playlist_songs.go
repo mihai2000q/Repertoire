@@ -9,16 +9,16 @@ import (
 )
 
 type ShufflePlaylistSongs struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewShufflePlaylistSongs(repository repository.PlaylistRepository) ShufflePlaylistSongs {
-	return ShufflePlaylistSongs{repository: repository}
+func NewShufflePlaylistSongs(playlistRepository repository.PlaylistRepository) ShufflePlaylistSongs {
+	return ShufflePlaylistSongs{playlistRepository: playlistRepository}
 }
 
 func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsRequest) *httperror.ErrorCode {
 	var songs []model.PlaylistSong
-	if err := s.repository.GetPlaylistSongs(&songs, request.ID); err != nil {
+	if err := s.playlistRepository.GetPlaylistSongs(&songs, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -29,7 +29,7 @@ func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsReques
 		songs[j].SongTrackNo = uint(j + 1)
 	}
 
-	if err := s.repository.UpdateAllPlaylistSongs(&songs); err != nil {
+	if err := s.playlistRepository.UpdateAllPlaylistSongs(&songs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

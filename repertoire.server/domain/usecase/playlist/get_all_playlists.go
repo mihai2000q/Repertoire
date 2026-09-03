@@ -10,14 +10,17 @@ import (
 )
 
 type GetAllPlaylists struct {
-	repository repository.PlaylistRepository
-	jwtService service.JwtService
+	playlistRepository repository.PlaylistRepository
+	jwtService         service.JwtService
 }
 
-func NewGetAllPlaylists(repository repository.PlaylistRepository, jwtService service.JwtService) GetAllPlaylists {
+func NewGetAllPlaylists(
+	playlistRepository repository.PlaylistRepository,
+	jwtService service.JwtService,
+) GetAllPlaylists {
 	return GetAllPlaylists{
-		repository: repository,
-		jwtService: jwtService,
+		playlistRepository: playlistRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -30,7 +33,7 @@ func (g GetAllPlaylists) Handle(
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(
+	err := g.playlistRepository.GetAllByUser(
 		&result.Models,
 		userID,
 		request.CurrentPage,
@@ -42,7 +45,7 @@ func (g GetAllPlaylists) Handle(
 		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
+	err = g.playlistRepository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
 		return result, httperror.DatabaseError(err)
 	}

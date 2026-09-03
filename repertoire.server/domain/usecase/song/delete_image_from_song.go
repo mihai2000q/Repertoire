@@ -13,18 +13,18 @@ import (
 )
 
 type DeleteImageFromSong struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	storageService          service.StorageService
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteImageFromSong(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	storageService service.StorageService,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteImageFromSong {
 	return DeleteImageFromSong{
-		repository:              repository,
+		songRepository:          songRepository,
 		storageService:          storageService,
 		messagePublisherService: messagePublisherService,
 	}
@@ -32,7 +32,7 @@ func NewDeleteImageFromSong(
 
 func (d DeleteImageFromSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	if err := d.repository.Get(&song, id); err != nil {
+	if err := d.songRepository.Get(&song, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
@@ -47,7 +47,7 @@ func (d DeleteImageFromSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 	}
 
 	song.ImageURL = nil
-	if err := d.repository.Update(&song); err != nil {
+	if err := d.songRepository.Update(&song); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

@@ -13,9 +13,9 @@ type UpdateBandMember struct {
 	artistRepository repository.ArtistRepository
 }
 
-func NewUpdateBandMember(repository repository.ArtistRepository) UpdateBandMember {
+func NewUpdateBandMember(artistRepository repository.ArtistRepository) UpdateBandMember {
 	return UpdateBandMember{
-		artistRepository: repository,
+		artistRepository: artistRepository,
 	}
 }
 

@@ -14,9 +14,9 @@ type MoveSongSection struct {
 	songRepository repository.SongRepository
 }
 
-func NewMoveSongSection(repository repository.SongRepository) MoveSongSection {
+func NewMoveSongSection(songRepository repository.SongRepository) MoveSongSection {
 	return MoveSongSection{
-		songRepository: repository,
+		songRepository: songRepository,
 	}
 }
 

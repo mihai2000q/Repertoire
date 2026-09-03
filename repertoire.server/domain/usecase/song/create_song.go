@@ -15,20 +15,20 @@ import (
 
 type CreateSong struct {
 	jwtService              service.JwtService
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) CreateSong {
 	return CreateSong{
 		jwtService:              jwtService,
-		repository:              repository,
+		songRepository:          songRepository,
 		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
@@ -66,7 +66,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, errCode
 	}
 
-	if err := c.repository.Create(&song); err != nil {
+	if err := c.songRepository.Create(&song); err != nil {
 		return uuid.Nil, httperror.DatabaseError(err)
 	}
 

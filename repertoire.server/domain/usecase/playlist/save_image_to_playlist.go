@@ -17,20 +17,20 @@ import (
 )
 
 type SaveImageToPlaylist struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	storageFilePathProvider provider.StorageFilePathProvider
 	storageService          service.StorageService
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewSaveImageToPlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	storageFilePathProvider provider.StorageFilePathProvider,
 	storageService service.StorageService,
 	messagePublisherService service.MessagePublisherService,
 ) SaveImageToPlaylist {
 	return SaveImageToPlaylist{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 		messagePublisherService: messagePublisherService,
@@ -39,7 +39,7 @@ func NewSaveImageToPlaylist(
 
 func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *httperror.ErrorCode {
 	var playlist model.Playlist
-	if err := s.repository.Get(&playlist, id); err != nil {
+	if err := s.playlistRepository.Get(&playlist, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
@@ -60,7 +60,7 @@ func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *h
 	}
 
 	playlist.ImageURL = (*internal.FilePath)(&imagePath)
-	if err := s.repository.Update(&playlist); err != nil {
+	if err := s.playlistRepository.Update(&playlist); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

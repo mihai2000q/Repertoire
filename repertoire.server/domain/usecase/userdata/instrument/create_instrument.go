@@ -15,7 +15,10 @@ type CreateInstrument struct {
 	jwtService service.JwtService
 }
 
-func NewCreateInstrument(repository repository.UserDataRepository, jwtService service.JwtService) CreateInstrument {
+func NewCreateInstrument(
+	repository repository.UserDataRepository,
+	jwtService service.JwtService,
+) CreateInstrument {
 	return CreateInstrument{
 		repository: repository,
 		jwtService: jwtService,

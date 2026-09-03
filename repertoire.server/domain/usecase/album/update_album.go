@@ -14,26 +14,26 @@ import (
 )
 
 type UpdateAlbum struct {
-	repository              repository.AlbumRepository
 	songRepository          repository.SongRepository
+	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdateAlbum(
-	repository repository.AlbumRepository,
 	songRepository repository.SongRepository,
+	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) UpdateAlbum {
 	return UpdateAlbum{
-		repository:              repository,
 		songRepository:          songRepository,
+		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	if err := u.repository.Get(&album, request.ID); err != nil {
+	if err := u.albumRepository.Get(&album, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {

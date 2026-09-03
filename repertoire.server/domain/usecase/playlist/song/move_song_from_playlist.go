@@ -10,16 +10,16 @@ import (
 )
 
 type MoveSongFromPlaylist struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewMoveSongFromPlaylist(repository repository.PlaylistRepository) MoveSongFromPlaylist {
-	return MoveSongFromPlaylist{repository: repository}
+func NewMoveSongFromPlaylist(playlistRepository repository.PlaylistRepository) MoveSongFromPlaylist {
+	return MoveSongFromPlaylist{playlistRepository: playlistRepository}
 }
 
 func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistRequest) *httperror.ErrorCode {
 	var playlistSongs []model.PlaylistSong
-	if err := m.repository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+	if err := m.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if len(playlistSongs) == 0 {
@@ -41,7 +41,7 @@ func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistReques
 		return errCode
 	}
 
-	if err := m.repository.UpdateAllPlaylistSongs(&playlistSongs); err != nil {
+	if err := m.playlistRepository.UpdateAllPlaylistSongs(&playlistSongs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

@@ -12,18 +12,18 @@ import (
 )
 
 type AddCustomSongRehearsal struct {
-	repository         repository.SongRepository
+	songRepository     repository.SongRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
 func NewAddCustomSongRehearsal(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
 ) AddCustomSongRehearsal {
 	return AddCustomSongRehearsal{
-		repository:         repository,
+		songRepository:     songRepository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
@@ -31,7 +31,7 @@ func NewAddCustomSongRehearsal(
 
 func (a AddCustomSongRehearsal) Handle(request requests.AddCustomSongRehearsalRequest) *httperror.ErrorCode {
 	var song model.Song
-	err := a.repository.GetWithPartsAndArrangementOccurrences(&song, request.ID, request.ArrangementID)
+	err := a.songRepository.GetWithPartsAndArrangementOccurrences(&song, request.ID, request.ArrangementID)
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
@@ -44,17 +44,17 @@ func (a AddCustomSongRehearsal) Handle(request requests.AddCustomSongRehearsalRe
 
 	var errCode *httperror.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		txSongPartRepository := factory.NewSongPartRepository()
-		txSongRepository := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
-		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, txSongPartRepository, nil)
+		errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, txSongPartRepo, nil)
 		if errC != nil {
 			errCode = errC
 			return errCode.Error
 		}
 
 		if isUpdated {
-			if err := txSongRepository.UpdateWithAssociations(&song); err != nil {
+			if err := txSongRepo.UpdateWithAssociations(&song); err != nil {
 				return err
 			}
 		}

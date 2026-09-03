@@ -13,19 +13,19 @@ import (
 )
 
 type DeleteImageFromPlaylist struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	storageService          service.StorageService
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteImageFromPlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	storageService service.StorageService,
 	messagePublisherService service.MessagePublisherService,
 
 ) DeleteImageFromPlaylist {
 	return DeleteImageFromPlaylist{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		storageService:          storageService,
 		messagePublisherService: messagePublisherService,
 	}
@@ -33,7 +33,7 @@ func NewDeleteImageFromPlaylist(
 
 func (d DeleteImageFromPlaylist) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var playlist model.Playlist
-	if err := d.repository.Get(&playlist, id); err != nil {
+	if err := d.playlistRepository.Get(&playlist, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
@@ -48,7 +48,7 @@ func (d DeleteImageFromPlaylist) Handle(id uuid.UUID) *httperror.ErrorCode {
 	}
 
 	playlist.ImageURL = nil
-	if err := d.repository.Update(&playlist); err != nil {
+	if err := d.playlistRepository.Update(&playlist); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

@@ -13,18 +13,18 @@ import (
 
 type CreateArtist struct {
 	jwtService              service.JwtService
-	repository              repository.ArtistRepository
+	artistRepository        repository.ArtistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateArtist(
 	jwtService service.JwtService,
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) CreateArtist {
 	return CreateArtist{
 		jwtService:              jwtService,
-		repository:              repository,
+		artistRepository:        artistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -41,7 +41,7 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 		IsBand: request.IsBand,
 		UserID: userID,
 	}
-	if err := c.repository.Create(&artist); err != nil {
+	if err := c.artistRepository.Create(&artist); err != nil {
 		return uuid.Nil, httperror.DatabaseError(err)
 	}
 

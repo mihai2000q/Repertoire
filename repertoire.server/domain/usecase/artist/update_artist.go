@@ -12,23 +12,23 @@ import (
 )
 
 type UpdateArtist struct {
-	repository              repository.ArtistRepository
+	artistRepository        repository.ArtistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdateArtist(
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) UpdateArtist {
 	return UpdateArtist{
-		repository:              repository,
+		artistRepository:        artistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *httperror.ErrorCode {
 	var artist model.Artist
-	if err := u.repository.Get(&artist, request.ID); err != nil {
+	if err := u.artistRepository.Get(&artist, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
@@ -38,7 +38,7 @@ func (u UpdateArtist) Handle(request requests.UpdateArtistRequest) *httperror.Er
 	artist.Name = request.Name
 	artist.IsBand = request.IsBand
 
-	if err := u.repository.Update(&artist); err != nil {
+	if err := u.artistRepository.Update(&artist); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

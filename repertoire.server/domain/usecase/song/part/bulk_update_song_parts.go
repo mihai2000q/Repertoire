@@ -15,9 +15,9 @@ import (
 )
 
 type BulkUpdateSongParts struct {
-	transactionManager   transaction.Manager
-	progressProcessor    processor.ProgressProcessor
-	txSongPartRepository repository.SongPartRepository
+	transactionManager transaction.Manager
+	progressProcessor  processor.ProgressProcessor
+	txSongPartRepo     repository.SongPartRepository
 }
 
 func NewBulkUpdateSongParts(
@@ -38,8 +38,8 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 
 	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		b.txSongPartRepository = factory.NewSongPartRepository()
-		txSongRepository := factory.NewSongRepository()
+		b.txSongPartRepo = factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
 		var totalOldRehearsals, totalNewRehearsals uint
 		var totalOldConfidence, totalNewConfidence uint
@@ -49,7 +49,7 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 		partsFound := 0
 
 		var song model.Song
-		if err := txSongRepository.GetWithParts(&song, request.SongID); err != nil {
+		if err := txSongRepo.GetWithParts(&song, request.SongID); err != nil {
 			return err
 		}
 		if reflect.ValueOf(song).IsZero() {
@@ -140,11 +140,11 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 			song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
 		}
 
-		if err := txSongRepository.UpdateWithAssociations(&song); err != nil {
+		if err := txSongRepo.UpdateWithAssociations(&song); err != nil {
 			return err
 		}
 
-		if err := b.txSongPartRepository.UpdateAll(&partsToUpdate); err != nil {
+		if err := b.txSongPartRepo.UpdateAll(&partsToUpdate); err != nil {
 			return err
 		}
 
@@ -169,13 +169,13 @@ func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsal
 		To:       newRehearsals,
 		PartID:   part.ID,
 	}
-	if err := b.txSongPartRepository.CreateHistory(&newHistory); err != nil {
+	if err := b.txSongPartRepo.CreateHistory(&newHistory); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
 	// update part's rehearsals score based on the history changes
 	var history []model.SongPartHistory
-	if err := b.txSongPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
+	if err := b.txSongPartRepo.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	part.RehearsalsScore = b.progressProcessor.ComputeRehearsalsScore(history)
@@ -193,13 +193,13 @@ func (b BulkUpdateSongParts) updateConfidence(part *model.SongPart, newConfidenc
 		To:       newConfidence,
 		PartID:   part.ID,
 	}
-	if err := b.txSongPartRepository.CreateHistory(&newHistory); err != nil {
+	if err := b.txSongPartRepo.CreateHistory(&newHistory); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
 	// update part's confidence score based on the history changes
 	var history []model.SongPartHistory
-	if err := b.txSongPartRepository.GetHistory(&history, part.ID, model.ConfidenceProperty); err != nil {
+	if err := b.txSongPartRepo.GetHistory(&history, part.ID, model.ConfidenceProperty); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	part.ConfidenceScore = b.progressProcessor.ComputeConfidenceScore(history)

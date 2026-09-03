@@ -16,7 +16,10 @@ type DeleteInstrument struct {
 	jwtService service.JwtService
 }
 
-func NewDeleteInstrument(repository repository.UserDataRepository, jwtService service.JwtService) DeleteInstrument {
+func NewDeleteInstrument(
+	repository repository.UserDataRepository,
+	jwtService service.JwtService,
+) DeleteInstrument {
 	return DeleteInstrument{
 		repository: repository,
 		jwtService: jwtService,

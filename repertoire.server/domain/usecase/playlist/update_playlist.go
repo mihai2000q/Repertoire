@@ -12,23 +12,23 @@ import (
 )
 
 type UpdatePlaylist struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdatePlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) UpdatePlaylist {
 	return UpdatePlaylist{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *httperror.ErrorCode {
 	var playlist model.Playlist
-	if err := u.repository.Get(&playlist, request.ID); err != nil {
+	if err := u.playlistRepository.Get(&playlist, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
@@ -38,7 +38,7 @@ func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *httperro
 	playlist.Title = request.Title
 	playlist.Description = request.Description
 
-	if err := u.repository.Update(&playlist); err != nil {
+	if err := u.playlistRepository.Update(&playlist); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

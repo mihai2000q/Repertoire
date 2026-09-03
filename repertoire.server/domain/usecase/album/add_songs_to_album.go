@@ -12,18 +12,18 @@ import (
 )
 
 type AddSongsToAlbum struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	songRepository          repository.SongRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewAddSongsToAlbum(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	songRepository repository.SongRepository,
 	messagePublisherService service.MessagePublisherService,
 ) AddSongsToAlbum {
 	return AddSongsToAlbum{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		songRepository:          songRepository,
 		messagePublisherService: messagePublisherService,
 	}
@@ -31,7 +31,7 @@ func NewAddSongsToAlbum(
 
 func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	if err := a.repository.GetWithSongs(&album, request.ID); err != nil {
+	if err := a.albumRepository.GetWithSongs(&album, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {

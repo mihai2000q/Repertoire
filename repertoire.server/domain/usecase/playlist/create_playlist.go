@@ -13,18 +13,18 @@ import (
 
 type CreatePlaylist struct {
 	jwtService              service.JwtService
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreatePlaylist(
 	jwtService service.JwtService,
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) CreatePlaylist {
 	return CreatePlaylist{
 		jwtService:              jwtService,
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -41,7 +41,7 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 		Description: request.Description,
 		UserID:      userID,
 	}
-	if err := c.repository.Create(&playlist); err != nil {
+	if err := c.playlistRepository.Create(&playlist); err != nil {
 		return uuid.Nil, httperror.DatabaseError(err)
 	}
 

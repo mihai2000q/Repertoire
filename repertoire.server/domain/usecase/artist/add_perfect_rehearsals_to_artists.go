@@ -11,18 +11,18 @@ import (
 )
 
 type AddPerfectRehearsalsToArtists struct {
-	repository         repository.ArtistRepository
+	artistRepository   repository.ArtistRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
 func NewAddPerfectRehearsalsToArtists(
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
 ) AddPerfectRehearsalsToArtists {
 	return AddPerfectRehearsalsToArtists{
-		repository:         repository,
+		artistRepository:   artistRepository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
@@ -30,7 +30,7 @@ func NewAddPerfectRehearsalsToArtists(
 
 func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehearsalsToArtistsRequest) *httperror.ErrorCode {
 	var artists []model.Artist
-	if err := a.repository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&artists, request.IDs); err != nil {
+	if err := a.artistRepository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&artists, request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if len(artists) != len(request.IDs) {
@@ -39,13 +39,13 @@ func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehears
 
 	var errCode *httperror.ErrorCode
 	err := a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		txSongPartRepository := factory.NewSongPartRepository()
-		txSongRepository := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, artist := range artists {
 			for _, song := range artist.Songs {
-				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, txSongPartRepository)
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, txSongPartRepo)
 				if errC != nil {
 					errCode = errC
 					return errCode.Error
@@ -57,7 +57,7 @@ func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehears
 		}
 
 		if len(newSongs) > 0 {
-			if err := txSongRepository.UpdateAllWithAssociations(&newSongs); err != nil {
+			if err := txSongRepo.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}

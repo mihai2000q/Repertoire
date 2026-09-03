@@ -52,15 +52,15 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *ht
 	}
 
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		txSongSectionRepository := factory.NewSongSectionRepository()
+		txSongSectionRepo := factory.NewSongSectionRepository()
 
 		section.Name = request.Name
 		section.SongSectionTypeID = request.TypeID
-		if err := txSongSectionRepository.Update(&section); err != nil {
+		if err := txSongSectionRepo.Update(&section); err != nil {
 			return err
 		}
 
-		if err := u.updateSectionParts(txSongSectionRepository, &section, request.PartIDs); err != nil {
+		if err := u.updateSectionParts(txSongSectionRepo, &section, request.PartIDs); err != nil {
 			return err
 		}
 
@@ -94,7 +94,7 @@ func (u UpdateSongSection) ensurePartsBelongToSameSong(
 }
 
 func (u UpdateSongSection) updateSectionParts(
-	txSongSectionRepository repository.SongSectionRepository,
+	txSongSectionRepo repository.SongSectionRepository,
 	section *model.SongSection,
 	partIDs []uuid.UUID,
 ) error {
@@ -113,7 +113,7 @@ func (u UpdateSongSection) updateSectionParts(
 		}
 	}
 	if len(partsToDelete) > 0 {
-		if err := txSongSectionRepository.DeleteSectionParts(&partsToDelete); err != nil {
+		if err := txSongSectionRepo.DeleteSectionParts(&partsToDelete); err != nil {
 			return err
 		}
 	}
@@ -137,13 +137,13 @@ func (u UpdateSongSection) updateSectionParts(
 	}
 
 	if len(partsToUpdate) > 0 {
-		if err := txSongSectionRepository.UpdateAllSectionParts(&partsToUpdate); err != nil {
+		if err := txSongSectionRepo.UpdateAllSectionParts(&partsToUpdate); err != nil {
 			return err
 		}
 	}
 
 	if len(partsToCreate) > 0 {
-		if err := txSongSectionRepository.CreateAllSectionParts(&partsToCreate); err != nil {
+		if err := txSongSectionRepo.CreateAllSectionParts(&partsToCreate); err != nil {
 			return err
 		}
 	}

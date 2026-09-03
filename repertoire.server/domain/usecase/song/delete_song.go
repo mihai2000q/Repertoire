@@ -14,18 +14,18 @@ import (
 )
 
 type DeleteSong struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteSong(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteSong {
 	return DeleteSong{
-		repository:              repository,
+		songRepository:          songRepository,
 		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
@@ -33,7 +33,7 @@ func NewDeleteSong(
 
 func (d DeleteSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	if err := d.repository.GetWithPlaylistsAndSongs(&song, id); err != nil {
+	if err := d.songRepository.GetWithPlaylistsAndSongs(&song, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
@@ -60,7 +60,7 @@ func (d DeleteSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 		}
 	}
 
-	if err := d.repository.Delete([]uuid.UUID{id}); err != nil {
+	if err := d.songRepository.Delete([]uuid.UUID{id}); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -77,7 +77,7 @@ func (d DeleteSong) reorderAlbum(song model.Song) *httperror.ErrorCode {
 	}
 
 	var albumSongs []model.Song
-	err := d.repository.GetAllByAlbumAndTrackNo(&albumSongs, *song.AlbumID, *song.AlbumTrackNo)
+	err := d.songRepository.GetAllByAlbumAndTrackNo(&albumSongs, *song.AlbumID, *song.AlbumTrackNo)
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
@@ -88,7 +88,7 @@ func (d DeleteSong) reorderAlbum(song model.Song) *httperror.ErrorCode {
 	}
 
 	if len(albumSongs) != 0 {
-		if err := d.repository.UpdateAll(&albumSongs); err != nil {
+		if err := d.songRepository.UpdateAll(&albumSongs); err != nil {
 			return httperror.DatabaseError(err)
 		}
 	}

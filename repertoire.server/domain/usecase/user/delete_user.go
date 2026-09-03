@@ -8,18 +8,18 @@ import (
 )
 
 type DeleteUser struct {
-	repository              repository.UserRepository
+	userRepository          repository.UserRepository
 	jwtService              service.JwtService
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteUser(
-	repository repository.UserRepository,
+	userRepository repository.UserRepository,
 	jwtService service.JwtService,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteUser {
 	return DeleteUser{
-		repository:              repository,
+		userRepository:          userRepository,
 		jwtService:              jwtService,
 		messagePublisherService: messagePublisherService,
 	}
@@ -31,7 +31,7 @@ func (d DeleteUser) Handle(token string) *httperror.ErrorCode {
 		return errCode
 	}
 
-	if err := d.repository.Delete(id); err != nil {
+	if err := d.userRepository.Delete(id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

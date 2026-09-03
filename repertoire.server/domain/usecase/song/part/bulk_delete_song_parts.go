@@ -15,8 +15,8 @@ type BulkDeleteSongParts struct {
 	transactionManager transaction.Manager
 	songProcessor      processor.SongProcessor
 
-	txSongRepository        repository.SongRepository
-	txSongSectionRepository repository.SongSectionRepository
+	txSongRepo        repository.SongRepository
+	txSongSectionRepo repository.SongSectionRepository
 }
 
 func NewBulkDeleteSongParts(
@@ -32,23 +32,23 @@ func NewBulkDeleteSongParts(
 func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest) *httperror.ErrorCode {
 	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		b.txSongSectionRepository = factory.NewSongSectionRepository()
-		txSongRepository := factory.NewSongRepository()
-		txSongPartRepository := factory.NewSongPartRepository()
+		b.txSongSectionRepo = factory.NewSongSectionRepository()
+		txSongRepo := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
 
 		idsSet := make(map[uuid.UUID]bool, len(request.IDs))
 		for _, id := range request.IDs {
 			idsSet[id] = true
 		}
 
-		errCode = b.songProcessor.UpdateSongAfterPartsDeletion(txSongRepository, request.SongID, request.IDs)
+		errCode = b.songProcessor.UpdateSongAfterPartsDeletion(txSongRepo, request.SongID, request.IDs)
 		if errCode != nil {
 			return errCode.Error
 		}
 		if errCode = b.reorderSectionParts(idsSet, request); errCode != nil {
 			return errCode.Error
 		}
-		if err := txSongPartRepository.Delete(request.IDs); err != nil {
+		if err := txSongPartRepo.Delete(request.IDs); err != nil {
 			return err
 		}
 
@@ -68,7 +68,7 @@ func (b BulkDeleteSongParts) reorderSectionParts(
 	request requests.BulkDeleteSongPartsRequest,
 ) *httperror.ErrorCode {
 	var sections []model.SongSection
-	err := b.txSongSectionRepository.GetAllByPartIDsWithSectionParts(&sections, request.IDs)
+	err := b.txSongSectionRepo.GetAllByPartIDsWithSectionParts(&sections, request.IDs)
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
@@ -90,7 +90,7 @@ func (b BulkDeleteSongParts) reorderSectionParts(
 	}
 
 	if len(sectionPartsToUpdate) > 0 {
-		if err = b.txSongSectionRepository.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
+		if err = b.txSongSectionRepo.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
 			return httperror.DatabaseError(err)
 		}
 	}

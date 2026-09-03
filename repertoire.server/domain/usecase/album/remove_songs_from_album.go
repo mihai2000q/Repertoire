@@ -14,18 +14,18 @@ import (
 )
 
 type RemoveSongsFromAlbum struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	transaction             transaction.Manager
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewRemoveSongsFromAlbum(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	transaction transaction.Manager,
 	messagePublisherService service.MessagePublisherService,
 ) RemoveSongsFromAlbum {
 	return RemoveSongsFromAlbum{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		transaction:             transaction,
 		messagePublisherService: messagePublisherService,
 	}
@@ -33,7 +33,7 @@ func NewRemoveSongsFromAlbum(
 
 func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	if err := r.repository.GetWithSongs(&album, request.ID); err != nil {
+	if err := r.albumRepository.GetWithSongs(&album, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
@@ -60,14 +60,14 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 	}
 
 	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
-		albumRepo := factory.NewAlbumRepository()
+		txAlbumRepo := factory.NewAlbumRepository()
 
-		if err := albumRepo.RemoveSongs(&album, &songsToDelete); err != nil {
+		if err := txAlbumRepo.RemoveSongs(&album, &songsToDelete); err != nil {
 			return err
 		}
 
 		album.Songs = songsToPreserve
-		if err := albumRepo.UpdateWithAssociations(&album); err != nil {
+		if err := txAlbumRepo.UpdateWithAssociations(&album); err != nil {
 			return err
 		}
 		return nil

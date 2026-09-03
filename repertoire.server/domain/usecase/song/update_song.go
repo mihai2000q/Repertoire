@@ -14,18 +14,18 @@ import (
 )
 
 type UpdateSong struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdateSong(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) UpdateSong {
 	return UpdateSong{
-		repository:              repository,
+		songRepository:          songRepository,
 		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
@@ -33,7 +33,7 @@ func NewUpdateSong(
 
 func (u UpdateSong) Handle(request requests.UpdateSongRequest) *httperror.ErrorCode {
 	var song model.Song
-	if err := u.repository.Get(&song, request.ID); err != nil {
+	if err := u.songRepository.Get(&song, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
@@ -81,7 +81,7 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *httperror.ErrorC
 	song.ArtistID = request.ArtistID
 	song.AlbumID = request.AlbumID
 
-	if err := u.repository.Update(&song); err != nil {
+	if err := u.songRepository.Update(&song); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -96,7 +96,7 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 	// reorder old album, if any
 	if song.AlbumID != nil {
 		var songs []model.Song
-		err := u.repository.GetAllByAlbumAndTrackNo(&songs, *song.AlbumID, *song.AlbumTrackNo)
+		err := u.songRepository.GetAllByAlbumAndTrackNo(&songs, *song.AlbumID, *song.AlbumTrackNo)
 		if err != nil {
 			return httperror.DatabaseError(err)
 		}
@@ -106,7 +106,7 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 			songs[i].AlbumTrackNo = &trackNo
 		}
 
-		if err := u.repository.UpdateAll(&songs); err != nil {
+		if err := u.songRepository.UpdateAll(&songs); err != nil {
 			return httperror.DatabaseError(err)
 		}
 	}
@@ -117,7 +117,7 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 	}
 
 	var songsCount int64
-	if err := u.repository.CountByAlbum(&songsCount, *request.AlbumID); err != nil {
+	if err := u.songRepository.CountByAlbum(&songsCount, *request.AlbumID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

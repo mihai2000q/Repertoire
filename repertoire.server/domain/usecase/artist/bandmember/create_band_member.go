@@ -15,9 +15,9 @@ type CreateBandMember struct {
 	artistRepository repository.ArtistRepository
 }
 
-func NewCreateBandMember(repository repository.ArtistRepository) CreateBandMember {
+func NewCreateBandMember(artistRepository repository.ArtistRepository) CreateBandMember {
 	return CreateBandMember{
-		artistRepository: repository,
+		artistRepository: artistRepository,
 	}
 }
 

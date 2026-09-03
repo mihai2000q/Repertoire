@@ -10,18 +10,18 @@ import (
 )
 
 type DeleteProfilePictureFromUser struct {
-	repository     repository.UserRepository
+	userRepository repository.UserRepository
 	jwtService     service.JwtService
 	storageService service.StorageService
 }
 
 func NewDeleteProfilePictureFromUser(
-	repository repository.UserRepository,
+	userRepository repository.UserRepository,
 	jwtService service.JwtService,
 	storageService service.StorageService,
 ) DeleteProfilePictureFromUser {
 	return DeleteProfilePictureFromUser{
-		repository:     repository,
+		userRepository: userRepository,
 		jwtService:     jwtService,
 		storageService: storageService,
 	}
@@ -34,7 +34,7 @@ func (d DeleteProfilePictureFromUser) Handle(token string) *httperror.ErrorCode 
 	}
 
 	var user model.User
-	if err := d.repository.Get(&user, id); err != nil {
+	if err := d.userRepository.Get(&user, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
@@ -49,7 +49,7 @@ func (d DeleteProfilePictureFromUser) Handle(token string) *httperror.ErrorCode 
 	}
 
 	user.ProfilePictureURL = nil
-	if err := d.repository.Update(&user); err != nil {
+	if err := d.userRepository.Update(&user); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

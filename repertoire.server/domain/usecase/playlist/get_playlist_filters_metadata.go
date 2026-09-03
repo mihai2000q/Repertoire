@@ -9,17 +9,17 @@ import (
 )
 
 type GetPlaylistFiltersMetadata struct {
-	jwtService service.JwtService
-	repository repository.PlaylistRepository
+	jwtService         service.JwtService
+	playlistRepository repository.PlaylistRepository
 }
 
 func NewGetPlaylistFiltersMetadata(
 	jwtService service.JwtService,
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 ) GetPlaylistFiltersMetadata {
 	return GetPlaylistFiltersMetadata{
-		jwtService: jwtService,
-		repository: repository,
+		jwtService:         jwtService,
+		playlistRepository: playlistRepository,
 	}
 }
 
@@ -32,7 +32,7 @@ func (g GetPlaylistFiltersMetadata) Handle(
 		return metadata, errCode
 	}
 
-	err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy)
+	err := g.playlistRepository.GetFiltersMetadata(&metadata, userID, request.SearchBy)
 	if err != nil {
 		return metadata, httperror.DatabaseError(err)
 	}

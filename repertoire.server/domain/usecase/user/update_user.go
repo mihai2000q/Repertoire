@@ -11,17 +11,17 @@ import (
 )
 
 type UpdateUser struct {
-	repository repository.UserRepository
-	jwtService service.JwtService
+	userRepository repository.UserRepository
+	jwtService     service.JwtService
 }
 
 func NewUpdateUser(
-	repository repository.UserRepository,
+	userRepository repository.UserRepository,
 	jwtService service.JwtService,
 ) UpdateUser {
 	return UpdateUser{
-		repository: repository,
-		jwtService: jwtService,
+		userRepository: userRepository,
+		jwtService:     jwtService,
 	}
 }
 
@@ -32,7 +32,7 @@ func (u UpdateUser) Handle(request requests.UpdateUserRequest, token string) *ht
 	}
 
 	var user model.User
-	if err := u.repository.Get(&user, id); err != nil {
+	if err := u.userRepository.Get(&user, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
@@ -41,7 +41,7 @@ func (u UpdateUser) Handle(request requests.UpdateUserRequest, token string) *ht
 
 	user.Name = request.Name
 
-	if err := u.repository.Update(&user); err != nil {
+	if err := u.userRepository.Update(&user); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

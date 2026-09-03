@@ -18,9 +18,9 @@ type BulkDeleteSongSections struct {
 	transactionManager transaction.Manager
 	songProcessor      processor.SongProcessor
 
-	txSongRepository        repository.SongRepository
-	txSongSectionRepository repository.SongSectionRepository
-	txSongPartRepository    repository.SongPartRepository
+	txSongRepo        repository.SongRepository
+	txSongSectionRepo repository.SongSectionRepository
+	txSongPartRepo    repository.SongPartRepository
 }
 
 func NewBulkDeleteSongSections(
@@ -36,11 +36,11 @@ func NewBulkDeleteSongSections(
 func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRequest) *httperror.ErrorCode {
 	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		b.txSongRepository = factory.NewSongRepository()
-		b.txSongSectionRepository = factory.NewSongSectionRepository()
+		b.txSongRepo = factory.NewSongRepository()
+		b.txSongSectionRepo = factory.NewSongSectionRepository()
 
 		var song model.Song
-		if err := b.txSongRepository.GetWithSections(&song, request.SongID); err != nil {
+		if err := b.txSongRepo.GetWithSections(&song, request.SongID); err != nil {
 			return err
 		}
 		if reflect.ValueOf(song).IsZero() {
@@ -66,18 +66,18 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 			return errCode.Error
 		}
 
-		if err := b.txSongRepository.UpdateWithAssociations(&song); err != nil {
+		if err := b.txSongRepo.UpdateWithAssociations(&song); err != nil {
 			return err
 		}
 
 		if request.WithParts {
-			b.txSongPartRepository = factory.NewSongPartRepository()
+			b.txSongPartRepo = factory.NewSongPartRepository()
 			if errCode = b.deleteParts(request.IDs); errCode != nil {
 				return errCode.Error
 			}
 		}
 
-		if err := b.txSongSectionRepository.Delete(request.IDs); err != nil {
+		if err := b.txSongSectionRepo.Delete(request.IDs); err != nil {
 			return err
 		}
 
@@ -95,7 +95,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 
 func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *httperror.ErrorCode {
 	var sections []model.SongSection
-	if err := b.txSongSectionRepository.GetAllByIDsWithSectionParts(&sections, ids); err != nil {
+	if err := b.txSongSectionRepo.GetAllByIDsWithSectionParts(&sections, ids); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -117,12 +117,12 @@ func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *httperror.ErrorCod
 		return nil
 	}
 
-	errCode := b.songProcessor.UpdateSongAfterPartsDeletion(b.txSongRepository, sections[0].SongID, partIDsToDelete)
+	errCode := b.songProcessor.UpdateSongAfterPartsDeletion(b.txSongRepo, sections[0].SongID, partIDsToDelete)
 	if errCode != nil {
 		return errCode
 	}
 
-	if err := b.txSongPartRepository.Delete(partIDsToDelete); err != nil {
+	if err := b.txSongPartRepo.Delete(partIDsToDelete); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	return nil

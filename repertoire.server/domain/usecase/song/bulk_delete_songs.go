@@ -13,18 +13,18 @@ import (
 )
 
 type BulkDeleteSongs struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewBulkDeleteSongs(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) BulkDeleteSongs {
 	return BulkDeleteSongs{
-		repository:              repository,
+		songRepository:          songRepository,
 		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
@@ -32,7 +32,7 @@ func NewBulkDeleteSongs(
 
 func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httperror.ErrorCode {
 	var songs []model.Song
-	if err := b.repository.GetAllByIDsWithAlbumsAndPlaylists(&songs, request.IDs); err != nil {
+	if err := b.songRepository.GetAllByIDsWithAlbumsAndPlaylists(&songs, request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if len(songs) == 0 {
@@ -59,7 +59,7 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httper
 		}
 	}
 
-	if err := b.repository.Delete(request.IDs); err != nil {
+	if err := b.songRepository.Delete(request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -99,7 +99,7 @@ func (b BulkDeleteSongs) reorderAlbums(songs []model.Song) *httperror.ErrorCode 
 	}
 
 	if len(albumSongsToUpdate) != 0 {
-		if err := b.repository.UpdateAll(&albumSongsToUpdate); err != nil {
+		if err := b.songRepository.UpdateAll(&albumSongsToUpdate); err != nil {
 			return httperror.DatabaseError(err)
 		}
 	}

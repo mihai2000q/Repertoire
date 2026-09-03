@@ -10,16 +10,16 @@ import (
 )
 
 type UpdateSongSettings struct {
-	repository repository.SongRepository
+	songRepository repository.SongRepository
 }
 
-func NewUpdateSongSettings(repository repository.SongRepository) UpdateSongSettings {
-	return UpdateSongSettings{repository: repository}
+func NewUpdateSongSettings(songRepository repository.SongRepository) UpdateSongSettings {
+	return UpdateSongSettings{songRepository: songRepository}
 }
 
 func (u UpdateSongSettings) Handle(request requests.UpdateSongSettingsRequest) *httperror.ErrorCode {
 	var settings model.SongSettings
-	if err := u.repository.GetSettings(&settings, request.SettingsID); err != nil {
+	if err := u.songRepository.GetSettings(&settings, request.SettingsID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(settings).IsZero() {
@@ -29,7 +29,7 @@ func (u UpdateSongSettings) Handle(request requests.UpdateSongSettingsRequest) *
 	settings.DefaultInstrumentID = request.DefaultInstrumentID
 	settings.DefaultBandMemberID = request.DefaultBandMemberID
 
-	if err := u.repository.UpdateSettings(&settings); err != nil {
+	if err := u.songRepository.UpdateSettings(&settings); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

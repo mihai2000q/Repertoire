@@ -11,17 +11,17 @@ import (
 )
 
 type GetSong struct {
-	repository repository.SongRepository
+	songRepository repository.SongRepository
 }
 
-func NewGetSong(repository repository.SongRepository) GetSong {
+func NewGetSong(songRepository repository.SongRepository) GetSong {
 	return GetSong{
-		repository: repository,
+		songRepository: songRepository,
 	}
 }
 
 func (g GetSong) Handle(id uuid.UUID) (song model.Song, e *httperror.ErrorCode) {
-	if err := g.repository.GetWithAssociations(&song, id); err != nil {
+	if err := g.songRepository.GetWithAssociations(&song, id); err != nil {
 		return song, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {

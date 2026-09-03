@@ -14,16 +14,16 @@ import (
 )
 
 type DeleteAlbum struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteAlbum(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteAlbum {
 	return DeleteAlbum{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -32,9 +32,9 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *httperror.Erro
 	var album model.Album
 	var err error
 	if request.WithSongs {
-		err = d.repository.GetWithSongs(&album, request.ID)
+		err = d.albumRepository.GetWithSongs(&album, request.ID)
 	} else {
-		err = d.repository.Get(&album, request.ID)
+		err = d.albumRepository.Get(&album, request.ID)
 	}
 	if err != nil {
 		return httperror.DatabaseError(err)
@@ -44,9 +44,9 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *httperror.Erro
 	}
 
 	if request.WithSongs {
-		err = d.repository.DeleteWithSongs([]uuid.UUID{request.ID})
+		err = d.albumRepository.DeleteWithSongs([]uuid.UUID{request.ID})
 	} else {
-		err = d.repository.Delete([]uuid.UUID{request.ID})
+		err = d.albumRepository.Delete([]uuid.UUID{request.ID})
 	}
 	if err != nil {
 		return httperror.DatabaseError(err)

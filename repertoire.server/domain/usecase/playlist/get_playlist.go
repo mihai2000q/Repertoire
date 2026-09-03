@@ -10,17 +10,17 @@ import (
 )
 
 type GetPlaylist struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewGetPlaylist(repository repository.PlaylistRepository) GetPlaylist {
+func NewGetPlaylist(playlistRepository repository.PlaylistRepository) GetPlaylist {
 	return GetPlaylist{
-		repository: repository,
+		playlistRepository: playlistRepository,
 	}
 }
 
 func (g GetPlaylist) Handle(request requests.GetPlaylistRequest) (playlist model.Playlist, e *httperror.ErrorCode) {
-	if err := g.repository.Get(&playlist, request.ID); err != nil {
+	if err := g.playlistRepository.Get(&playlist, request.ID); err != nil {
 		return playlist, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {

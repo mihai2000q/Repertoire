@@ -12,18 +12,18 @@ import (
 )
 
 type AddSongsToPlaylist struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewAddSongsToPlaylist(repository repository.PlaylistRepository) AddSongsToPlaylist {
-	return AddSongsToPlaylist{repository: repository}
+func NewAddSongsToPlaylist(playlistRepository repository.PlaylistRepository) AddSongsToPlaylist {
+	return AddSongsToPlaylist{playlistRepository: playlistRepository}
 }
 
 func (a AddSongsToPlaylist) Handle(
 	request requests.AddSongsToPlaylistRequest,
 ) (*responses.AddSongsToPlaylistResponse, *httperror.ErrorCode) {
 	var playlistSongs []model.PlaylistSong
-	if err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+	if err := a.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
 		return nil, httperror.DatabaseError(err)
 	}
 
@@ -54,7 +54,7 @@ func (a AddSongsToPlaylist) Handle(
 		return &responses.AddSongsToPlaylistResponse{Success: false, Duplicates: duplicates}, nil
 	}
 
-	if err := a.repository.AddSongs(&newPlaylistSongs); err != nil {
+	if err := a.playlistRepository.AddSongs(&newPlaylistSongs); err != nil {
 		return nil, httperror.DatabaseError(err)
 	}
 

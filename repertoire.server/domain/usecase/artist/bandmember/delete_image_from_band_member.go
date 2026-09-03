@@ -12,23 +12,23 @@ import (
 )
 
 type DeleteImageFromBandMember struct {
-	repository     repository.ArtistRepository
-	storageService service.StorageService
+	artistRepository repository.ArtistRepository
+	storageService   service.StorageService
 }
 
 func NewDeleteImageFromBandMember(
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	storageService service.StorageService,
 ) DeleteImageFromBandMember {
 	return DeleteImageFromBandMember{
-		repository:     repository,
-		storageService: storageService,
+		artistRepository: artistRepository,
+		storageService:   storageService,
 	}
 }
 
 func (d DeleteImageFromBandMember) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var member model.BandMember
-	if err := d.repository.GetBandMember(&member, id); err != nil {
+	if err := d.artistRepository.GetBandMember(&member, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(member).IsZero() {
@@ -43,7 +43,7 @@ func (d DeleteImageFromBandMember) Handle(id uuid.UUID) *httperror.ErrorCode {
 	}
 
 	member.ImageURL = nil
-	if err := d.repository.UpdateBandMember(&member); err != nil {
+	if err := d.artistRepository.UpdateBandMember(&member); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

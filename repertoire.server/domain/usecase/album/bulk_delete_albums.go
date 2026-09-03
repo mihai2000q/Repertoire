@@ -11,16 +11,16 @@ import (
 )
 
 type BulkDeleteAlbums struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewBulkDeleteAlbums(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) BulkDeleteAlbums {
 	return BulkDeleteAlbums{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -29,9 +29,9 @@ func (b BulkDeleteAlbums) Handle(request requests.BulkDeleteAlbumsRequest) *http
 	var albums []model.Album
 	var err error
 	if request.WithSongs {
-		err = b.repository.GetAllByIDsWithSongs(&albums, request.IDs)
+		err = b.albumRepository.GetAllByIDsWithSongs(&albums, request.IDs)
 	} else {
-		err = b.repository.GetAllByIDs(&albums, request.IDs)
+		err = b.albumRepository.GetAllByIDs(&albums, request.IDs)
 	}
 	if err != nil {
 		return httperror.DatabaseError(err)
@@ -41,9 +41,9 @@ func (b BulkDeleteAlbums) Handle(request requests.BulkDeleteAlbumsRequest) *http
 	}
 
 	if request.WithSongs {
-		err = b.repository.DeleteWithSongs(request.IDs)
+		err = b.albumRepository.DeleteWithSongs(request.IDs)
 	} else {
-		err = b.repository.Delete(request.IDs)
+		err = b.albumRepository.Delete(request.IDs)
 	}
 	if err != nil {
 		return httperror.DatabaseError(err)

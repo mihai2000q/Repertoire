@@ -10,12 +10,12 @@ import (
 )
 
 type GetAlbum struct {
-	repository repository.AlbumRepository
+	albumRepository repository.AlbumRepository
 }
 
-func NewGetAlbum(repository repository.AlbumRepository) GetAlbum {
+func NewGetAlbum(albumRepository repository.AlbumRepository) GetAlbum {
 	return GetAlbum{
-		repository: repository,
+		albumRepository: albumRepository,
 	}
 }
 
@@ -24,7 +24,7 @@ func (g GetAlbum) Handle(request requests.GetAlbumRequest) (album model.Album, e
 		request.SongsOrderBy = []string{"album_track_no"}
 	}
 
-	if err := g.repository.GetWithAssociations(&album, request.ID, request.SongsOrderBy); err != nil {
+	if err := g.albumRepository.GetWithAssociations(&album, request.ID, request.SongsOrderBy); err != nil {
 		return album, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {

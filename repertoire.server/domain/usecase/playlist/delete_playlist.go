@@ -13,30 +13,30 @@ import (
 )
 
 type DeletePlaylist struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeletePlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) DeletePlaylist {
 	return DeletePlaylist{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (d DeletePlaylist) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var playlist model.Playlist
-	if err := d.repository.Get(&playlist, id); err != nil {
+	if err := d.playlistRepository.Get(&playlist, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
 		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 
-	if err := d.repository.Delete([]uuid.UUID{id}); err != nil {
+	if err := d.playlistRepository.Delete([]uuid.UUID{id}); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

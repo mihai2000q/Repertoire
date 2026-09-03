@@ -11,30 +11,30 @@ import (
 )
 
 type BulkDeletePlaylists struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewBulkDeletePlaylists(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) BulkDeletePlaylists {
 	return BulkDeletePlaylists{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
 func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *httperror.ErrorCode {
 	var playlists []model.Playlist
-	if err := b.repository.GetAllByIDs(&playlists, request.IDs); err != nil {
+	if err := b.playlistRepository.GetAllByIDs(&playlists, request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if len(playlists) == 0 {
 		return httperror.NotFoundError(errors.New("playlists not found"))
 	}
 
-	if err := b.repository.Delete(request.IDs); err != nil {
+	if err := b.playlistRepository.Delete(request.IDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

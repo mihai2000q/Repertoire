@@ -11,17 +11,17 @@ import (
 )
 
 type GetArtist struct {
-	repository repository.ArtistRepository
+	artistRepository repository.ArtistRepository
 }
 
-func NewGetArtist(repository repository.ArtistRepository) GetArtist {
+func NewGetArtist(artistRepository repository.ArtistRepository) GetArtist {
 	return GetArtist{
-		repository: repository,
+		artistRepository: artistRepository,
 	}
 }
 
 func (g GetArtist) Handle(id uuid.UUID) (artist model.Artist, e *httperror.ErrorCode) {
-	if err := g.repository.GetWithAssociations(&artist, id); err != nil {
+	if err := g.artistRepository.GetWithAssociations(&artist, id); err != nil {
 		return artist, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {

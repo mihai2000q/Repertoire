@@ -20,8 +20,8 @@ type UpdateSongPart struct {
 	progressProcessor  processor.ProgressProcessor
 	transactionManager transaction.Manager
 
-	txSongPartRepository repository.SongPartRepository
-	txSongRepository     repository.SongRepository
+	txSongRepo     repository.SongRepository
+	txSongPartRepo repository.SongPartRepository
 }
 
 func NewUpdateSongPart(
@@ -67,8 +67,8 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 	}
 
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		u.txSongRepository = factory.NewSongRepository()
-		u.txSongPartRepository = factory.NewSongPartRepository()
+		u.txSongRepo = factory.NewSongRepository()
+		u.txSongPartRepo = factory.NewSongPartRepository()
 
 		// Store old stats before modifications
 		oldPart := model.SongPart{
@@ -105,7 +105,7 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 		}
 
 		// finally update part
-		if err := u.txSongPartRepository.Update(&part); err != nil {
+		if err := u.txSongPartRepo.Update(&part); err != nil {
 			return err
 		}
 
@@ -130,13 +130,13 @@ func (u UpdateSongPart) updateRehearsals(
 		To:       newRehearsals,
 		PartID:   part.ID,
 	}
-	if err := u.txSongPartRepository.CreateHistory(&newHistory); err != nil {
+	if err := u.txSongPartRepo.CreateHistory(&newHistory); err != nil {
 		return err
 	}
 
 	// update part's rehearsals score based on the history changes
 	var history []model.SongPartHistory
-	if err := u.txSongPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
+	if err := u.txSongPartRepo.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
 		return err
 	}
 	part.RehearsalsScore = u.progressProcessor.ComputeRehearsalsScore(history)
@@ -157,13 +157,13 @@ func (u UpdateSongPart) updateConfidence(
 		To:       newConfidence,
 		PartID:   part.ID,
 	}
-	if err := u.txSongPartRepository.CreateHistory(&newHistory); err != nil {
+	if err := u.txSongPartRepo.CreateHistory(&newHistory); err != nil {
 		return err
 	}
 
 	// update part's confidence score based on the history changes
 	var history []model.SongPartHistory
-	if err := u.txSongPartRepository.GetHistory(&history, part.ID, model.ConfidenceProperty); err != nil {
+	if err := u.txSongPartRepo.GetHistory(&history, part.ID, model.ConfidenceProperty); err != nil {
 		return err
 	}
 	part.ConfidenceScore = u.progressProcessor.ComputeConfidenceScore(history)
@@ -176,10 +176,10 @@ func (u UpdateSongPart) updateSongStats(oldPart model.SongPart, newPart model.So
 	// fetch song and the number of parts in it
 	var song model.Song
 	var songPartsCount int64
-	if err := u.txSongRepository.Get(&song, newPart.SongID); err != nil {
+	if err := u.txSongRepo.Get(&song, newPart.SongID); err != nil {
 		return err
 	}
-	if err := u.txSongPartRepository.CountAllBySong(&songPartsCount, newPart.SongID); err != nil {
+	if err := u.txSongPartRepo.CountAllBySong(&songPartsCount, newPart.SongID); err != nil {
 		return err
 	}
 
@@ -198,7 +198,7 @@ func (u UpdateSongPart) updateSongStats(oldPart model.SongPart, newPart model.So
 	}
 
 	// update song
-	err := u.txSongRepository.Update(&song)
+	err := u.txSongRepo.Update(&song)
 	if err != nil {
 		return err
 	}

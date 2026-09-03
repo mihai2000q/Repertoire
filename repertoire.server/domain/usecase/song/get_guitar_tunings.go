@@ -8,14 +8,17 @@ import (
 )
 
 type GetGuitarTunings struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	songRepository repository.SongRepository
+	jwtService     service.JwtService
 }
 
-func NewGetGuitarTunings(repository repository.SongRepository, jwtService service.JwtService) GetGuitarTunings {
+func NewGetGuitarTunings(
+	songRepository repository.SongRepository,
+	jwtService service.JwtService,
+) GetGuitarTunings {
 	return GetGuitarTunings{
-		repository: repository,
-		jwtService: jwtService,
+		songRepository: songRepository,
+		jwtService:     jwtService,
 	}
 }
 
@@ -25,7 +28,7 @@ func (g GetGuitarTunings) Handle(token string) (result []model.GuitarTuning, e *
 		return result, errCode
 	}
 
-	if err := g.repository.GetGuitarTunings(&result, userID); err != nil {
+	if err := g.songRepository.GetGuitarTunings(&result, userID); err != nil {
 		return result, httperror.DatabaseError(err)
 	}
 

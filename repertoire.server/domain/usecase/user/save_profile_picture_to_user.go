@@ -14,20 +14,20 @@ import (
 )
 
 type SaveProfilePictureToUser struct {
-	repository              repository.UserRepository
+	userRepository          repository.UserRepository
 	storageFilePathProvider provider.StorageFilePathProvider
 	jwtService              service.JwtService
 	storageService          service.StorageService
 }
 
 func NewSaveProfilePictureToUser(
-	repository repository.UserRepository,
+	userRepository repository.UserRepository,
 	storageFilePathProvider provider.StorageFilePathProvider,
 	jwtService service.JwtService,
 	storageService service.StorageService,
 ) SaveProfilePictureToUser {
 	return SaveProfilePictureToUser{
-		repository:              repository,
+		userRepository:          userRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		jwtService:              jwtService,
 		storageService:          storageService,
@@ -41,7 +41,7 @@ func (s SaveProfilePictureToUser) Handle(file *multipart.FileHeader, token strin
 	}
 
 	var user model.User
-	if err := s.repository.Get(&user, id); err != nil {
+	if err := s.userRepository.Get(&user, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
@@ -62,7 +62,7 @@ func (s SaveProfilePictureToUser) Handle(file *multipart.FileHeader, token strin
 	}
 
 	user.ProfilePictureURL = (*internal.FilePath)(&imagePath)
-	if err := s.repository.Update(&user); err != nil {
+	if err := s.userRepository.Update(&user); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

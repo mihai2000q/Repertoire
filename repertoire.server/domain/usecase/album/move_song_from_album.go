@@ -11,16 +11,16 @@ import (
 )
 
 type MoveSongFromAlbum struct {
-	repository repository.AlbumRepository
+	albumRepository repository.AlbumRepository
 }
 
-func NewMoveSongFromAlbum(repository repository.AlbumRepository) MoveSongFromAlbum {
-	return MoveSongFromAlbum{repository: repository}
+func NewMoveSongFromAlbum(albumRepository repository.AlbumRepository) MoveSongFromAlbum {
+	return MoveSongFromAlbum{albumRepository: albumRepository}
 }
 
 func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	if err := m.repository.GetWithSongs(&album, request.ID); err != nil {
+	if err := m.albumRepository.GetWithSongs(&album, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
@@ -42,7 +42,7 @@ func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *ht
 		return errCode
 	}
 
-	if err := m.repository.UpdateWithAssociations(&album); err != nil {
+	if err := m.albumRepository.UpdateWithAssociations(&album); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

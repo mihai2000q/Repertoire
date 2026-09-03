@@ -13,18 +13,18 @@ import (
 )
 
 type AddCustomSongRehearsals struct {
-	repository         repository.SongRepository
+	songRepository     repository.SongRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
 func NewAddCustomSongRehearsals(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
 ) AddCustomSongRehearsals {
 	return AddCustomSongRehearsals{
-		repository:         repository,
+		songRepository:     songRepository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
@@ -37,7 +37,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 	}
 
 	var songs []model.Song
-	err := a.repository.GetAllByIDsWithPartsAndArrangementOccurrences(&songs, ids)
+	err := a.songRepository.GetAllByIDsWithPartsAndArrangementOccurrences(&songs, ids)
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
@@ -55,8 +55,8 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 
 	var errCode *httperror.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		txSongPartRepository := factory.NewSongPartRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, r := range request.Requests {
@@ -66,7 +66,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 				return errCode.Error
 			}
 
-			errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, txSongPartRepository, &r.ArrangementID)
+			errC, isUpdated := a.songProcessor.AddCustomRehearsal(&song, txSongPartRepo, &r.ArrangementID)
 			if errC != nil {
 				errCode = errC
 				return errCode.Error
@@ -77,7 +77,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 		}
 
 		if len(newSongs) > 0 {
-			if err := transactionSongRepository.UpdateAllWithAssociations(&newSongs); err != nil {
+			if err := txSongRepo.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}

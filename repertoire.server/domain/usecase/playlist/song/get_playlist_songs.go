@@ -9,12 +9,12 @@ import (
 )
 
 type GetPlaylistSongs struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewGetPlaylistSongs(repository repository.PlaylistRepository) GetPlaylistSongs {
+func NewGetPlaylistSongs(playlistRepository repository.PlaylistRepository) GetPlaylistSongs {
 	return GetPlaylistSongs{
-		repository: repository,
+		playlistRepository: playlistRepository,
 	}
 }
 
@@ -24,7 +24,7 @@ func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (resu
 	}
 
 	var playlistSongs []model.PlaylistSong
-	err := g.repository.GetPlaylistSongsWithSongs(
+	err := g.playlistRepository.GetPlaylistSongsWithSongs(
 		&playlistSongs,
 		request.ID,
 		request.CurrentPage,
@@ -35,7 +35,7 @@ func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (resu
 		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetPlaylistSongsCount(&result.TotalCount, request.ID)
+	err = g.playlistRepository.GetPlaylistSongsCount(&result.TotalCount, request.ID)
 	if err != nil {
 		return result, httperror.DatabaseError(err)
 	}

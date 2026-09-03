@@ -14,7 +14,10 @@ type MoveInstrument struct {
 	jwtService service.JwtService
 }
 
-func NewMoveInstrument(repository repository.UserDataRepository, jwtService service.JwtService) MoveInstrument {
+func NewMoveInstrument(
+	repository repository.UserDataRepository,
+	jwtService service.JwtService,
+) MoveInstrument {
 	return MoveInstrument{
 		repository: repository,
 		jwtService: jwtService,

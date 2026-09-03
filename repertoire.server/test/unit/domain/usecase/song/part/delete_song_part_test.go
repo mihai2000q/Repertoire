@@ -48,17 +48,17 @@ func TestDeleteSongPart_WhenGetSongFails_ShouldReturnInternalServerError(t *test
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("get error")
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(internalError).
 		Once()
 
@@ -72,9 +72,9 @@ func TestDeleteSongPart_WhenGetSongFails_ShouldReturnInternalServerError(t *test
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -87,16 +87,16 @@ func TestDeleteSongPart_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T)
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil).
 		Once()
 
@@ -110,9 +110,9 @@ func TestDeleteSongPart_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T)
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenPartNotFoundInSong_ShouldReturnNotFoundError(t *testing.T) {
@@ -125,20 +125,20 @@ func TestDeleteSongPart_WhenPartNotFoundInSong_ShouldReturnNotFoundError(t *test
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	mockSong := &model.Song{
 		ID:    songID,
 		Parts: []model.SongPart{{ID: uuid.New()}},
 	}
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil, mockSong).
 		Once()
 
@@ -152,9 +152,9 @@ func TestDeleteSongPart_WhenPartNotFoundInSong_ShouldReturnNotFoundError(t *test
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -167,25 +167,25 @@ func TestDeleteSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *t
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	mockSong := &model.Song{
 		ID:    songID,
 		Parts: []model.SongPart{{ID: id}},
 	}
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil, mockSong).
 		Once()
 
 	internalError := errors.New("update error")
-	txSongRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(mockSong)).
 		Return(internalError).
 		Once()
 
@@ -199,9 +199,9 @@ func TestDeleteSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *t
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenGetSectionsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -214,13 +214,13 @@ func TestDeleteSongPart_WhenGetSectionsFails_ShouldReturnInternalServerError(t *
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	// updateSong
@@ -228,16 +228,16 @@ func TestDeleteSongPart_WhenGetSectionsFails_ShouldReturnInternalServerError(t *
 		ID:    songID,
 		Parts: []model.SongPart{{ID: id}},
 	}
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil, mockSong).
 		Once()
-	txSongRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
 
 	// updateSections
 	internalError := errors.New("get sections error")
-	txSongSectionRepository.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
+	txSongSectionRepo.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
 		Return(internalError).
 		Once()
 
@@ -251,9 +251,9 @@ func TestDeleteSongPart_WhenGetSectionsFails_ShouldReturnInternalServerError(t *
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -267,13 +267,13 @@ func TestDeleteSongPart_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServe
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	// updateSong
@@ -281,10 +281,10 @@ func TestDeleteSongPart_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServe
 		ID:    songID,
 		Parts: []model.SongPart{{ID: id}},
 	}
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil, mockSong).
 		Once()
-	txSongRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
 
@@ -298,12 +298,12 @@ func TestDeleteSongPart_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServe
 			},
 		},
 	}
-	txSongSectionRepository.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
+	txSongSectionRepo.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
 		Return(nil, &mockSections).
 		Once()
 
 	internalError := errors.New("update section parts error")
-	txSongSectionRepository.On("UpdateAllSectionParts", mock.Anything).
+	txSongSectionRepo.On("UpdateAllSectionParts", mock.Anything).
 		Return(internalError).
 		Once()
 
@@ -317,9 +317,9 @@ func TestDeleteSongPart_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServe
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenDeletePartFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -332,13 +332,13 @@ func TestDeleteSongPart_WhenDeletePartFails_ShouldReturnInternalServerError(t *t
 
 	// given - mocking
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepository := new(repository.SongRepositoryMock)
-	txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-	txSongPartRepository := new(repository.SongPartRepositoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-	repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	// updateSong
@@ -346,20 +346,20 @@ func TestDeleteSongPart_WhenDeletePartFails_ShouldReturnInternalServerError(t *t
 		ID:    songID,
 		Parts: []model.SongPart{{ID: id}},
 	}
-	txSongRepository.On("GetWithParts", new(model.Song), songID).
+	txSongRepo.On("GetWithParts", new(model.Song), songID).
 		Return(nil, mockSong).
 		Once()
-	txSongRepository.On("UpdateWithAssociations", mock.IsType(mockSong)).
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
 
 	// updateSections
-	txSongSectionRepository.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
+	txSongSectionRepo.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
 		Return(nil, &[]model.SongSection{}).
 		Once()
 
 	internalError := errors.New("delete error")
-	txSongPartRepository.On("Delete", []uuid.UUID{id}).
+	txSongPartRepo.On("Delete", []uuid.UUID{id}).
 		Return(internalError).
 		Once()
 
@@ -373,9 +373,9 @@ func TestDeleteSongPart_WhenDeletePartFails_ShouldReturnInternalServerError(t *t
 
 	repositoryFactory.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
-	txSongRepository.AssertExpectations(t)
-	txSongSectionRepository.AssertExpectations(t)
-	txSongPartRepository.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
@@ -536,21 +536,21 @@ func TestDeleteSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			// given - mocking
 			repositoryFactory := new(transaction.RepositoryFactoryMock)
-			txSongRepository := new(repository.SongRepositoryMock)
-			txSongSectionRepository := new(repository.SongSectionRepositoryMock)
-			txSongPartRepository := new(repository.SongPartRepositoryMock)
+			txSongRepo := new(repository.SongRepositoryMock)
+			txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+			txSongPartRepo := new(repository.SongPartRepositoryMock)
 
-			repositoryFactory.On("NewSongRepository").Return(txSongRepository).Once()
-			repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepository).Once()
-			repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
+			repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+			repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+			repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 			// updateSong
-			txSongRepository.On("GetWithParts", new(model.Song), songID).
+			txSongRepo.On("GetWithParts", new(model.Song), songID).
 				Return(nil, &song).
 				Once()
 
-			txSongRepository.On("UpdateWithAssociations", mock.IsType(&song)).
+			txSongRepo.On("UpdateWithAssociations", mock.IsType(&song)).
 				Run(func(args mock.Arguments) {
 					updatedSong := args.Get(0).(*model.Song)
 
@@ -597,11 +597,11 @@ func TestDeleteSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 					}
 				}
 
-				txSongSectionRepository.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
+				txSongSectionRepo.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
 					Return(nil, &mockSections).
 					Once()
 
-				txSongSectionRepository.On("UpdateAllSectionParts", mock.IsType(&expectedSectionParts)).
+				txSongSectionRepo.On("UpdateAllSectionParts", mock.IsType(&expectedSectionParts)).
 					Run(func(args mock.Arguments) {
 						updatedSectionParts := args.Get(0).(*[]model.SongSectionPart)
 						assert.Equal(t, expectedSectionParts, *updatedSectionParts)
@@ -609,12 +609,12 @@ func TestDeleteSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 					Return(nil).
 					Once()
 			} else {
-				txSongSectionRepository.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
+				txSongSectionRepo.On("GetAllByPartWithSectionParts", new([]model.SongSection), id).
 					Return(nil, &[]model.SongSection{}).
 					Once()
 			}
 
-			txSongPartRepository.On("Delete", []uuid.UUID{id}).
+			txSongPartRepo.On("Delete", []uuid.UUID{id}).
 				Return(nil).
 				Once()
 
@@ -626,9 +626,9 @@ func TestDeleteSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			repositoryFactory.AssertExpectations(t)
 			transactionManager.AssertExpectations(t)
-			txSongRepository.AssertExpectations(t)
-			txSongSectionRepository.AssertExpectations(t)
-			txSongPartRepository.AssertExpectations(t)
+			txSongRepo.AssertExpectations(t)
+			txSongSectionRepo.AssertExpectations(t)
+			txSongPartRepo.AssertExpectations(t)
 		})
 	}
 }

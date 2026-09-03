@@ -3,6 +3,7 @@ package bandmember
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
@@ -12,12 +13,16 @@ import (
 )
 
 type DeleteBandMember struct {
-	artistRepository repository.ArtistRepository
+	artistRepository   repository.ArtistRepository
+	transactionManager transaction.Manager
 }
 
-func NewDeleteBandMember(repository repository.ArtistRepository) DeleteBandMember {
+func NewDeleteBandMember(
+	artistRepository repository.ArtistRepository,
+	transactionManager transaction.Manager,
+) DeleteBandMember {
 	return DeleteBandMember{
-		artistRepository: repository,
+		artistRepository: artistRepository,
 	}
 }
 

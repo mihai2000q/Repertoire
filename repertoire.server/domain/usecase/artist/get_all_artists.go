@@ -10,14 +10,17 @@ import (
 )
 
 type GetAllArtists struct {
-	repository repository.ArtistRepository
-	jwtService service.JwtService
+	artistRepository repository.ArtistRepository
+	jwtService       service.JwtService
 }
 
-func NewGetAllArtists(repository repository.ArtistRepository, jwtService service.JwtService) GetAllArtists {
+func NewGetAllArtists(
+	artistRepository repository.ArtistRepository,
+	jwtService service.JwtService,
+) GetAllArtists {
 	return GetAllArtists{
-		repository: repository,
-		jwtService: jwtService,
+		artistRepository: artistRepository,
+		jwtService:       jwtService,
 	}
 }
 
@@ -27,7 +30,7 @@ func (g GetAllArtists) Handle(request requests.GetArtistsRequest, token string) 
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(
+	err := g.artistRepository.GetAllByUser(
 		&result.Models,
 		userID,
 		request.CurrentPage,
@@ -39,7 +42,7 @@ func (g GetAllArtists) Handle(request requests.GetArtistsRequest, token string) 
 		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
+	err = g.artistRepository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
 		return result, httperror.DatabaseError(err)
 	}

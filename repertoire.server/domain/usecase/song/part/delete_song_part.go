@@ -13,10 +13,10 @@ import (
 )
 
 type DeleteSongPart struct {
-	transactionManager      transaction.Manager
-	txSongRepository        repository.SongRepository
-	txSongSectionRepository repository.SongSectionRepository
-	txSongPartRepository    repository.SongPartRepository
+	transactionManager transaction.Manager
+	txSongRepo         repository.SongRepository
+	txSongSectionRepo  repository.SongSectionRepository
+	txSongPartRepo     repository.SongPartRepository
 }
 
 func NewDeleteSongPart(
@@ -30,9 +30,9 @@ func NewDeleteSongPart(
 func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var errCode *httperror.ErrorCode
 	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		d.txSongRepository = factory.NewSongRepository()
-		d.txSongSectionRepository = factory.NewSongSectionRepository()
-		d.txSongPartRepository = factory.NewSongPartRepository()
+		d.txSongRepo = factory.NewSongRepository()
+		d.txSongSectionRepo = factory.NewSongSectionRepository()
+		d.txSongPartRepo = factory.NewSongPartRepository()
 
 		if errCode = d.updateSong(id, songID); errCode != nil {
 			return errCode.Error
@@ -40,7 +40,7 @@ func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorC
 		if errCode = d.updateSections(id); errCode != nil {
 			return errCode.Error
 		}
-		if err := d.txSongPartRepository.Delete([]uuid.UUID{id}); err != nil {
+		if err := d.txSongPartRepo.Delete([]uuid.UUID{id}); err != nil {
 			return err
 		}
 
@@ -58,7 +58,7 @@ func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorC
 
 func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	if err := d.txSongRepository.GetWithParts(&song, songID); err != nil {
+	if err := d.txSongRepo.GetWithParts(&song, songID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
@@ -89,7 +89,7 @@ func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *httperror.Er
 		song.Progress = (song.Progress*float64(partsLength) - float64(song.Parts[index].Progress)) / float64(partsLength-1)
 	}
 
-	if err := d.txSongRepository.UpdateWithAssociations(&song); err != nil {
+	if err := d.txSongRepo.UpdateWithAssociations(&song); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -98,7 +98,7 @@ func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *httperror.Er
 
 func (d DeleteSongPart) updateSections(id uuid.UUID) *httperror.ErrorCode {
 	var sections []model.SongSection
-	if err := d.txSongSectionRepository.GetAllByPartWithSectionParts(&sections, id); err != nil {
+	if err := d.txSongSectionRepo.GetAllByPartWithSectionParts(&sections, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -116,7 +116,7 @@ func (d DeleteSongPart) updateSections(id uuid.UUID) *httperror.ErrorCode {
 	}
 
 	if len(sectionPartsToUpdate) > 0 {
-		if err := d.txSongSectionRepository.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
+		if err := d.txSongSectionRepo.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
 			return httperror.DatabaseError(err)
 		}
 	}

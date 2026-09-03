@@ -8,14 +8,17 @@ import (
 )
 
 type GetBandMemberRoles struct {
-	repository repository.ArtistRepository
-	jwtService service.JwtService
+	artistRepository repository.ArtistRepository
+	jwtService       service.JwtService
 }
 
-func NewGetBandMemberRoles(repository repository.ArtistRepository, jwtService service.JwtService) GetBandMemberRoles {
+func NewGetBandMemberRoles(
+	artistRepository repository.ArtistRepository,
+	jwtService service.JwtService,
+) GetBandMemberRoles {
 	return GetBandMemberRoles{
-		repository: repository,
-		jwtService: jwtService,
+		artistRepository: artistRepository,
+		jwtService:       jwtService,
 	}
 }
 
@@ -25,7 +28,7 @@ func (g GetBandMemberRoles) Handle(token string) (result []model.BandMemberRole,
 		return result, errCode
 	}
 
-	if err := g.repository.GetBandMemberRoles(&result, userID); err != nil {
+	if err := g.artistRepository.GetBandMemberRoles(&result, userID); err != nil {
 		return result, httperror.DatabaseError(err)
 	}
 

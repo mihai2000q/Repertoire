@@ -16,7 +16,10 @@ type DeleteGuitarTuning struct {
 	jwtService service.JwtService
 }
 
-func NewDeleteGuitarTuning(repository repository.UserDataRepository, jwtService service.JwtService) DeleteGuitarTuning {
+func NewDeleteGuitarTuning(
+	repository repository.UserDataRepository,
+	jwtService service.JwtService,
+) DeleteGuitarTuning {
 	return DeleteGuitarTuning{
 		repository: repository,
 		jwtService: jwtService,

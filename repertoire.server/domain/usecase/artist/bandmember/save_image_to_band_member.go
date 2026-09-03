@@ -16,18 +16,18 @@ import (
 )
 
 type SaveImageToBandMember struct {
-	repository              repository.ArtistRepository
+	artistRepository        repository.ArtistRepository
 	storageFilePathProvider provider.StorageFilePathProvider
 	storageService          service.StorageService
 }
 
 func NewSaveImageToBandMember(
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	storageFilePathProvider provider.StorageFilePathProvider,
 	storageService service.StorageService,
 ) SaveImageToBandMember {
 	return SaveImageToBandMember{
-		repository:              repository,
+		artistRepository:        artistRepository,
 		storageFilePathProvider: storageFilePathProvider,
 		storageService:          storageService,
 	}
@@ -35,7 +35,7 @@ func NewSaveImageToBandMember(
 
 func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) *httperror.ErrorCode {
 	var member model.BandMember
-	if err := s.repository.GetBandMemberWithArtist(&member, id); err != nil {
+	if err := s.artistRepository.GetBandMemberWithArtist(&member, id); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(member).IsZero() {
@@ -56,7 +56,7 @@ func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) 
 	}
 
 	member.ImageURL = (*internal.FilePath)(&imagePath)
-	if err := s.repository.UpdateBandMember(&member); err != nil {
+	if err := s.artistRepository.UpdateBandMember(&member); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
