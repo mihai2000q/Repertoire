@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -24,16 +24,15 @@ func NewMoveBandMemberRole(
 	}
 }
 
-func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode {
+func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, token string) *httperror.ErrorCode {
 	userID, errCode := m.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var roles []model.BandMemberRole
-	err := m.repository.GetBandMemberRoles(&roles, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.GetBandMemberRoles(&roles, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	errCode = reorder.MoveEntity(
@@ -49,9 +48,8 @@ func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, t
 		return errCode
 	}
 
-	err = m.repository.UpdateAllBandMemberRoles(&roles)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.UpdateAllBandMemberRoles(&roles); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

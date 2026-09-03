@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/playlist"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -95,7 +95,7 @@ func TestDeleteImageFromPlaylist_WhenDeleteImageFails_ShouldReturnInternalServer
 	mockPlaylist := &model.Playlist{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	playlistRepository.On("Get", new(model.Playlist), id).Return(nil, mockPlaylist).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockPlaylist.ImageURL).Return(internalError).Once()
 
 	// when

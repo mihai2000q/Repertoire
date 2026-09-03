@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -29,7 +29,7 @@ func NewCreatePlaylist(
 	}
 }
 
-func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token string) (uuid.UUID, *httperror.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return uuid.Nil, errCode
@@ -41,14 +41,12 @@ func (c CreatePlaylist) Handle(request requests.CreatePlaylistRequest, token str
 		Description: request.Description,
 		UserID:      userID,
 	}
-	err := c.repository.Create(&playlist)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.repository.Create(&playlist); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
-	err = c.messagePublisherService.Publish(topics.PlaylistCreatedTopic, playlist)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.messagePublisherService.Publish(topics.PlaylistCreatedTopic, playlist); err != nil {
+		return uuid.Nil, httperror.MessagePublisherError(err)
 	}
 
 	return playlist.ID, nil

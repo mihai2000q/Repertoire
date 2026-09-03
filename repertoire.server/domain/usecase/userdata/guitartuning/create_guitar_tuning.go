@@ -4,7 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -22,16 +22,15 @@ func NewCreateGuitarTuning(repository repository.UserDataRepository, jwtService 
 	}
 }
 
-func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
+func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, token string) *httperror.ErrorCode {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var count int64
-	err := c.repository.GetGuitarTuningsCount(&count, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.GetGuitarTuningsCount(&count, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	guitarTuning := &model.GuitarTuning{
@@ -40,9 +39,8 @@ func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, t
 		Order:  uint(count),
 		UserID: userID,
 	}
-	err = c.repository.CreateGuitarTuning(guitarTuning)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.CreateGuitarTuning(guitarTuning); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

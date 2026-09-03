@@ -5,8 +5,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"slices"
 	"sync"
@@ -30,18 +30,17 @@ func NewBulkDeleteSongs(
 	}
 }
 
-func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *wrapper.ErrorCode {
+func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httperror.ErrorCode {
 	var songs []model.Song
-	err := b.repository.GetAllByIDsWithAlbumsAndPlaylists(&songs, request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.repository.GetAllByIDsWithAlbumsAndPlaylists(&songs, request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if len(songs) == 0 {
-		return wrapper.NotFoundError(errors.New("songs not found"))
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
 	var wg sync.WaitGroup
-	errChan := make(chan *wrapper.ErrorCode, 2)
+	errChan := make(chan *httperror.ErrorCode, 2)
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
@@ -60,20 +59,18 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *wrappe
 		}
 	}
 
-	err = b.repository.Delete(request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.repository.Delete(request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = b.messagePublisherService.Publish(topics.SongsDeletedTopic, songs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.messagePublisherService.Publish(topics.SongsDeletedTopic, songs); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil
 }
 
-func (b BulkDeleteSongs) reorderAlbums(songs []model.Song) *wrapper.ErrorCode {
+func (b BulkDeleteSongs) reorderAlbums(songs []model.Song) *httperror.ErrorCode {
 	var albumsToReorder []model.Album
 	for _, song := range songs {
 		if song.AlbumID != nil && !slices.ContainsFunc(albumsToReorder, func(album model.Album) bool {
@@ -102,16 +99,15 @@ func (b BulkDeleteSongs) reorderAlbums(songs []model.Song) *wrapper.ErrorCode {
 	}
 
 	if len(albumSongsToUpdate) != 0 {
-		err := b.repository.UpdateAll(&albumSongsToUpdate)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := b.repository.UpdateAll(&albumSongsToUpdate); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 
 	return nil
 }
 
-func (b BulkDeleteSongs) reorderSongsInPlaylists(songs []model.Song) *wrapper.ErrorCode {
+func (b BulkDeleteSongs) reorderSongsInPlaylists(songs []model.Song) *httperror.ErrorCode {
 	var playlistsToReorder []model.Playlist
 	for _, song := range songs {
 		for _, playlist := range song.Playlists {
@@ -141,9 +137,8 @@ func (b BulkDeleteSongs) reorderSongsInPlaylists(songs []model.Song) *wrapper.Er
 	}
 
 	if len(playlistSongsToUpdate) != 0 {
-		err := b.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := b.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 

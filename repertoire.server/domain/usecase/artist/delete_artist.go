@@ -7,8 +7,8 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -32,45 +32,40 @@ func NewDeleteArtist(
 	}
 }
 
-func (d DeleteArtist) Handle(request requests.DeleteArtistRequest) *wrapper.ErrorCode {
+func (d DeleteArtist) Handle(request requests.DeleteArtistRequest) *httperror.ErrorCode {
 	var artist model.Artist
-	err := d.repository.GetWithSongsOrAlbums(&artist, request.ID, request.WithSongs, request.WithAlbums)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.GetWithSongsOrAlbums(&artist, request.ID, request.WithSongs, request.WithAlbums); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
-		return wrapper.NotFoundError(errors.New("artist not found"))
+		return httperror.NotFoundError(errors.New("artist not found"))
 	}
 
-	err = d.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+	err := d.transaction.Execute(func(factory transaction.RepositoryFactory) error {
 		artistRepo := factory.NewArtistRepository()
 
 		if request.WithAlbums {
-			err = artistRepo.DeleteAlbums([]uuid.UUID{request.ID})
-			if err != nil {
+			if err := artistRepo.DeleteAlbums([]uuid.UUID{request.ID}); err != nil {
 				return err
 			}
 		}
 		if request.WithSongs {
-			err = artistRepo.DeleteSongs([]uuid.UUID{request.ID})
-			if err != nil {
+			if err := artistRepo.DeleteSongs([]uuid.UUID{request.ID}); err != nil {
 				return err
 			}
 		}
 
-		err = artistRepo.Delete([]uuid.UUID{request.ID})
-		if err != nil {
+		if err := artistRepo.Delete([]uuid.UUID{request.ID}); err != nil {
 			return err
 		}
 		return nil
 	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.ArtistsDeletedTopic, artist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err = d.messagePublisherService.Publish(topics.ArtistsDeletedTopic, artist); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

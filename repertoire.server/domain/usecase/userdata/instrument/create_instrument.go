@@ -4,7 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -22,16 +22,15 @@ func NewCreateInstrument(repository repository.UserDataRepository, jwtService se
 	}
 }
 
-func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode {
+func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token string) *httperror.ErrorCode {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var count int64
-	err := c.repository.GetInstrumentsCount(&count, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.GetInstrumentsCount(&count, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	guitarTuning := &model.Instrument{
@@ -40,9 +39,8 @@ func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token
 		Order:  uint(count),
 		UserID: userID,
 	}
-	err = c.repository.CreateInstrument(guitarTuning)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.CreateInstrument(guitarTuning); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

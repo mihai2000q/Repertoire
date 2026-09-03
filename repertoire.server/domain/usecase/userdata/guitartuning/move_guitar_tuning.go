@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -21,16 +21,15 @@ func NewMoveGuitarTuning(repository repository.UserDataRepository, jwtService se
 	}
 }
 
-func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode {
+func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token string) *httperror.ErrorCode {
 	userID, errCode := m.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var tunings []model.GuitarTuning
-	err := m.repository.GetGuitarTunings(&tunings, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.GetGuitarTunings(&tunings, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	errCode = reorder.MoveEntity(
@@ -46,9 +45,8 @@ func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token
 		return errCode
 	}
 
-	err = m.repository.UpdateAllGuitarTunings(&tunings)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.UpdateAllGuitarTunings(&tunings); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

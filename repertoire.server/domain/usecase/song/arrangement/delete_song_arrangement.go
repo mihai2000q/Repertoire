@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -26,21 +26,20 @@ func NewDeleteSongArrangement(
 	}
 }
 
-func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	err := d.songRepository.GetWithArrangements(&song, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songRepository.GetWithArrangements(&song, songID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	index := slices.IndexFunc(song.Arrangements, func(a model.SongArrangement) bool {
 		return a.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("song arrangement not found"))
+		return httperror.NotFoundError(errors.New("song arrangement not found"))
 	}
 
 	// reorder the other arrangements
@@ -48,13 +47,11 @@ func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.E
 		song.Arrangements[i].Order = song.Arrangements[i].Order - 1
 	}
 
-	err = d.songRepository.UpdateWithAssociations(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songRepository.UpdateWithAssociations(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
-	err = d.songArrangementRepository.Delete(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songArrangementRepository.Delete(id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

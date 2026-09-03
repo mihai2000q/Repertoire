@@ -6,7 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -25,26 +25,24 @@ func NewUpdateUser(
 	}
 }
 
-func (u UpdateUser) Handle(request requests.UpdateUserRequest, token string) *wrapper.ErrorCode {
+func (u UpdateUser) Handle(request requests.UpdateUserRequest, token string) *httperror.ErrorCode {
 	id, errCode := u.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var user model.User
-	err := u.repository.Get(&user, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.repository.Get(&user, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
-		return wrapper.NotFoundError(errors.New("user not found"))
+		return httperror.NotFoundError(errors.New("user not found"))
 	}
 
 	user.Name = request.Name
 
-	err = u.repository.Update(&user)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.repository.Update(&user); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

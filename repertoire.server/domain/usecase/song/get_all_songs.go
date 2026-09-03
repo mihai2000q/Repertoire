@@ -4,7 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 )
 
@@ -20,7 +21,7 @@ func NewGetAllSongs(repository repository.SongRepository, jwtService service.Jwt
 	}
 }
 
-func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedSong], e *wrapper.ErrorCode) {
+func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (result pagination.WithTotalCount[model.EnhancedSong], e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
@@ -36,12 +37,12 @@ func (g GetAllSongs) Handle(request requests.GetSongsRequest, token string) (res
 		request.With,
 	)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

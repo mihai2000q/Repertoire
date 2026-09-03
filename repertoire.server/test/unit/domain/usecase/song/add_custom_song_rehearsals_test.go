@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -198,7 +198,7 @@ func TestAddCustomSongRehearsals_WhenProcessorFails_ShouldReturnInternalServerEr
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	songProcessor.
 		On(
 			"AddCustomRehearsal",

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -19,32 +19,28 @@ func NewUpdateBandMember(repository repository.ArtistRepository) UpdateBandMembe
 	}
 }
 
-func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *wrapper.ErrorCode {
+func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *httperror.ErrorCode {
 	var bandMember model.BandMember
-	err := u.artistRepository.GetBandMember(&bandMember, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.artistRepository.GetBandMember(&bandMember, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(bandMember).IsZero() {
-		return wrapper.NotFoundError(errors.New("band member not found"))
+		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 
 	var roles []model.BandMemberRole
-	err = u.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = u.artistRepository.ReplaceRolesFromBandMember(roles, &bandMember)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.artistRepository.ReplaceRolesFromBandMember(roles, &bandMember); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	bandMember.Name = request.Name
 	bandMember.Color = request.Color
-	err = u.artistRepository.UpdateBandMember(&bandMember)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.artistRepository.UpdateBandMember(&bandMember); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

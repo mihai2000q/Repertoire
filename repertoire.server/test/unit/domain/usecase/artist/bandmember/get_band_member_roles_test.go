@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/usecase/artist/bandmember"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -23,7 +23,7 @@ func TestGetBandMemberRoles_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testi
 
 	token := "this is a token"
 
-	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
+	forbiddenError := httperror.ForbiddenError(errors.New("forbidden error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when

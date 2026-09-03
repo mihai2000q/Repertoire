@@ -6,7 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -34,19 +34,19 @@ func NewCreateSongPart(
 	}
 }
 
-func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.ErrorCode {
+func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *httperror.ErrorCode {
 	// Validate sections
 	if len(request.SectionIDs) > 0 {
 		var sections []model.SongSection
 		if err := c.songSectionRepository.GetAllByIDs(&sections, request.SectionIDs); err != nil {
-			return wrapper.InternalServerError(err)
+			return httperror.DatabaseError(err)
 		}
 		if len(sections) != len(request.SectionIDs) {
-			return wrapper.NotFoundError(errors.New("sections not found"))
+			return httperror.NotFoundError(errors.New("sections not found"))
 		}
 		for _, section := range sections {
 			if section.SongID != request.SongID {
-				return wrapper.ConflictError(errors.New("section does not belong to the same song"))
+				return httperror.ConflictError(errors.New("section does not belong to the same song"))
 			}
 		}
 	}
@@ -55,14 +55,14 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 	if request.BandMemberID != nil {
 		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
 		if err != nil {
-			return wrapper.InternalServerError(err)
+			return httperror.DatabaseError(err)
 		}
 		if !res {
-			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
+			return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 		}
 	}
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	err := c.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		c.txSongRepository = factory.NewSongRepository()
 		c.txSongPartRepository = factory.NewSongPartRepository()
@@ -73,7 +73,7 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			return err
 		}
 		if reflect.ValueOf(song).IsZero() {
-			errCode = wrapper.NotFoundError(errors.New("song not found"))
+			errCode = httperror.NotFoundError(errors.New("song not found"))
 			return errCode.Error
 		}
 
@@ -100,12 +100,12 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 			return err
 		}
 
-		if errCode = c.updateSong(&song, part); errCode != nil {
-			return errCode.Error
+		if err := c.updateSong(&song, part); err != nil {
+			return err
 		}
 
-		if errCode = c.updateArrangements(part.ID, request.SongID); errCode != nil {
-			return errCode.Error
+		if err := c.updateArrangements(part.ID, request.SongID); err != nil {
+			return err
 		}
 
 		return nil
@@ -114,7 +114,7 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *wrapper.
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
@@ -143,7 +143,7 @@ func (c CreateSongPart) createSectionParts(request requests.CreateSongPartReques
 }
 
 // Update song's new confidence, rehearsals and progress medians
-func (c CreateSongPart) updateSong(song *model.Song, part model.SongPart) *wrapper.ErrorCode {
+func (c CreateSongPart) updateSong(song *model.Song, part model.SongPart) error {
 	songPartsCount := part.SongOrder
 
 	song.Confidence = (song.Confidence*float64(songPartsCount) + float64(part.Confidence)) / float64(songPartsCount+1)
@@ -151,18 +151,17 @@ func (c CreateSongPart) updateSong(song *model.Song, part model.SongPart) *wrapp
 	song.Progress = (song.Progress*float64(songPartsCount) + float64(part.Progress)) / float64(songPartsCount+1)
 
 	if err := c.txSongRepository.Update(song); err != nil {
-		return wrapper.InternalServerError(err)
+		return err
 	}
 
 	return nil
 }
 
 // Add one new part occurrence on each song arrangement
-func (c CreateSongPart) updateArrangements(partID uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (c CreateSongPart) updateArrangements(partID uuid.UUID, songID uuid.UUID) error {
 	var arrangements []model.SongArrangement
-	err := c.txSongArrangementRepository.GetAllBySong(&arrangements, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.txSongArrangementRepository.GetAllBySong(&arrangements, songID); err != nil {
+		return err
 	}
 
 	for i := range arrangements {
@@ -174,9 +173,8 @@ func (c CreateSongPart) updateArrangements(partID uuid.UUID, songID uuid.UUID) *
 		arrangements[i].PartOccurrences = append(arrangements[i].PartOccurrences, occurrence)
 	}
 
-	err = c.txSongArrangementRepository.UpdateAllWithAssociations(&arrangements)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.txSongArrangementRepository.UpdateAllWithAssociations(&arrangements); err != nil {
+		return err
 	}
 
 	return nil

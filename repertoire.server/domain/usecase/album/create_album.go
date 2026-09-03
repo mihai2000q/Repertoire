@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -29,7 +29,7 @@ func NewCreateAlbum(
 	}
 }
 
-func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (uuid.UUID, *httperror.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return uuid.Nil, errCode
@@ -45,14 +45,12 @@ func (c CreateAlbum) Handle(request requests.CreateAlbumRequest, token string) (
 
 	c.createArtist(&album, request, userID)
 
-	err := c.repository.Create(&album)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.repository.Create(&album); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
-	err = c.messagePublisherService.Publish(topics.AlbumCreatedTopic, album)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.messagePublisherService.Publish(topics.AlbumCreatedTopic, album); err != nil {
+		return uuid.Nil, httperror.MessagePublisherError(err)
 	}
 
 	return album.ID, nil

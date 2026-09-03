@@ -4,8 +4,8 @@ import (
 	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -17,14 +17,13 @@ func NewMoveSongFromPlaylist(repository repository.PlaylistRepository) MoveSongF
 	return MoveSongFromPlaylist{repository: repository}
 }
 
-func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistRequest) *wrapper.ErrorCode {
+func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistRequest) *httperror.ErrorCode {
 	var playlistSongs []model.PlaylistSong
-	err := m.repository.GetPlaylistSongs(&playlistSongs, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if len(playlistSongs) == 0 {
-		return wrapper.NotFoundError(errors.New("playlist not found"))
+		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 
 	errCode := reorder.MoveEntity(
@@ -42,9 +41,8 @@ func (m MoveSongFromPlaylist) Handle(request requests.MoveSongFromPlaylistReques
 		return errCode
 	}
 
-	err = m.repository.UpdateAllPlaylistSongs(&playlistSongs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.UpdateAllPlaylistSongs(&playlistSongs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

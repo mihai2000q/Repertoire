@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -25,7 +25,7 @@ func TestGetAlbumFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternalS
 	request := requests.GetAlbumFiltersMetadataRequest{}
 	token := "some token"
 
-	internalError := wrapper.InternalServerError(errors.New("some internal error"))
+	internalError := httperror.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when

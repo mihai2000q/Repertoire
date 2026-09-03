@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -27,8 +27,8 @@ func NewDeleteSongPart(
 	}
 }
 
-func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	var errCode *wrapper.ErrorCode
+func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
+	var errCode *httperror.ErrorCode
 	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		d.txSongRepository = factory.NewSongRepository()
 		d.txSongSectionRepository = factory.NewSongSectionRepository()
@@ -50,27 +50,26 @@ func (d DeleteSongPart) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCod
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	err := d.txSongRepository.GetWithParts(&song, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.txSongRepository.GetWithParts(&song, songID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	index := slices.IndexFunc(song.Parts, func(a model.SongPart) bool {
 		return a.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("song part not found"))
+		return httperror.NotFoundError(errors.New("song part not found"))
 	}
 
 	// reorder the other parts in song
@@ -90,27 +89,20 @@ func (d DeleteSongPart) updateSong(id uuid.UUID, songID uuid.UUID) *wrapper.Erro
 		song.Progress = (song.Progress*float64(partsLength) - float64(song.Parts[index].Progress)) / float64(partsLength-1)
 	}
 
-	err = d.txSongRepository.UpdateWithAssociations(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.txSongRepository.UpdateWithAssociations(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (d DeleteSongPart) updateSections(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSongPart) updateSections(id uuid.UUID) *httperror.ErrorCode {
 	var sections []model.SongSection
-	err := d.txSongSectionRepository.GetAllByPartWithSectionParts(&sections, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	if len(sections) == 0 {
-		return nil
+	if err := d.txSongSectionRepository.GetAllByPartWithSectionParts(&sections, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	var sectionPartsToUpdate []model.SongSectionPart
-
 	for _, section := range sections {
 		index := slices.IndexFunc(section.SectionParts, func(sp model.SongSectionPart) bool {
 			return sp.PartID == id
@@ -124,9 +116,8 @@ func (d DeleteSongPart) updateSections(id uuid.UUID) *wrapper.ErrorCode {
 	}
 
 	if len(sectionPartsToUpdate) > 0 {
-		err = d.txSongSectionRepository.UpdateAllSectionParts(&sectionPartsToUpdate)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := d.txSongSectionRepository.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 

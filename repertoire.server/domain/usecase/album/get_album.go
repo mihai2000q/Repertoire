@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -19,17 +19,16 @@ func NewGetAlbum(repository repository.AlbumRepository) GetAlbum {
 	}
 }
 
-func (g GetAlbum) Handle(request requests.GetAlbumRequest) (album model.Album, e *wrapper.ErrorCode) {
+func (g GetAlbum) Handle(request requests.GetAlbumRequest) (album model.Album, e *httperror.ErrorCode) {
 	if len(request.SongsOrderBy) == 0 {
 		request.SongsOrderBy = []string{"album_track_no"}
 	}
 
-	err := g.repository.GetWithAssociations(&album, request.ID, request.SongsOrderBy)
-	if err != nil {
-		return album, wrapper.InternalServerError(err)
+	if err := g.repository.GetWithAssociations(&album, request.ID, request.SongsOrderBy); err != nil {
+		return album, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return album, wrapper.NotFoundError(errors.New("album not found"))
+		return album, httperror.NotFoundError(errors.New("album not found"))
 	}
 	return album, nil
 }

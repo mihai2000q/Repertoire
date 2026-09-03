@@ -6,8 +6,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -28,7 +28,7 @@ func NewDeleteAlbum(
 	}
 }
 
-func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorCode {
+func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
 	var err error
 	if request.WithSongs {
@@ -37,10 +37,10 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 		err = d.repository.Get(&album, request.ID)
 	}
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	if request.WithSongs {
@@ -49,12 +49,11 @@ func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorC
 		err = d.repository.Delete([]uuid.UUID{request.ID})
 	}
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

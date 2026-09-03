@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/section"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -318,7 +318,7 @@ func TestBulkDeleteSongSections_WithParts_WhenUpdateSongAfterPartsDeletionFails_
 		Return(nil, &mockSections).
 		Once()
 
-	expectedError := wrapper.InternalServerError(errors.New("processor error"))
+	expectedError := httperror.InternalServerError(errors.New("processor error"))
 	songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepository, request.SongID, []uuid.UUID{partID}).
 		Return(expectedError).
 		Once()

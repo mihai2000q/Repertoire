@@ -8,7 +8,7 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
 	"repertoire/server/internal/deduplicate"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -35,13 +35,13 @@ func NewUpdateSongSection(
 	}
 }
 
-func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
+func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *httperror.ErrorCode {
 	var section model.SongSection
 	if err := u.songSectionRepository.GetWithSectionParts(&section, request.ID); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(section).IsZero() {
-		return wrapper.NotFoundError(errors.New("song section not found"))
+		return httperror.NotFoundError(errors.New("song section not found"))
 	}
 
 	if len(request.PartIDs) > 0 {
@@ -67,7 +67,7 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 		return nil
 	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
@@ -76,18 +76,18 @@ func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wr
 func (u UpdateSongSection) ensurePartsBelongToSameSong(
 	request requests.UpdateSongSectionRequest,
 	songID uuid.UUID,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	var parts []model.SongPart
 	if err := u.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	partIDSet := deduplicate.Deduplicate(request.PartIDs)
 	if len(parts) != len(partIDSet) {
-		return wrapper.NotFoundError(errors.New("some parts not found"))
+		return httperror.NotFoundError(errors.New("some parts not found"))
 	}
 	for _, p := range parts {
 		if p.SongID != songID {
-			return wrapper.ConflictError(errors.New("song part does not belong to the same song as the section"))
+			return httperror.ConflictError(errors.New("song part does not belong to the same song as the section"))
 		}
 	}
 	return nil

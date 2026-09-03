@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -126,7 +126,7 @@ func TestAddPerfectArtistRehearsals_WhenProcessorFails_ShouldReturnInternalServe
 	repositoryFactory.On("NewSongRepository").Return(transactionSongRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	songProcessor.On("AddPerfectRehearsal", mock.IsType(new(model.Song)), transactionSongPartRepository).
 		Return(internalError, false).
 		Times(len(mockArtists[0].Songs))

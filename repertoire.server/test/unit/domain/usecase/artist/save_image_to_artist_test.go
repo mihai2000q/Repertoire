@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/artist"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -79,7 +79,7 @@ func TestSaveImageToArtist_WhenStorageDeleteFileFails_ShouldReturnError(t *testi
 	mockArtist := &model.Artist{ID: id, ImageURL: &[]internal.FilePath{"file_path"}[0]}
 	artistRepository.On("Get", new(model.Artist), id).Return(nil, mockArtist).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockArtist.ImageURL).Return(internalError).Once()
 
 	// when

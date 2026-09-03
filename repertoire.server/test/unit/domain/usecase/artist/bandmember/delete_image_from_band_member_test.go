@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -102,7 +102,7 @@ func TestDeleteImageFromBandMember_WhenDeleteImageFails_ShouldReturnInternalServ
 		Return(nil, mockBandMember).
 		Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockBandMember.ImageURL).
 		Return(internalError).
 		Once()

@@ -8,8 +8,8 @@ import (
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"time"
 
@@ -37,19 +37,17 @@ func NewSaveImageToPlaylist(
 	}
 }
 
-func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
+func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *httperror.ErrorCode {
 	var playlist model.Playlist
-	err := s.repository.Get(&playlist, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.Get(&playlist, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
-		return wrapper.NotFoundError(errors.New("playlist not found"))
+		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 
 	if playlist.ImageURL != nil {
-		errCode := s.storageService.DeleteFile(*playlist.ImageURL)
-		if errCode != nil {
+		if errCode := s.storageService.DeleteFile(*playlist.ImageURL); errCode != nil {
 			return errCode
 		}
 	}
@@ -57,20 +55,17 @@ func (s SaveImageToPlaylist) Handle(file *multipart.FileHeader, id uuid.UUID) *w
 	playlist.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetPlaylistImagePath(file, playlist)
 
-	err = s.storageService.Upload(file, imagePath)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if errCode := s.storageService.Upload(file, imagePath); errCode != nil {
+		return errCode
 	}
 
 	playlist.ImageURL = (*internal.FilePath)(&imagePath)
-	err = s.repository.Update(&playlist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.Update(&playlist); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = s.messagePublisherService.Publish(topics.PlaylistUpdatedTopic, playlist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.messagePublisherService.Publish(topics.PlaylistUpdatedTopic, playlist); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

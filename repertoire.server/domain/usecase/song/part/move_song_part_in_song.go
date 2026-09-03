@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -21,25 +21,25 @@ func NewMoveSongPartInSong(repository repository.SongRepository) MoveSongPartInS
 	}
 }
 
-func (c MoveSongPartInSong) Handle(request requests.MoveSongPartInSongRequest) *wrapper.ErrorCode {
+func (c MoveSongPartInSong) Handle(request requests.MoveSongPartInSongRequest) *httperror.ErrorCode {
 	var song model.Song
 	err := c.songRepository.GetWithParts(&song, request.SongID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.InternalServerError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	index, overIndex, err := c.getIndexes(song.Parts, request.ID, request.OverID)
 	if err != nil {
-		return wrapper.NotFoundError(err)
+		return httperror.NotFoundError(err)
 	}
 	song.Parts = c.move(song.Parts, index, overIndex)
 
 	err = c.songRepository.UpdateWithAssociations(&song)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.InternalServerError(err)
 	}
 
 	return nil

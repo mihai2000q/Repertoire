@@ -6,8 +6,8 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -29,14 +29,14 @@ func NewBulkDeleteArtists(
 	}
 }
 
-func (b BulkDeleteArtists) Handle(request requests.BulkDeleteArtistsRequest) *wrapper.ErrorCode {
+func (b BulkDeleteArtists) Handle(request requests.BulkDeleteArtistsRequest) *httperror.ErrorCode {
 	var artists []model.Artist
 	err := b.repository.GetAllByIDs(&artists, request.IDs, request.WithSongs, request.WithAlbums)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if len(artists) == 0 {
-		return wrapper.NotFoundError(errors.New("artists not found"))
+		return httperror.NotFoundError(errors.New("artists not found"))
 	}
 
 	err = b.transaction.Execute(func(factory transaction.RepositoryFactory) error {
@@ -62,12 +62,12 @@ func (b BulkDeleteArtists) Handle(request requests.BulkDeleteArtistsRequest) *wr
 		return nil
 	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	err = b.messagePublisherService.Publish(topics.ArtistsDeletedTopic, artists)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

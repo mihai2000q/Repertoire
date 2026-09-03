@@ -3,7 +3,7 @@ package song
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -19,15 +19,14 @@ func NewGetInstruments(repository repository.SongRepository, jwtService service.
 	}
 }
 
-func (g GetInstruments) Handle(token string) (result []model.Instrument, e *wrapper.ErrorCode) {
+func (g GetInstruments) Handle(token string) (result []model.Instrument, e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
-	err := g.repository.GetInstruments(&result, userID)
-	if err != nil {
-		return result, wrapper.InternalServerError(err)
+	if err := g.repository.GetInstruments(&result, userID); err != nil {
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

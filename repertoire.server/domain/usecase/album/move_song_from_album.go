@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -18,14 +18,13 @@ func NewMoveSongFromAlbum(repository repository.AlbumRepository) MoveSongFromAlb
 	return MoveSongFromAlbum{repository: repository}
 }
 
-func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *wrapper.ErrorCode {
+func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	err := m.repository.GetWithSongs(&album, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.GetWithSongs(&album, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	errCode := reorder.MoveEntity(
@@ -43,9 +42,8 @@ func (m MoveSongFromAlbum) Handle(request requests.MoveSongFromAlbumRequest) *wr
 		return errCode
 	}
 
-	err = m.repository.UpdateWithAssociations(&album)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.UpdateWithAssociations(&album); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

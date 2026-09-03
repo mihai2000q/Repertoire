@@ -3,7 +3,7 @@ package reorder
 import (
 	"errors"
 	"reflect"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 
 	"github.com/google/uuid"
 )
@@ -30,11 +30,11 @@ func DefaultConfig() *Config {
 
 // MoveEntity updates Order fields when moving an entity within a slice.
 // It does NOT reorder the slice – only updates the Order property.
-func MoveEntity[T any](entities []T, id, overID uuid.UUID, config *Config) *wrapper.ErrorCode {
+func MoveEntity[T any](entities []T, id, overID uuid.UUID, config *Config) *httperror.ErrorCode {
 	cfg := mergeConfig(config)
 
 	if len(entities) == 0 {
-		return wrapper.ConflictError(errors.New("empty slice"))
+		return httperror.ConflictError(errors.New("empty slice"))
 	}
 
 	index, overIndex, errCode := getIndexes(entities, id, overID, cfg)
@@ -72,7 +72,7 @@ func mergeConfig(userConfig *Config) *Config {
 }
 
 // getIndexes finds the indices of the entity and the target entity
-func getIndexes[T any](entities []T, id, overID uuid.UUID, cfg *Config) (int, int, *wrapper.ErrorCode) {
+func getIndexes[T any](entities []T, id, overID uuid.UUID, cfg *Config) (int, int, *httperror.ErrorCode) {
 	var index, overIndex int
 	found := false
 	overFound := false
@@ -82,13 +82,13 @@ func getIndexes[T any](entities []T, id, overID uuid.UUID, cfg *Config) (int, in
 		idField := item.FieldByName(cfg.IDField)
 
 		if !idField.IsValid() {
-			return -1, -1, wrapper.InternalServerError(errors.New("ID field '" + cfg.IDField + "' not found on type"))
+			return -1, -1, httperror.InternalServerError(errors.New("ID field '" + cfg.IDField + "' not found on type"))
 		}
 
 		// Type check to avoid panic
 		idValue, ok := idField.Interface().(uuid.UUID)
 		if !ok {
-			return -1, -1, wrapper.InternalServerError(errors.New("ID field is not of type uuid.UUID"))
+			return -1, -1, httperror.InternalServerError(errors.New("ID field is not of type uuid.UUID"))
 		}
 
 		if idValue == id {
@@ -106,31 +106,31 @@ func getIndexes[T any](entities []T, id, overID uuid.UUID, cfg *Config) (int, in
 	}
 
 	if !found {
-		return -1, -1, wrapper.NotFoundError(errors.New(cfg.EntityNotFoundMsg))
+		return -1, -1, httperror.NotFoundError(errors.New(cfg.EntityNotFoundMsg))
 	}
 	if !overFound {
-		return -1, -1, wrapper.NotFoundError(errors.New(cfg.OverEntityNotFoundMsg))
+		return -1, -1, httperror.NotFoundError(errors.New(cfg.OverEntityNotFoundMsg))
 	}
 
 	return index, overIndex, nil
 }
 
 // updateOrderFields updates the Order fields based on the move operation.
-func updateOrderFields[T any](entities []T, index, overIndex int, cfg *Config) *wrapper.ErrorCode {
+func updateOrderFields[T any](entities []T, index, overIndex int, cfg *Config) *httperror.ErrorCode {
 	if index < 0 || index >= len(entities) || overIndex < 0 || overIndex >= len(entities) {
-		return wrapper.ConflictError(errors.New("index out of range"))
+		return httperror.ConflictError(errors.New("index out of range"))
 	}
 
 	// Validate Order field exists and is either uint or *uint
 	testVal := reflect.ValueOf(entities[0])
 	orderFieldVal := testVal.FieldByName(cfg.OrderField)
 	if !orderFieldVal.IsValid() {
-		return wrapper.InternalServerError(errors.New("Order field '" + cfg.OrderField + "' not found on type"))
+		return httperror.InternalServerError(errors.New("Order field '" + cfg.OrderField + "' not found on type"))
 	}
 
 	kind := orderFieldVal.Kind()
 	if kind != reflect.Uint && !(kind == reflect.Ptr && orderFieldVal.Type().Elem().Kind() == reflect.Uint) {
-		return wrapper.InternalServerError(errors.New("order field must be of type uint or *uint"))
+		return httperror.InternalServerError(errors.New("order field must be of type uint or *uint"))
 	}
 
 	if index < overIndex {

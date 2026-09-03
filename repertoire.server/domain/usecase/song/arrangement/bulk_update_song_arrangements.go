@@ -4,7 +4,7 @@ import (
 	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -18,7 +18,7 @@ func NewBulkUpdateSongArrangements(songArrangementRepository repository.SongArra
 	return BulkUpdateSongArrangements{songArrangementRepository: songArrangementRepository}
 }
 
-func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrangementsRequest) *wrapper.ErrorCode {
+func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrangementsRequest) *httperror.ErrorCode {
 	// the arrangements in the request are not in the same order as those returned
 	requestsMap := make(map[uuid.UUID]requests.UpdateSongArrangementRequest)
 	var ids []uuid.UUID
@@ -30,10 +30,10 @@ func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrang
 	var arrangements []model.SongArrangement
 	err := b.songArrangementRepository.GetAllBySongWithPartOccurrences(&arrangements, ids, request.SongID)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if len(arrangements) != len(ids) {
-		return wrapper.NotFoundError(errors.New("song arrangements not found"))
+		return httperror.NotFoundError(errors.New("song arrangements not found"))
 	}
 
 	for i, arrangement := range arrangements {
@@ -54,9 +54,8 @@ func (b BulkUpdateSongArrangements) Handle(request requests.BulkUpdateSongArrang
 		}
 	}
 
-	err = b.songArrangementRepository.UpdateAllWithAssociations(&arrangements)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.songArrangementRepository.UpdateAllWithAssociations(&arrangements); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

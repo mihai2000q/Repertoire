@@ -6,7 +6,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -30,7 +30,7 @@ func NewAddCustomSongRehearsals(
 	}
 }
 
-func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsalsRequest) *wrapper.ErrorCode {
+func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsalsRequest) *httperror.ErrorCode {
 	var ids []uuid.UUID
 	for _, r := range request.Requests {
 		ids = append(ids, r.ID)
@@ -39,10 +39,10 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 	var songs []model.Song
 	err := a.repository.GetAllByIDsWithPartsAndArrangementOccurrences(&songs, ids)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if len(songs) == 0 {
-		return wrapper.NotFoundError(errors.New("songs not found"))
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
 	// use a map in order to not go through the songs, but through the ids that were sent
@@ -53,7 +53,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 		songsMap[song.ID] = song
 	}
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		txSongPartRepository := factory.NewSongPartRepository()
 		transactionSongRepository := factory.NewSongRepository()
@@ -62,7 +62,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 		for _, r := range request.Requests {
 			song, ok := songsMap[r.ID]
 			if !ok {
-				errCode = wrapper.NotFoundError(errors.New("songs not found"))
+				errCode = httperror.NotFoundError(errors.New("songs not found"))
 				return errCode.Error
 			}
 
@@ -77,9 +77,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 		}
 
 		if len(newSongs) > 0 {
-			err = transactionSongRepository.UpdateAllWithAssociations(&newSongs)
-			if err != nil {
-				errCode = wrapper.InternalServerError(err)
+			if err := transactionSongRepository.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}
@@ -89,7 +87,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

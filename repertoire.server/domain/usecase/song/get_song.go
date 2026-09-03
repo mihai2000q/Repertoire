@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -20,13 +20,12 @@ func NewGetSong(repository repository.SongRepository) GetSong {
 	}
 }
 
-func (g GetSong) Handle(id uuid.UUID) (song model.Song, e *wrapper.ErrorCode) {
-	err := g.repository.GetWithAssociations(&song, id)
-	if err != nil {
-		return song, wrapper.InternalServerError(err)
+func (g GetSong) Handle(id uuid.UUID) (song model.Song, e *httperror.ErrorCode) {
+	if err := g.repository.GetWithAssociations(&song, id); err != nil {
+		return song, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return song, wrapper.NotFoundError(errors.New("song not found"))
+		return song, httperror.NotFoundError(errors.New("song not found"))
 	}
 	return song, nil
 }

@@ -6,8 +6,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -31,14 +31,13 @@ func NewUpdateSong(
 	}
 }
 
-func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCode {
+func (u UpdateSong) Handle(request requests.UpdateSongRequest) *httperror.ErrorCode {
 	var song model.Song
-	err := u.repository.Get(&song, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.repository.Get(&song, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	artistHasChanged := song.ArtistID != nil && request.ArtistID == nil ||
@@ -50,17 +49,16 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 
 	if (albumHasChanged || artistHasChanged) && request.AlbumID != nil {
 		var album model.Album
-		err = u.albumRepository.Get(&album, *request.AlbumID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := u.albumRepository.Get(&album, *request.AlbumID); err != nil {
+			return httperror.DatabaseError(err)
 		}
 		if reflect.ValueOf(album).IsZero() {
-			return wrapper.NotFoundError(errors.New("album not found"))
+			return httperror.NotFoundError(errors.New("album not found"))
 		}
 		if request.ArtistID == nil && album.ArtistID != nil ||
 			request.ArtistID != nil && album.ArtistID == nil ||
 			request.ArtistID != nil && album.ArtistID != nil && *request.ArtistID != *album.ArtistID {
-			return wrapper.ConflictError(errors.New("album's artist does not match the request's artist"))
+			return httperror.ConflictError(errors.New("album's artist does not match the request's artist"))
 		}
 	}
 
@@ -83,26 +81,24 @@ func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCod
 	song.ArtistID = request.ArtistID
 	song.AlbumID = request.AlbumID
 
-	err = u.repository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.repository.Update(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = u.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil
 }
 
-func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *model.Song) *wrapper.ErrorCode {
+func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *model.Song) *httperror.ErrorCode {
 	// reorder old album, if any
 	if song.AlbumID != nil {
 		var songs []model.Song
 		err := u.repository.GetAllByAlbumAndTrackNo(&songs, *song.AlbumID, *song.AlbumTrackNo)
 		if err != nil {
-			return wrapper.InternalServerError(err)
+			return httperror.DatabaseError(err)
 		}
 
 		for i := range songs {
@@ -110,9 +106,8 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 			songs[i].AlbumTrackNo = &trackNo
 		}
 
-		err = u.repository.UpdateAll(&songs)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := u.repository.UpdateAll(&songs); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 
@@ -122,9 +117,8 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 	}
 
 	var songsCount int64
-	err := u.repository.CountByAlbum(&songsCount, *request.AlbumID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.repository.CountByAlbum(&songsCount, *request.AlbumID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	trackNo := uint(songsCount) + 1

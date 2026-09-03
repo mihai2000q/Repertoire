@@ -8,8 +8,8 @@ import (
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"time"
 
@@ -37,14 +37,13 @@ func NewSaveImageToAlbum(
 	}
 }
 
-func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
+func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *httperror.ErrorCode {
 	var album model.Album
-	err := s.repository.Get(&album, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.Get(&album, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	if album.ImageURL != nil {
@@ -57,20 +56,17 @@ func (s SaveImageToAlbum) Handle(file *multipart.FileHeader, id uuid.UUID) *wrap
 	album.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetAlbumImagePath(file, album)
 
-	err = s.storageService.Upload(file, imagePath)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if errCode := s.storageService.Upload(file, imagePath); errCode != nil {
+		return errCode
 	}
 
 	album.ImageURL = (*internal.FilePath)(&imagePath)
-	err = s.repository.Update(&album)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.Update(&album); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = s.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

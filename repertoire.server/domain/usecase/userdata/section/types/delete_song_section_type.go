@@ -4,7 +4,7 @@ import (
 	"errors"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -26,37 +26,34 @@ func NewDeleteSongSectionType(
 	}
 }
 
-func (d DeleteSongSectionType) Handle(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (d DeleteSongSectionType) Handle(id uuid.UUID, token string) *httperror.ErrorCode {
 	userID, errCode := d.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var types []model.SongSectionType
-	err := d.repository.GetSectionTypes(&types, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.GetSectionTypes(&types, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	index := slices.IndexFunc(types, func(s model.SongSectionType) bool {
 		return s.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("song section type not found"))
+		return httperror.NotFoundError(errors.New("song section type not found"))
 	}
 
 	for i := index + 1; i < len(types); i++ {
 		types[i].Order = types[i].Order - 1
 	}
 
-	err = d.repository.UpdateAllSectionTypes(&types)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.UpdateAllSectionTypes(&types); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.repository.DeleteSectionType(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.DeleteSectionType(id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

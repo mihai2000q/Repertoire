@@ -5,8 +5,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -25,24 +25,21 @@ func NewBulkDeletePlaylists(
 	}
 }
 
-func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode {
+func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *httperror.ErrorCode {
 	var playlists []model.Playlist
-	err := b.repository.GetAllByIDs(&playlists, request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.repository.GetAllByIDs(&playlists, request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if len(playlists) == 0 {
-		return wrapper.NotFoundError(errors.New("playlists not found"))
+		return httperror.NotFoundError(errors.New("playlists not found"))
 	}
 
-	err = b.repository.Delete(request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.repository.Delete(request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = b.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, playlists)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, playlists); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 	return nil
 }

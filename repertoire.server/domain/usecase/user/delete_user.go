@@ -3,8 +3,8 @@ package user
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 )
 
 type DeleteUser struct {
@@ -25,20 +25,18 @@ func NewDeleteUser(
 	}
 }
 
-func (d DeleteUser) Handle(token string) *wrapper.ErrorCode {
+func (d DeleteUser) Handle(token string) *httperror.ErrorCode {
 	id, errCode := d.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
-	err := d.repository.Delete(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Delete(id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.UserDeletedTopic, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.messagePublisherService.Publish(topics.UserDeletedTopic, id); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
@@ -31,7 +31,7 @@ func TestShufflePlaylistSongs_WhenSuccessful_ShouldShuffleSongsOnPlaylist(t *tes
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response wrapper.WithTotalCount[model.Song]
+	var response pagination.WithTotalCount[model.Song]
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	var playlistSongs []model.PlaylistSong

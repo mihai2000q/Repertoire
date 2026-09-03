@@ -6,27 +6,27 @@ import (
 	"repertoire/server/domain/usecase/userdata/guitartuning"
 	"repertoire/server/domain/usecase/userdata/instrument"
 	"repertoire/server/domain/usecase/userdata/section/types"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 
 	"github.com/google/uuid"
 )
 
 type UserDataService interface {
-	CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode
-	DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode
-	MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode
+	CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *httperror.ErrorCode
+	DeleteBandMemberRole(id uuid.UUID, token string) *httperror.ErrorCode
+	MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *httperror.ErrorCode
 
-	CreateInstrument(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode
-	MoveInstrument(request requests.MoveInstrumentRequest, token string) *wrapper.ErrorCode
-	DeleteInstrument(id uuid.UUID, token string) *wrapper.ErrorCode
+	CreateInstrument(request requests.CreateInstrumentRequest, token string) *httperror.ErrorCode
+	MoveInstrument(request requests.MoveInstrumentRequest, token string) *httperror.ErrorCode
+	DeleteInstrument(id uuid.UUID, token string) *httperror.ErrorCode
 
-	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode
-	MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode
-	DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode
+	CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *httperror.ErrorCode
+	MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *httperror.ErrorCode
+	DeleteGuitarTuning(id uuid.UUID, token string) *httperror.ErrorCode
 
-	CreateSectionType(request requests.CreateSongSectionTypeRequest, token string) *wrapper.ErrorCode
-	DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode
-	MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode
+	CreateSectionType(request requests.CreateSongSectionTypeRequest, token string) *httperror.ErrorCode
+	DeleteSectionType(id uuid.UUID, token string) *httperror.ErrorCode
+	MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *httperror.ErrorCode
 }
 
 type userDataService struct {
@@ -85,43 +85,43 @@ func NewUserDataService(
 
 // Band Member Roles
 
-func (u *userDataService) CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) CreateBandMemberRole(request requests.CreateBandMemberRoleRequest, token string) *httperror.ErrorCode {
 	return u.createBandMemberRole.Handle(request, token)
 }
 
-func (u *userDataService) DeleteBandMemberRole(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (u *userDataService) DeleteBandMemberRole(id uuid.UUID, token string) *httperror.ErrorCode {
 	return u.deleteBandMemberRole.Handle(id, token)
 }
 
-func (u *userDataService) MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) MoveBandMemberRole(request requests.MoveBandMemberRoleRequest, token string) *httperror.ErrorCode {
 	return u.moveBandMemberRole.Handle(request, token)
 }
 
 // Guitar Tunings
 
-func (u *userDataService) CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) CreateGuitarTuning(request requests.CreateGuitarTuningRequest, token string) *httperror.ErrorCode {
 	return u.createGuitarTuning.Handle(request, token)
 }
 
-func (u *userDataService) DeleteGuitarTuning(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (u *userDataService) DeleteGuitarTuning(id uuid.UUID, token string) *httperror.ErrorCode {
 	return u.deleteGuitarTuning.Handle(id, token)
 }
 
-func (u *userDataService) MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) MoveGuitarTuning(request requests.MoveGuitarTuningRequest, token string) *httperror.ErrorCode {
 	return u.moveGuitarTuning.Handle(request, token)
 }
 
 // Instruments
 
-func (u *userDataService) CreateInstrument(request requests.CreateInstrumentRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) CreateInstrument(request requests.CreateInstrumentRequest, token string) *httperror.ErrorCode {
 	return u.createInstrument.Handle(request, token)
 }
 
-func (u *userDataService) DeleteInstrument(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (u *userDataService) DeleteInstrument(id uuid.UUID, token string) *httperror.ErrorCode {
 	return u.deleteInstrument.Handle(id, token)
 }
 
-func (u *userDataService) MoveInstrument(request requests.MoveInstrumentRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) MoveInstrument(request requests.MoveInstrumentRequest, token string) *httperror.ErrorCode {
 	return u.moveInstrument.Handle(request, token)
 }
 
@@ -130,14 +130,14 @@ func (u *userDataService) MoveInstrument(request requests.MoveInstrumentRequest,
 func (u *userDataService) CreateSectionType(
 	request requests.CreateSongSectionTypeRequest,
 	token string,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	return u.createSongSectionType.Handle(request, token)
 }
 
-func (u *userDataService) DeleteSectionType(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (u *userDataService) DeleteSectionType(id uuid.UUID, token string) *httperror.ErrorCode {
 	return u.deleteSongSectionType.Handle(id, token)
 }
 
-func (u *userDataService) MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *wrapper.ErrorCode {
+func (u *userDataService) MoveSectionType(request requests.MoveSongSectionTypeRequest, token string) *httperror.ErrorCode {
 	return u.moveSongSectionType.Handle(request, token)
 }

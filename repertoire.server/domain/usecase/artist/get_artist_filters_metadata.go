@@ -4,7 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -26,15 +26,14 @@ func NewGetArtistFiltersMetadata(
 func (g GetArtistFiltersMetadata) Handle(
 	request requests.GetArtistFiltersMetadataRequest,
 	token string,
-) (metadata model.ArtistFiltersMetadata, e *wrapper.ErrorCode) {
+) (metadata model.ArtistFiltersMetadata, e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return metadata, errCode
 	}
 
-	err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy)
-	if err != nil {
-		return metadata, wrapper.InternalServerError(err)
+	if err := g.repository.GetFiltersMetadata(&metadata, userID, request.SearchBy); err != nil {
+		return metadata, httperror.DatabaseError(err)
 	}
 	return metadata, nil
 }

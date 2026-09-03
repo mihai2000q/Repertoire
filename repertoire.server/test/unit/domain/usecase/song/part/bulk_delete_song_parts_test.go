@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/part"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
@@ -66,7 +66,7 @@ func TestBulkDeleteSongParts_WhenSongProcessorUpdateFails_ShouldReturnInternalSe
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepository).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepository, request.SongID, request.IDs).
 		Return(internalError).
 		Once()

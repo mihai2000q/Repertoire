@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -21,23 +21,21 @@ func NewCreateBandMember(repository repository.ArtistRepository) CreateBandMembe
 	}
 }
 
-func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid.UUID, *httperror.ErrorCode) {
 	var artist model.Artist
-	err := c.artistRepository.GetWithBandMembers(&artist, request.ArtistID)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.artistRepository.GetWithBandMembers(&artist, request.ArtistID); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
-		return uuid.Nil, wrapper.NotFoundError(errors.New("artist not found"))
+		return uuid.Nil, httperror.NotFoundError(errors.New("artist not found"))
 	}
 	if !artist.IsBand {
-		return uuid.Nil, wrapper.ConflictError(errors.New("artist is not band"))
+		return uuid.Nil, httperror.ConflictError(errors.New("artist is not band"))
 	}
 
 	var roles []model.BandMemberRole
-	err = c.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
 	member := model.BandMember{
@@ -48,9 +46,8 @@ func (c CreateBandMember) Handle(request requests.CreateBandMemberRequest) (uuid
 		ArtistID: request.ArtistID,
 		Roles:    roles,
 	}
-	err = c.artistRepository.CreateBandMember(&member)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.artistRepository.CreateBandMember(&member); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
 	return member.ID, nil

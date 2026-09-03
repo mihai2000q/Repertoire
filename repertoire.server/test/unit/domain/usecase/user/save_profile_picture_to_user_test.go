@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -34,7 +34,7 @@ func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError
 	token := "This is a token"
 
 	// given - mocking
-	err := wrapper.ForbiddenError(errors.New("internal error"))
+	err := httperror.ForbiddenError(errors.New("internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
 
 	// when
@@ -133,7 +133,7 @@ func TestSaveProfilePictureToUser_WhenStorageDeleteFileFails_ShouldReturnError(t
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"file-path"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when

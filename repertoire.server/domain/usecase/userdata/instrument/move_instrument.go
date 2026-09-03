@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -21,16 +21,15 @@ func NewMoveInstrument(repository repository.UserDataRepository, jwtService serv
 	}
 }
 
-func (m MoveInstrument) Handle(request requests.MoveInstrumentRequest, token string) *wrapper.ErrorCode {
+func (m MoveInstrument) Handle(request requests.MoveInstrumentRequest, token string) *httperror.ErrorCode {
 	userID, errCode := m.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var instruments []model.Instrument
-	err := m.repository.GetInstruments(&instruments, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.GetInstruments(&instruments, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	errCode = reorder.MoveEntity(
@@ -46,9 +45,8 @@ func (m MoveInstrument) Handle(request requests.MoveInstrumentRequest, token str
 		return errCode
 	}
 
-	err = m.repository.UpdateAllInstruments(&instruments)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.repository.UpdateAllInstruments(&instruments); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

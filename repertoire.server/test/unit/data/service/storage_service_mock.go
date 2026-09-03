@@ -3,7 +3,7 @@ package service
 import (
 	"mime/multipart"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -17,23 +17,23 @@ func (s *StorageServiceMock) Upload(fileHeader *multipart.FileHeader, filePath s
 	return args.Error(0)
 }
 
-func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) *wrapper.ErrorCode {
+func (s *StorageServiceMock) DeleteFile(filePath internal.FilePath) *httperror.ErrorCode {
 	args := s.Called(filePath)
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	if a := args.Get(0); a != nil {
-		errCode = a.(*wrapper.ErrorCode)
+		errCode = a.(*httperror.ErrorCode)
 	}
 
 	return errCode
 }
 
-func (s *StorageServiceMock) DeleteDirectories(directoryPaths []string) *wrapper.ErrorCode {
+func (s *StorageServiceMock) DeleteDirectories(directoryPaths []string) *httperror.ErrorCode {
 	args := s.Called(directoryPaths)
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	if a := args.Get(0); a != nil {
-		errCode = a.(*wrapper.ErrorCode)
+		errCode = a.(*httperror.ErrorCode)
 	}
 
 	return errCode

@@ -1,6 +1,8 @@
-package wrapper
+package httperror
 
-import "net/http"
+import (
+	"net/http"
+)
 
 type ErrorCode struct {
 	Error error

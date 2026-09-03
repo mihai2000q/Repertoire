@@ -4,7 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -28,16 +28,15 @@ func NewCreateSongSectionType(
 func (c CreateSongSectionType) Handle(
 	request requests.CreateSongSectionTypeRequest,
 	token string,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var count int64
-	err := c.repository.CountSectionTypes(&count, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.CountSectionTypes(&count, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	sectionType := model.SongSectionType{
@@ -47,9 +46,8 @@ func (c CreateSongSectionType) Handle(
 		UserID: userID,
 	}
 
-	err = c.repository.CreateSectionType(&sectionType)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.repository.CreateSectionType(&sectionType); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

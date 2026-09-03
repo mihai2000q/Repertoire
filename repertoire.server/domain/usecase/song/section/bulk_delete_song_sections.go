@@ -8,7 +8,7 @@ import (
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
 	"repertoire/server/internal/deduplicate"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -33,8 +33,8 @@ func NewBulkDeleteSongSections(
 	}
 }
 
-func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRequest) *wrapper.ErrorCode {
-	var errCode *wrapper.ErrorCode
+func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRequest) *httperror.ErrorCode {
+	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		b.txSongRepository = factory.NewSongRepository()
 		b.txSongSectionRepository = factory.NewSongSectionRepository()
@@ -44,7 +44,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 			return err
 		}
 		if reflect.ValueOf(song).IsZero() {
-			errCode = wrapper.NotFoundError(errors.New("song not found"))
+			errCode = httperror.NotFoundError(errors.New("song not found"))
 			return errCode.Error
 		}
 
@@ -62,7 +62,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 
 		// Validate all requested section IDs were found
 		if int(sectionsFound) != len(idsSet) {
-			errCode = wrapper.NotFoundError(errors.New("song sections not found"))
+			errCode = httperror.NotFoundError(errors.New("song sections not found"))
 			return errCode.Error
 		}
 
@@ -87,16 +87,16 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *wrapper.ErrorCode {
+func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *httperror.ErrorCode {
 	var sections []model.SongSection
 	if err := b.txSongSectionRepository.GetAllByIDsWithSectionParts(&sections, ids); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	// Collect all part IDs from all sections (deduplicate)
@@ -123,7 +123,7 @@ func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *wrapper.ErrorCode 
 	}
 
 	if err := b.txSongPartRepository.Delete(partIDsToDelete); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	return nil
 }

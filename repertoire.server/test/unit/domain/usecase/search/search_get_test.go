@@ -7,7 +7,8 @@ import (
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/internal"
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/service"
 	"strings"
@@ -28,7 +29,7 @@ func TestSearchGet_WhenJwtGetUserIDFails_ShouldReturnErrorCode(t *testing.T) {
 	}
 	token := "some token"
 
-	errorCode := &wrapper.ErrorCode{Error: errors.New("internalError"), Code: 400}
+	errorCode := &httperror.ErrorCode{Error: errors.New("internalError"), Code: 400}
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, errorCode).Once()
 
 	// when
@@ -56,7 +57,7 @@ func TestSearchGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) 
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	errorCode := &wrapper.ErrorCode{Error: errors.New("internalError"), Code: 400}
+	errorCode := &httperror.ErrorCode{Error: errors.New("internalError"), Code: 400}
 	searchEngineService.
 		On(
 			"Search",
@@ -68,7 +69,7 @@ func TestSearchGet_WhenSearchEngineGetFails_ShouldReturnErrorCode(t *testing.T) 
 			request.Filter,
 			request.Order,
 		).
-		Return(wrapper.WithTotalCount[map[string]any]{}, errorCode).
+		Return(pagination.WithTotalCount[map[string]any]{}, errorCode).
 		Once()
 
 	// when
@@ -160,7 +161,7 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResult(t *testing.T) {
 		},
 	}
 
-	searchResult := wrapper.WithTotalCount[map[string]any]{
+	searchResult := pagination.WithTotalCount[map[string]any]{
 		Models:     modelsResult,
 		TotalCount: int64(len(modelsResult)),
 	}
@@ -316,7 +317,7 @@ func TestSearchGet_WhenArtistsWithIDsAndNotIDs_ShouldReturnSearchResult(t *testi
 	notIDsFilter = strings.TrimSuffix(notIDsFilter, ", ") + "]"
 
 	filter := append(request.Filter, idsFilter, notIDsFilter)
-	searchResult := wrapper.WithTotalCount[map[string]any]{
+	searchResult := pagination.WithTotalCount[map[string]any]{
 		Models:     modelsResult,
 		TotalCount: int64(len(modelsResult)),
 	}

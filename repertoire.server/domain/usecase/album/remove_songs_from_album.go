@@ -7,8 +7,8 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"slices"
 )
@@ -31,14 +31,13 @@ func NewRemoveSongsFromAlbum(
 	}
 }
 
-func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumRequest) *wrapper.ErrorCode {
+func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	err := r.repository.GetWithSongs(&album, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := r.repository.GetWithSongs(&album, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	var songsToDelete []model.Song
@@ -57,10 +56,10 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 	}
 
 	if len(songsToDelete) != len(request.SongIDs) {
-		return wrapper.NotFoundError(errors.New("could not find all songs"))
+		return httperror.NotFoundError(errors.New("could not find all songs"))
 	}
 
-	err = r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
 		albumRepo := factory.NewAlbumRepository()
 
 		if err := albumRepo.RemoveSongs(&album, &songsToDelete); err != nil {
@@ -74,12 +73,11 @@ func (r RemoveSongsFromAlbum) Handle(request requests.RemoveSongsFromAlbumReques
 		return nil
 	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
-	err = r.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err = r.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -23,37 +23,34 @@ func NewDeleteGuitarTuning(repository repository.UserDataRepository, jwtService 
 	}
 }
 
-func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *wrapper.ErrorCode {
+func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *httperror.ErrorCode {
 	userID, errCode := d.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var tunings []model.GuitarTuning
-	err := d.repository.GetGuitarTunings(&tunings, userID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.GetGuitarTunings(&tunings, userID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	index := slices.IndexFunc(tunings, func(t model.GuitarTuning) bool {
 		return t.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("guitar tuning not found"))
+		return httperror.NotFoundError(errors.New("guitar tuning not found"))
 	}
 
 	for i := index + 1; i < len(tunings); i++ {
 		tunings[i].Order = tunings[i].Order - 1
 	}
 
-	err = d.repository.UpdateAllGuitarTunings(&tunings)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.UpdateAllGuitarTunings(&tunings); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.repository.DeleteGuitarTuning(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.DeleteGuitarTuning(id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

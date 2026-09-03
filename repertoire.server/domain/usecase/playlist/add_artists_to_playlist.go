@@ -4,7 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -26,17 +26,15 @@ func NewAddArtistsToPlaylist(
 	}
 }
 
-func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
+func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *httperror.ErrorCode) {
 	var playlistSongs []model.PlaylistSong
-	err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var artists []model.Artist
-	err = a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var duplicateSongIDs []uuid.UUID
@@ -82,9 +80,8 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 		}, nil
 	}
 
-	err = a.repository.AddSongs(&newPlaylistSongs)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.repository.AddSongs(&newPlaylistSongs); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var addedSongIDs []uuid.UUID

@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -30,17 +30,16 @@ func NewDeleteImageFromArtist(
 	}
 }
 
-func (d DeleteImageFromArtist) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteImageFromArtist) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var artist model.Artist
-	err := d.repository.Get(&artist, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Get(&artist, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
-		return wrapper.NotFoundError(errors.New("artist not found"))
+		return httperror.NotFoundError(errors.New("artist not found"))
 	}
 	if artist.ImageURL == nil {
-		return wrapper.ConflictError(errors.New("artist does not have an image"))
+		return httperror.ConflictError(errors.New("artist does not have an image"))
 	}
 
 	errCode := d.storageService.DeleteFile(*artist.ImageURL)
@@ -49,14 +48,12 @@ func (d DeleteImageFromArtist) Handle(id uuid.UUID) *wrapper.ErrorCode {
 	}
 
 	artist.ImageURL = nil
-	err = d.repository.Update(&artist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Update(&artist); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.messagePublisherService.Publish(topics.ArtistUpdatedTopic, artist.ID); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/deduplicate"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 	"time"
@@ -18,16 +18,16 @@ type SongProcessor interface {
 		song *model.Song,
 		songPartRepository repository.SongPartRepository,
 		arrangementID *uuid.UUID,
-	) (errCode *wrapper.ErrorCode, updatedSong bool)
+	) (errCode *httperror.ErrorCode, updatedSong bool)
 	AddPerfectRehearsal(
 		song *model.Song,
 		songPartRepository repository.SongPartRepository,
-	) (errCode *wrapper.ErrorCode, updatedSong bool)
+	) (errCode *httperror.ErrorCode, updatedSong bool)
 	UpdateSongAfterPartsDeletion(
 		songRepository repository.SongRepository,
 		songID uuid.UUID,
 		partIDs []uuid.UUID,
-	) *wrapper.ErrorCode
+	) *httperror.ErrorCode
 }
 
 type songProcessor struct {
@@ -42,7 +42,7 @@ func (s *songProcessor) AddCustomRehearsal(
 	song *model.Song,
 	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
-) (*wrapper.ErrorCode, bool) {
+) (*httperror.ErrorCode, bool) {
 	if len(song.Parts) == 0 || (arrangementID == nil && len(song.Parts[0].ArrangementOccurrences) == 0) {
 		return nil, false
 	}
@@ -51,7 +51,7 @@ func (s *songProcessor) AddCustomRehearsal(
 			return o.ArrangementID == *arrangementID
 		})
 		if index == -1 {
-			return wrapper.NotFoundError(errors.New("song arrangement not found")), false
+			return httperror.NotFoundError(errors.New("song arrangement not found")), false
 		}
 	}
 
@@ -61,7 +61,7 @@ func (s *songProcessor) AddCustomRehearsal(
 func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
 	songPartRepository repository.SongPartRepository,
-) (*wrapper.ErrorCode, bool) {
+) (*httperror.ErrorCode, bool) {
 	if song.DefaultArrangementID == nil {
 		return nil, false
 	}
@@ -72,7 +72,7 @@ func (s *songProcessor) addRehearsal(
 	song *model.Song,
 	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
-) (*wrapper.ErrorCode, bool) {
+) (*httperror.ErrorCode, bool) {
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
 	for i, part := range song.Parts {
@@ -100,16 +100,14 @@ func (s *songProcessor) addRehearsal(
 			PartID:    part.ID,
 			CreatedAt: time.Now().UTC(),
 		}
-		err := songPartRepository.CreateHistory(&newHistory)
-		if err != nil {
-			return wrapper.InternalServerError(err), false
+		if err := songPartRepository.CreateHistory(&newHistory); err != nil {
+			return httperror.DatabaseError(err), false
 		}
 
 		// update part's rehearsals score based on the history changes and update the rehearsals and progress too
 		var history []model.SongPartHistory
-		err = songPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty)
-		if err != nil {
-			return wrapper.InternalServerError(err), false
+		if err := songPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
+			return httperror.DatabaseError(err), false
 		}
 
 		song.Parts[i].Rehearsals = newRehearsals
@@ -139,14 +137,14 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 	songRepository repository.SongRepository,
 	songID uuid.UUID,
 	partIDs []uuid.UUID,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	// Fetch the song with its parts
 	var song model.Song
 	if err := songRepository.GetWithParts(&song, songID); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	// Reorder remaining parts and accumulate deleted stats
@@ -171,7 +169,7 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 
 	// Validate that all unique part IDs were found
 	if partsToDeleteCount != len(idsSet) {
-		return wrapper.NotFoundError(errors.New("song parts not found"))
+		return httperror.NotFoundError(errors.New("song parts not found"))
 	}
 
 	// Recalculate song stats
@@ -188,7 +186,7 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 	}
 
 	if err := songRepository.UpdateWithAssociations(&song); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

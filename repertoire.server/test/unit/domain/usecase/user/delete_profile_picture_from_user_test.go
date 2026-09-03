@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -25,7 +25,7 @@ func TestDeleteProfilePictureFromUser_WhenGetUserIdFromJwtFails_ShouldReturnTheE
 	token := "this is a token"
 
 	// given - mocking
-	err := wrapper.ForbiddenError(errors.New("forbidden error"))
+	err := httperror.ForbiddenError(errors.New("forbidden error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
 
 	// when
@@ -134,7 +134,7 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"This is some url"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when

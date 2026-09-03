@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"repertoire/server/domain/message/handler/storage"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
@@ -23,7 +23,7 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturn
 
 	internalError := errors.New("internal error")
 	storageService.On("DeleteDirectories", directories).
-		Return(wrapper.InternalServerError(internalError)).
+		Return(httperror.InternalServerError(internalError)).
 		Once()
 
 	// when

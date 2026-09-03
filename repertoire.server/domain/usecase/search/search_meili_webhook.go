@@ -6,7 +6,7 @@ import (
 	"errors"
 	"io"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"strconv"
 	"strings"
 )
@@ -29,17 +29,17 @@ func NewMeiliWebhook(
 	}
 }
 
-func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
+func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *httperror.ErrorCode {
 	gz, err := gzip.NewReader(requestBody)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.InternalServerError(err)
 	}
 	defer func(gz *gzip.Reader) {
 		_ = gz.Close()
 	}(gz)
 	body, err := io.ReadAll(gz)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.InternalServerError(err)
 	}
 
 	tasks := strings.Split(string(body), "\n")
@@ -49,13 +49,13 @@ func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
 		Status string `json:"status"`
 	}
 	if err = json.Unmarshal([]byte(tasks[0]), &task); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.InternalServerError(err)
 	}
 
 	taskID := strconv.FormatInt(task.UID, 10)
 
 	if !m.searchEngineService.HasTaskSucceeded(task.Status) {
-		return wrapper.InternalServerError(
+		return httperror.InternalServerError(
 			errors.New("meilisearch task, " + taskID + ", failed"),
 		)
 	}
@@ -67,7 +67,7 @@ func (m MeiliWebhook) Handle(requestBody io.ReadCloser) *wrapper.ErrorCode {
 
 	err = m.realTimeService.Publish("search", userID, map[string]any{"action": "SEARCH_CACHE_INVALIDATION"})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

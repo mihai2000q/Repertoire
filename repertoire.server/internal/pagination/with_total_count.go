@@ -1,4 +1,4 @@
-package wrapper
+package pagination
 
 type WithTotalCount[T any] struct {
 	Models     []T   `json:"models"`

@@ -4,7 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 )
 
@@ -23,7 +24,7 @@ func NewGetAllPlaylists(repository repository.PlaylistRepository, jwtService ser
 func (g GetAllPlaylists) Handle(
 	request requests.GetPlaylistsRequest,
 	token string,
-) (result wrapper.WithTotalCount[model.EnhancedPlaylist], e *wrapper.ErrorCode) {
+) (result pagination.WithTotalCount[model.EnhancedPlaylist], e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
@@ -38,12 +39,12 @@ func (g GetAllPlaylists) Handle(
 		request.SearchBy,
 	)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

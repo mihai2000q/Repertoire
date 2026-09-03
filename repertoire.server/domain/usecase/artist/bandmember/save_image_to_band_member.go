@@ -8,7 +8,7 @@ import (
 	"repertoire/server/data/service"
 	"repertoire/server/domain/provider"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"time"
 
@@ -33,14 +33,13 @@ func NewSaveImageToBandMember(
 	}
 }
 
-func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) *wrapper.ErrorCode {
+func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) *httperror.ErrorCode {
 	var member model.BandMember
-	err := s.repository.GetBandMemberWithArtist(&member, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.GetBandMemberWithArtist(&member, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(member).IsZero() {
-		return wrapper.NotFoundError(errors.New("band member not found"))
+		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 
 	if member.ImageURL != nil {
@@ -53,15 +52,13 @@ func (s SaveImageToBandMember) Handle(file *multipart.FileHeader, id uuid.UUID) 
 	member.UpdatedAt = time.Now().UTC()
 	imagePath := s.storageFilePathProvider.GetBandMemberImagePath(file, member)
 
-	err = s.storageService.Upload(file, imagePath)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if errCode := s.storageService.Upload(file, imagePath); errCode != nil {
+		return errCode
 	}
 
 	member.ImageURL = (*internal.FilePath)(&imagePath)
-	err = s.repository.UpdateBandMember(&member)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.repository.UpdateBandMember(&member); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

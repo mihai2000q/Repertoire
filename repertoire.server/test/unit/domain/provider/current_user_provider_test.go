@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/provider"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -23,7 +23,7 @@ func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnEr
 
 	token := "this is a token"
 
-	internalErrorCode := wrapper.InternalServerError(errors.New("internal error"))
+	internalErrorCode := httperror.InternalServerError(errors.New("internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalErrorCode).Once()
 
 	// when

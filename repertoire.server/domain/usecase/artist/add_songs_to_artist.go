@@ -5,8 +5,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -25,16 +25,15 @@ func NewAddSongsToArtist(
 	}
 }
 
-func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrapper.ErrorCode {
+func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *httperror.ErrorCode {
 	var songs []model.Song
-	err := a.songRepository.GetAllByIDsWithAlbumSongs(&songs, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.songRepository.GetAllByIDsWithAlbumSongs(&songs, request.SongIDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	for i, song := range songs {
 		if song.ArtistID != nil {
-			return wrapper.ConflictError(errors.New("song " + song.ID.String() + "already has an artist"))
+			return httperror.ConflictError(errors.New("song " + song.ID.String() + "already has an artist"))
 		}
 
 		// update the whole album's artist, including the other songs
@@ -48,14 +47,12 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *wrap
 		}
 	}
 
-	err = a.songRepository.UpdateAllWithAssociations(&songs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.songRepository.UpdateAllWithAssociations(&songs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

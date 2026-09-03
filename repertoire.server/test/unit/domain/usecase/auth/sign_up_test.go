@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/user"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -166,7 +166,7 @@ func TestAuthService_SignUp_WhenSignInFails_ShouldReturnInternalServerError(t *t
 		Return(nil).
 		Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	authService.On("SignIn", strings.ToLower(request.Email), request.Password).
 		Return("", internalError).
 		Once()

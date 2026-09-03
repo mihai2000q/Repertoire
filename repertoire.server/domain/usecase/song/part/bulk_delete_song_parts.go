@@ -5,7 +5,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -29,8 +29,8 @@ func NewBulkDeleteSongParts(
 	}
 }
 
-func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest) *wrapper.ErrorCode {
-	var errCode *wrapper.ErrorCode
+func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest) *httperror.ErrorCode {
+	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		b.txSongSectionRepository = factory.NewSongSectionRepository()
 		txSongRepository := factory.NewSongRepository()
@@ -58,7 +58,7 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	return nil
 }
@@ -66,11 +66,11 @@ func (b BulkDeleteSongParts) Handle(request requests.BulkDeleteSongPartsRequest)
 func (b BulkDeleteSongParts) reorderSectionParts(
 	idsSet map[uuid.UUID]bool,
 	request requests.BulkDeleteSongPartsRequest,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	var sections []model.SongSection
 	err := b.txSongSectionRepository.GetAllByPartIDsWithSectionParts(&sections, request.IDs)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if len(sections) == 0 {
 		return nil
@@ -91,7 +91,7 @@ func (b BulkDeleteSongParts) reorderSectionParts(
 
 	if len(sectionPartsToUpdate) > 0 {
 		if err = b.txSongSectionRepository.UpdateAllSectionParts(&sectionPartsToUpdate); err != nil {
-			return wrapper.InternalServerError(err)
+			return httperror.DatabaseError(err)
 		}
 	}
 

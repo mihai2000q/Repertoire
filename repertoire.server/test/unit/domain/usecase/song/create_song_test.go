@@ -6,8 +6,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal/date"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -30,7 +30,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 	}
 	token := "this is a token"
 
-	forbiddenError := wrapper.UnauthorizedError(errors.New("forbidden"))
+	forbiddenError := httperror.UnauthorizedError(errors.New("forbidden"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when

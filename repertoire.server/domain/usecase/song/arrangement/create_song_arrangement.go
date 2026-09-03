@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -26,20 +26,18 @@ func NewCreateSongArrangement(
 	}
 }
 
-func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequest) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequest) (uuid.UUID, *httperror.ErrorCode) {
 	var arrangementsCount int64
-	err := c.songArrangementRepository.CountBySong(&arrangementsCount, request.SongID)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.songArrangementRepository.CountBySong(&arrangementsCount, request.SongID); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
 	var song model.Song
-	err = c.songRepository.GetWithParts(&song, request.SongID)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.songRepository.GetWithParts(&song, request.SongID); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return uuid.Nil, wrapper.NotFoundError(errors.New("song not found"))
+		return uuid.Nil, httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	arrangement := model.SongArrangement{
@@ -51,9 +49,8 @@ func (c CreateSongArrangement) Handle(request requests.CreateSongArrangementRequ
 
 	c.CreatePartOccurrences(&arrangement, song.Parts)
 
-	err = c.songArrangementRepository.Create(&arrangement)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.songArrangementRepository.Create(&arrangement); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
 	return arrangement.ID, nil

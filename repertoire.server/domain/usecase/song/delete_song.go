@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"sync"
 
@@ -31,18 +31,17 @@ func NewDeleteSong(
 	}
 }
 
-func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	err := d.repository.GetWithPlaylistsAndSongs(&song, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.GetWithPlaylistsAndSongs(&song, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	var wg sync.WaitGroup
-	errChan := make(chan *wrapper.ErrorCode, 2)
+	errChan := make(chan *httperror.ErrorCode, 2)
 	wg.Add(2)
 	go func() {
 		defer wg.Done()
@@ -61,20 +60,18 @@ func (d DeleteSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
 		}
 	}
 
-	err = d.repository.Delete([]uuid.UUID{id})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Delete([]uuid.UUID{id}); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.SongsDeletedTopic, []model.Song{song})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.messagePublisherService.Publish(topics.SongsDeletedTopic, []model.Song{song}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil
 }
 
-func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
+func (d DeleteSong) reorderAlbum(song model.Song) *httperror.ErrorCode {
 	if song.AlbumID == nil {
 		return nil
 	}
@@ -82,7 +79,7 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 	var albumSongs []model.Song
 	err := d.repository.GetAllByAlbumAndTrackNo(&albumSongs, *song.AlbumID, *song.AlbumTrackNo)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	for i := range albumSongs {
@@ -91,16 +88,15 @@ func (d DeleteSong) reorderAlbum(song model.Song) *wrapper.ErrorCode {
 	}
 
 	if len(albumSongs) != 0 {
-		err = d.repository.UpdateAll(&albumSongs)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := d.repository.UpdateAll(&albumSongs); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 
 	return nil
 }
 
-func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode {
+func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *httperror.ErrorCode {
 	var playlistSongsToUpdate []model.PlaylistSong
 	for _, playlist := range song.Playlists {
 		songsFound := uint(0)
@@ -118,9 +114,8 @@ func (d DeleteSong) reorderSongsInPlaylists(song model.Song) *wrapper.ErrorCode 
 	}
 
 	if len(playlistSongsToUpdate) != 0 {
-		err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := d.playlistRepository.UpdateAllPlaylistSongs(&playlistSongsToUpdate); err != nil {
+			return httperror.DatabaseError(err)
 		}
 	}
 

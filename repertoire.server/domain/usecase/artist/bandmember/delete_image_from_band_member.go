@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -26,28 +26,25 @@ func NewDeleteImageFromBandMember(
 	}
 }
 
-func (d DeleteImageFromBandMember) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteImageFromBandMember) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var member model.BandMember
-	err := d.repository.GetBandMember(&member, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.GetBandMember(&member, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(member).IsZero() {
-		return wrapper.NotFoundError(errors.New("band member not found"))
+		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 	if member.ImageURL == nil {
-		return wrapper.ConflictError(errors.New("band member does not have an image"))
+		return httperror.ConflictError(errors.New("band member does not have an image"))
 	}
 
-	errCode := d.storageService.DeleteFile(*member.ImageURL)
-	if errCode != nil {
+	if errCode := d.storageService.DeleteFile(*member.ImageURL); errCode != nil {
 		return errCode
 	}
 
 	member.ImageURL = nil
-	err = d.repository.UpdateBandMember(&member)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.UpdateBandMember(&member); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

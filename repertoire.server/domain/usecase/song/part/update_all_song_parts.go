@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -17,14 +17,13 @@ func NewUpdateAllSongParts(songRepository repository.SongRepository) UpdateAllSo
 	return UpdateAllSongParts{songRepository: songRepository}
 }
 
-func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *wrapper.ErrorCode {
+func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *httperror.ErrorCode {
 	var song model.Song
-	err := u.songRepository.GetWithParts(&song, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songRepository.GetWithParts(&song, request.SongID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	for i := range song.Parts {
@@ -36,9 +35,8 @@ func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *
 		}
 	}
 
-	err = u.songRepository.UpdateWithAssociations(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songRepository.UpdateWithAssociations(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	return nil
 }

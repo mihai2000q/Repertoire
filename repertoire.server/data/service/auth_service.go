@@ -5,11 +5,11 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/data/http/client"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 )
 
 type AuthService interface {
-	SignIn(email string, password string) (string, *wrapper.ErrorCode)
+	SignIn(email string, password string) (string, *httperror.ErrorCode)
 }
 
 type authService struct {
@@ -20,17 +20,17 @@ func NewAuthService(authClient client.AuthClient) AuthService {
 	return &authService{authClient: authClient}
 }
 
-func (a authService) SignIn(email string, password string) (string, *wrapper.ErrorCode) {
+func (a authService) SignIn(email string, password string) (string, *httperror.ErrorCode) {
 	response, err := a.authClient.SignIn(email, password)
 	if err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", httperror.InternalServerError(err)
 	}
 	if response.StatusCode() != http.StatusOK {
-		return "", wrapper.InternalServerError(errors.New("failed to sign in" + response.String()))
+		return "", httperror.InternalServerError(errors.New("failed to sign in" + response.String()))
 	}
 	var token string
 	if err = json.Unmarshal(response.Body(), &token); err != nil {
-		return "", wrapper.InternalServerError(err)
+		return "", httperror.InternalServerError(err)
 	}
 	return token, nil
 }

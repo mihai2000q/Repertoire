@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/reorder"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -20,14 +20,13 @@ func NewMoveBandMember(repository repository.ArtistRepository) MoveBandMember {
 	}
 }
 
-func (m MoveBandMember) Handle(request requests.MoveBandMemberRequest) *wrapper.ErrorCode {
+func (m MoveBandMember) Handle(request requests.MoveBandMemberRequest) *httperror.ErrorCode {
 	var artist model.Artist
-	err := m.artistRepository.GetWithBandMembers(&artist, request.ArtistID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.artistRepository.GetWithBandMembers(&artist, request.ArtistID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
-		return wrapper.NotFoundError(errors.New("artist not found"))
+		return httperror.NotFoundError(errors.New("artist not found"))
 	}
 
 	errCode := reorder.MoveEntity(
@@ -43,9 +42,8 @@ func (m MoveBandMember) Handle(request requests.MoveBandMemberRequest) *wrapper.
 		return errCode
 	}
 
-	err = m.artistRepository.UpdateWithAssociations(&artist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := m.artistRepository.UpdateWithAssociations(&artist); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

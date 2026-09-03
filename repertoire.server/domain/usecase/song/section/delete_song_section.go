@@ -6,7 +6,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -35,23 +35,23 @@ func NewDeleteSongSection(
 	}
 }
 
-func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID, withParts bool) *wrapper.ErrorCode {
+func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID, withParts bool) *httperror.ErrorCode {
 	var song model.Song
 	if err := d.songRepository.GetWithSections(&song, songID); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	index := slices.IndexFunc(song.Sections, func(a model.SongSection) bool {
 		return a.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("song section not found"))
+		return httperror.NotFoundError(errors.New("song section not found"))
 	}
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		d.txSongRepository = factory.NewSongRepository()
 		d.txSongSectionRepository = factory.NewSongSectionRepository()
@@ -82,16 +82,16 @@ func (d DeleteSongSection) Handle(id uuid.UUID, songID uuid.UUID, withParts bool
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (d DeleteSongSection) deleteParts(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSongSection) deleteParts(id uuid.UUID) *httperror.ErrorCode {
 	var section model.SongSection
 	if err := d.txSongSectionRepository.GetWithSectionParts(&section, id); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	var partIDsToDelete []uuid.UUID
@@ -111,7 +111,7 @@ func (d DeleteSongSection) deleteParts(id uuid.UUID) *wrapper.ErrorCode {
 	}
 
 	if err := d.txSongPartRepository.Delete(partIDsToDelete); err != nil {
-			return wrapper.InternalServerError(err)
-		}
+		return httperror.DatabaseError(err)
+	}
 	return nil
 }

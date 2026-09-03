@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -18,13 +18,12 @@ func NewGetUser(repository repository.UserRepository) GetUser {
 	return GetUser{repository: repository}
 }
 
-func (g GetUser) Handle(id uuid.UUID) (user model.User, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&user, id)
-	if err != nil {
-		return user, wrapper.InternalServerError(err)
+func (g GetUser) Handle(id uuid.UUID) (user model.User, e *httperror.ErrorCode) {
+	if err := g.repository.Get(&user, id); err != nil {
+		return user, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
-		return user, wrapper.NotFoundError(errors.New("user not found"))
+		return user, httperror.NotFoundError(errors.New("user not found"))
 	}
 	return user, nil
 }

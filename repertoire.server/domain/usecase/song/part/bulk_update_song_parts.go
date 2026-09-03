@@ -7,7 +7,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"time"
 
@@ -30,13 +30,13 @@ func NewBulkUpdateSongParts(
 	}
 }
 
-func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest) *wrapper.ErrorCode {
+func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest) *httperror.ErrorCode {
 	requestMap := make(map[uuid.UUID]requests.BulkUpdateSongPartRequest, len(request.Requests))
 	for _, req := range request.Requests {
 		requestMap[req.ID] = req
 	}
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	err := b.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		b.txSongPartRepository = factory.NewSongPartRepository()
 		txSongRepository := factory.NewSongRepository()
@@ -53,7 +53,7 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 			return err
 		}
 		if reflect.ValueOf(song).IsZero() {
-			errCode = wrapper.NotFoundError(errors.New("song not found"))
+			errCode = httperror.NotFoundError(errors.New("song not found"))
 			return errCode.Error
 		}
 
@@ -65,14 +65,14 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 			}
 			partsFound++
 			if req.Rehearsals < part.Rehearsals {
-				errCode = wrapper.ConflictError(errors.New("rehearsals can only be increased"))
+				errCode = httperror.ConflictError(errors.New("rehearsals can only be increased"))
 				return errCode.Error
 			}
 		}
 
 		// validate parts' existence
 		if partsFound != len(request.Requests) {
-			errCode = wrapper.NotFoundError(errors.New("song parts not found"))
+			errCode = httperror.NotFoundError(errors.New("song parts not found"))
 			return errCode.Error
 		}
 
@@ -141,12 +141,10 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 		}
 
 		if err := txSongRepository.UpdateWithAssociations(&song); err != nil {
-			errCode = wrapper.InternalServerError(err)
 			return err
 		}
 
 		if err := b.txSongPartRepository.UpdateAll(&partsToUpdate); err != nil {
-			errCode = wrapper.InternalServerError(err)
 			return err
 		}
 
@@ -157,12 +155,12 @@ func (b BulkUpdateSongParts) Handle(request requests.BulkUpdateSongPartsRequest)
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	return nil
 }
 
-func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsals uint) *wrapper.ErrorCode {
+func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsals uint) *httperror.ErrorCode {
 	// add history of the rehearsals change
 	newHistory := model.SongPartHistory{
 		ID:       uuid.New(),
@@ -171,15 +169,14 @@ func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsal
 		To:       newRehearsals,
 		PartID:   part.ID,
 	}
-	err := b.txSongPartRepository.CreateHistory(&newHistory)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.txSongPartRepository.CreateHistory(&newHistory); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	// update part's rehearsals score based on the history changes
 	var history []model.SongPartHistory
-	if err = b.txSongPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.txSongPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	part.RehearsalsScore = b.progressProcessor.ComputeRehearsalsScore(history)
 	part.Rehearsals = newRehearsals
@@ -187,7 +184,7 @@ func (b BulkUpdateSongParts) updateRehearsals(part *model.SongPart, newRehearsal
 	return nil
 }
 
-func (b BulkUpdateSongParts) updateConfidence(part *model.SongPart, newConfidence uint) *wrapper.ErrorCode {
+func (b BulkUpdateSongParts) updateConfidence(part *model.SongPart, newConfidence uint) *httperror.ErrorCode {
 	// add history of the confidence change
 	newHistory := model.SongPartHistory{
 		ID:       uuid.New(),
@@ -197,13 +194,13 @@ func (b BulkUpdateSongParts) updateConfidence(part *model.SongPart, newConfidenc
 		PartID:   part.ID,
 	}
 	if err := b.txSongPartRepository.CreateHistory(&newHistory); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	// update part's confidence score based on the history changes
 	var history []model.SongPartHistory
 	if err := b.txSongPartRepository.GetHistory(&history, part.ID, model.ConfidenceProperty); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	part.ConfidenceScore = b.progressProcessor.ComputeConfidenceScore(history)
 	part.Confidence = newConfidence

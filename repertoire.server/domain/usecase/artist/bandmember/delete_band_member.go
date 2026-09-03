@@ -4,7 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -21,21 +21,20 @@ func NewDeleteBandMember(repository repository.ArtistRepository) DeleteBandMembe
 	}
 }
 
-func (d DeleteBandMember) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteBandMember) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var artist model.Artist
-	err := d.artistRepository.GetWithBandMembers(&artist, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.artistRepository.GetWithBandMembers(&artist, songID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(artist).IsZero() {
-		return wrapper.NotFoundError(errors.New("artist not found"))
+		return httperror.NotFoundError(errors.New("artist not found"))
 	}
 
 	index := slices.IndexFunc(artist.BandMembers, func(a model.BandMember) bool {
 		return a.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("band member not found"))
+		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 
 	sectionsLength := len(artist.BandMembers)
@@ -43,13 +42,11 @@ func (d DeleteBandMember) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorC
 		artist.BandMembers[i].Order = artist.BandMembers[i].Order - 1
 	}
 
-	err = d.artistRepository.UpdateWithAssociations(&artist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.artistRepository.UpdateWithAssociations(&artist); err != nil {
+		return httperror.DatabaseError(err)
 	}
-	err = d.artistRepository.DeleteBandMember(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.artistRepository.DeleteBandMember(id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

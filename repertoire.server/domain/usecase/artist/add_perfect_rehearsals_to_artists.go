@@ -6,7 +6,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -28,18 +28,17 @@ func NewAddPerfectRehearsalsToArtists(
 	}
 }
 
-func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehearsalsToArtistsRequest) *wrapper.ErrorCode {
+func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehearsalsToArtistsRequest) *httperror.ErrorCode {
 	var artists []model.Artist
-	err := a.repository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&artists, request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.repository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&artists, request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if len(artists) != len(request.IDs) {
-		return wrapper.NotFoundError(errors.New("artists not found"))
+		return httperror.NotFoundError(errors.New("artists not found"))
 	}
 
-	var errCode *wrapper.ErrorCode
-	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+	var errCode *httperror.ErrorCode
+	err := a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		txSongPartRepository := factory.NewSongPartRepository()
 		txSongRepository := factory.NewSongRepository()
 
@@ -58,9 +57,7 @@ func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehears
 		}
 
 		if len(newSongs) > 0 {
-			err = txSongRepository.UpdateAllWithAssociations(&newSongs)
-			if err != nil {
-				errCode = wrapper.InternalServerError(err)
+			if err := txSongRepository.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}
@@ -70,7 +67,7 @@ func (a AddPerfectRehearsalsToArtists) Handle(request requests.AddPerfectRehears
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

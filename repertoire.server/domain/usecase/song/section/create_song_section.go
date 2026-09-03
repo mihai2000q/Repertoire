@@ -5,7 +5,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/deduplicate"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -26,7 +26,7 @@ func NewCreateSongSection(
 	}
 }
 
-func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wrapper.ErrorCode {
+func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *httperror.ErrorCode {
 	if len(request.PartIDs) > 0 {
 		errCode := c.ensurePartsBelongToSameSong(request, request.SongID)
 		if errCode != nil {
@@ -35,9 +35,8 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 	}
 
 	var sectionsCount int64
-	err := c.songSectionRepository.CountAllBySong(&sectionsCount, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.songSectionRepository.CountAllBySong(&sectionsCount, request.SongID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	section := model.SongSection{
@@ -48,9 +47,8 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 		SongID:            request.SongID,
 		SectionParts:      c.createSectionParts(request.PartIDs),
 	}
-	err = c.songSectionRepository.Create(&section)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.songSectionRepository.Create(&section); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
@@ -59,18 +57,18 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wr
 func (c CreateSongSection) ensurePartsBelongToSameSong(
 	request requests.CreateSongSectionRequest,
 	songID uuid.UUID,
-) *wrapper.ErrorCode {
+) *httperror.ErrorCode {
 	var parts []model.SongPart
 	if err := c.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	partIDSet := deduplicate.Deduplicate(request.PartIDs)
 	if len(parts) != len(partIDSet) {
-		return wrapper.NotFoundError(errors.New("some parts not found"))
+		return httperror.NotFoundError(errors.New("some parts not found"))
 	}
 	for _, p := range parts {
 		if p.SongID != songID {
-			return wrapper.ConflictError(errors.New("song part does not belong to the same song as the section"))
+			return httperror.ConflictError(errors.New("song part does not belong to the same song as the section"))
 		}
 	}
 	return nil

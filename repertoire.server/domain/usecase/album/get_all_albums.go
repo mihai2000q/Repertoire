@@ -4,7 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 )
 
@@ -20,7 +21,7 @@ func NewGetAllAlbums(repository repository.AlbumRepository, jwtService service.J
 	}
 }
 
-func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedAlbum], e *wrapper.ErrorCode) {
+func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result pagination.WithTotalCount[model.EnhancedAlbum], e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
@@ -35,12 +36,12 @@ func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (r
 		request.SearchBy,
 	)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

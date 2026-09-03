@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -27,24 +27,21 @@ func NewDeletePlaylist(
 	}
 }
 
-func (d DeletePlaylist) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeletePlaylist) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var playlist model.Playlist
-	err := d.repository.Get(&playlist, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Get(&playlist, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
-		return wrapper.NotFoundError(errors.New("playlist not found"))
+		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 
-	err = d.repository.Delete([]uuid.UUID{id})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.repository.Delete([]uuid.UUID{id}); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, []model.Playlist{playlist})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, []model.Playlist{playlist}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 	return nil
 }
