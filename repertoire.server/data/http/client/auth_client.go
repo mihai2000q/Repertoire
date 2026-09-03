@@ -3,17 +3,17 @@ package client
 import (
 	"repertoire/server/data/http"
 	"repertoire/server/data/http/auth"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 
 	"github.com/go-resty/resty/v2"
 )
 
 type AuthClient struct {
-	env internal.Env
+	env env.Env
 	resty.Client
 }
 
-func NewAuthClient(client http.RestyClient, env internal.Env) AuthClient {
+func NewAuthClient(client http.RestyClient, env env.Env) AuthClient {
 	return AuthClient{
 		env:    env,
 		Client: *client.SetBaseURL(env.AuthUrl),

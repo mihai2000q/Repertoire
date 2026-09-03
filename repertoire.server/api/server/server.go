@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"os"
 	"repertoire/server/data/logger"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 
 	"go.uber.org/fx"
 )
 
-func NewServer(lc fx.Lifecycle, handler *RequestHandler, logger *logger.Logger, env internal.Env) *http.Server {
+func NewServer(lc fx.Lifecycle, handler *RequestHandler, logger *logger.Logger, env env.Env) *http.Server {
 	address := ""
 	if os.Getenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH") == "" {
 		address = fmt.Sprintf("%s:%s", env.ApplicationHost, env.ApplicationPort)

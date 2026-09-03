@@ -2,7 +2,7 @@ package realtime
 
 import (
 	"context"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 
 	"github.com/centrifugal/centrifuge-go"
 )
@@ -14,6 +14,6 @@ type CentrifugoClient interface {
 	SetToken(token string)
 }
 
-func NewCentrifugoClient(env internal.Env) CentrifugoClient {
+func NewCentrifugoClient(env env.Env) CentrifugoClient {
 	return centrifuge.NewJsonClient(env.CentrifugoUrl, centrifuge.Config{})
 }

@@ -2,7 +2,7 @@ package main
 
 import (
 	"repertoire/server/data/search"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/internal/migration/utils"
 )
 
@@ -10,7 +10,7 @@ var uid = "20250419104445"
 var name = "add_id_filter"
 
 func main() {
-	env := internal.NewEnv()
+	env := env.NewEnv()
 	meiliClient := search.NewMeiliClient(env)
 
 	if utils.HasMigrationAlreadyBeenApplied(meiliClient, uid) {
