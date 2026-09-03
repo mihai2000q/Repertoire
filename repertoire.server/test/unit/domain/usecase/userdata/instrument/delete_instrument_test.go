@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/usecase/userdata/instrument"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"slices"
@@ -20,7 +21,7 @@ import (
 func TestDeleteInstrument_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := instrument.NewDeleteInstrument(nil, jwtService)
+	_uut := instrument.NewDeleteInstrument(nil, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -42,7 +43,7 @@ func TestDeleteInstrument_WhenGetInstrumentsFails_ShouldReturnInternalServerErro
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -71,7 +72,7 @@ func TestDeleteInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -98,11 +99,12 @@ func TestDeleteInstrument_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteInstrument_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, transactionManager)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -118,7 +120,49 @@ func TestDeleteInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServ
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(id, token)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestDeleteInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
+
+	id := uuid.New()
+	token := "this is a token"
+
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	instruments := &[]model.Instrument{
+		{ID: id},
+	}
+	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
+		Return(nil, instruments).
+		Once()
+
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	txUserDataRepo.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Return(internalError).
 		Once()
 
@@ -132,13 +176,20 @@ func TestDeleteInstrument_WhenUpdateAllInstrumentsFails_ShouldReturnInternalServ
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }
 
 func TestDeleteInstrument_WhenDeleteInstrumentFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -153,12 +204,15 @@ func TestDeleteInstrument_WhenDeleteInstrumentFails_ShouldReturnInternalServerEr
 		Return(nil, instruments).
 		Once()
 
-	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txUserDataRepo.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("DeleteInstrument", id).
+	txUserDataRepo.On("DeleteInstrument", id).
 		Return(internalError).
 		Once()
 
@@ -172,13 +226,20 @@ func TestDeleteInstrument_WhenDeleteInstrumentFails_ShouldReturnInternalServerEr
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }
 
 func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := instrument.NewDeleteInstrument(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -193,7 +254,10 @@ func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 		Return(nil, instruments).
 		Once()
 
-	userDataRepository.On("UpdateAllInstruments", mock.IsType(instruments)).
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txUserDataRepo.On("UpdateAllInstruments", mock.IsType(instruments)).
 		Run(func(args mock.Arguments) {
 			newInstruments := args.Get(0).(*[]model.Instrument)
 			guitarTunings := slices.DeleteFunc(*newInstruments, func(t model.Instrument) bool {
@@ -206,7 +270,7 @@ func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 		Return(nil).
 		Once()
 
-	userDataRepository.On("DeleteInstrument", id).
+	txUserDataRepo.On("DeleteInstrument", id).
 		Return(nil).
 		Once()
 
@@ -218,4 +282,7 @@ func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }

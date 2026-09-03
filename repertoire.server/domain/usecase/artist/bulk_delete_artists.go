@@ -43,20 +43,17 @@ func (b BulkDeleteArtists) Handle(request requests.BulkDeleteArtistsRequest) *ht
 		txArtistRepo := factory.NewArtistRepository()
 
 		if request.WithAlbums {
-			err = txArtistRepo.DeleteAlbums(request.IDs)
-			if err != nil {
+			if err = txArtistRepo.DeleteAlbums(request.IDs); err != nil {
 				return err
 			}
 		}
 		if request.WithSongs {
-			err = txArtistRepo.DeleteSongs(request.IDs)
-			if err != nil {
+			if err = txArtistRepo.DeleteSongs(request.IDs); err != nil {
 				return err
 			}
 		}
 
-		err = txArtistRepo.Delete(request.IDs)
-		if err != nil {
+		if err = txArtistRepo.Delete(request.IDs); err != nil {
 			return err
 		}
 		return nil

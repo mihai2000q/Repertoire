@@ -2,6 +2,7 @@ package types
 
 import (
 	"errors"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/httperror"
@@ -12,17 +13,20 @@ import (
 )
 
 type DeleteSongSectionType struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
+	transactionManager transaction.Manager
 }
 
 func NewDeleteSongSectionType(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
+	transactionManager transaction.Manager,
 ) DeleteSongSectionType {
 	return DeleteSongSectionType{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -33,7 +37,7 @@ func (d DeleteSongSectionType) Handle(id uuid.UUID, token string) *httperror.Err
 	}
 
 	var types []model.SongSectionType
-	if err := d.repository.GetSectionTypes(&types, userID); err != nil {
+	if err := d.userDataRepository.GetSectionTypes(&types, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,11 +52,17 @@ func (d DeleteSongSectionType) Handle(id uuid.UUID, token string) *httperror.Err
 		types[i].Order = types[i].Order - 1
 	}
 
-	if err := d.repository.UpdateAllSectionTypes(&types); err != nil {
-		return httperror.DatabaseError(err)
-	}
-
-	if err := d.repository.DeleteSectionType(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txUserDataRepo := factory.NewUserDataRepository()
+		if err := txUserDataRepo.UpdateAllSectionTypes(&types); err != nil {
+			return err
+		}
+		if err := txUserDataRepo.DeleteSectionType(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

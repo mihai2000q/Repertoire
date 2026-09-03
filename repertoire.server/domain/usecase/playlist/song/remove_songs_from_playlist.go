@@ -52,7 +52,6 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 
 	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
 		txPlaylistRepo := factory.NewPlaylistRepository()
-
 		if err := txPlaylistRepo.RemoveSongs(&songsToDelete); err != nil {
 			return err
 		}

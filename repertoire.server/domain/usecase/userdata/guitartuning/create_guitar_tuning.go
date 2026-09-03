@@ -11,17 +11,17 @@ import (
 )
 
 type CreateGuitarTuning struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewCreateGuitarTuning(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) CreateGuitarTuning {
 	return CreateGuitarTuning{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -32,7 +32,7 @@ func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, t
 	}
 
 	var count int64
-	if err := c.repository.GetGuitarTuningsCount(&count, userID); err != nil {
+	if err := c.userDataRepository.GetGuitarTuningsCount(&count, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -42,7 +42,7 @@ func (c CreateGuitarTuning) Handle(request requests.CreateGuitarTuningRequest, t
 		Order:  uint(count),
 		UserID: userID,
 	}
-	if err := c.repository.CreateGuitarTuning(guitarTuning); err != nil {
+	if err := c.userDataRepository.CreateGuitarTuning(guitarTuning); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

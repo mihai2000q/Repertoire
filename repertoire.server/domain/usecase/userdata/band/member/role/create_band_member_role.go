@@ -11,17 +11,17 @@ import (
 )
 
 type CreateBandMemberRole struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewCreateBandMemberRole(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) CreateBandMemberRole {
 	return CreateBandMemberRole{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -35,7 +35,7 @@ func (c CreateBandMemberRole) Handle(
 	}
 
 	var count int64
-	if err := c.repository.CountBandMemberRoles(&count, userID); err != nil {
+	if err := c.userDataRepository.CountBandMemberRoles(&count, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -46,7 +46,7 @@ func (c CreateBandMemberRole) Handle(
 		UserID: userID,
 	}
 
-	if err := c.repository.CreateBandMemberRole(&bandMemberRole); err != nil {
+	if err := c.userDataRepository.CreateBandMemberRole(&bandMemberRole); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

@@ -22,7 +22,8 @@ func NewDeleteBandMember(
 	transactionManager transaction.Manager,
 ) DeleteBandMember {
 	return DeleteBandMember{
-		artistRepository: artistRepository,
+		artistRepository:   artistRepository,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -47,10 +48,17 @@ func (d DeleteBandMember) Handle(id uuid.UUID, songID uuid.UUID) *httperror.Erro
 		artist.BandMembers[i].Order = artist.BandMembers[i].Order - 1
 	}
 
-	if err := d.artistRepository.UpdateWithAssociations(&artist); err != nil {
-		return httperror.DatabaseError(err)
-	}
-	if err := d.artistRepository.DeleteBandMember(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txArtistRepo := factory.NewArtistRepository()
+		if err := txArtistRepo.UpdateWithAssociations(&artist); err != nil {
+			return err
+		}
+		if err := txArtistRepo.DeleteBandMember(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

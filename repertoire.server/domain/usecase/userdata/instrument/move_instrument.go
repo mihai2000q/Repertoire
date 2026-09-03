@@ -10,17 +10,17 @@ import (
 )
 
 type MoveInstrument struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewMoveInstrument(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveInstrument {
 	return MoveInstrument{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -31,7 +31,7 @@ func (m MoveInstrument) Handle(request requests.MoveInstrumentRequest, token str
 	}
 
 	var instruments []model.Instrument
-	if err := m.repository.GetInstruments(&instruments, userID); err != nil {
+	if err := m.userDataRepository.GetInstruments(&instruments, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,7 +48,7 @@ func (m MoveInstrument) Handle(request requests.MoveInstrumentRequest, token str
 		return errCode
 	}
 
-	if err := m.repository.UpdateAllInstruments(&instruments); err != nil {
+	if err := m.userDataRepository.UpdateAllInstruments(&instruments); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

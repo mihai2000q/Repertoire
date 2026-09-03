@@ -3,6 +3,7 @@ package arrangement
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
@@ -12,17 +13,17 @@ import (
 )
 
 type DeleteSongArrangement struct {
-	songArrangementRepository repository.SongArrangementRepository
-	songRepository            repository.SongRepository
+	songRepository     repository.SongRepository
+	transactionManager transaction.Manager
 }
 
 func NewDeleteSongArrangement(
-	songArrangementRepository repository.SongArrangementRepository,
 	songRepository repository.SongRepository,
+	transactionManager transaction.Manager,
 ) DeleteSongArrangement {
 	return DeleteSongArrangement{
-		songArrangementRepository: songArrangementRepository,
-		songRepository:            songRepository,
+		songRepository:     songRepository,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -47,10 +48,18 @@ func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *httperror
 		song.Arrangements[i].Order = song.Arrangements[i].Order - 1
 	}
 
-	if err := d.songRepository.UpdateWithAssociations(&song); err != nil {
-		return httperror.DatabaseError(err)
-	}
-	if err := d.songArrangementRepository.Delete(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txSongRepo := factory.NewSongRepository()
+		txSongArrangementRepo := factory.NewSongArrangementRepository()
+		if err := txSongRepo.UpdateWithAssociations(&song); err != nil {
+			return err
+		}
+		if err := txSongArrangementRepo.Delete(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

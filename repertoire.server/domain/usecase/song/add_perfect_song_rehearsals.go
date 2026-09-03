@@ -58,9 +58,7 @@ func (a AddPerfectSongRehearsals) Handle(request requests.AddPerfectSongRehearsa
 		}
 
 		if len(newSongs) > 0 {
-			err = txSongRepo.UpdateAllWithAssociations(&newSongs)
-			if err != nil {
-				errCode = httperror.DatabaseError(err)
+			if err = txSongRepo.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}

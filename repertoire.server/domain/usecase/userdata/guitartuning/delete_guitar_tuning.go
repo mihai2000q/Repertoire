@@ -2,6 +2,7 @@ package guitartuning
 
 import (
 	"errors"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/httperror"
@@ -12,17 +13,20 @@ import (
 )
 
 type DeleteGuitarTuning struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
+	transactionManager transaction.Manager
 }
 
 func NewDeleteGuitarTuning(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
+	transactionManager transaction.Manager,
 ) DeleteGuitarTuning {
 	return DeleteGuitarTuning{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -33,7 +37,7 @@ func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *httperror.ErrorC
 	}
 
 	var tunings []model.GuitarTuning
-	if err := d.repository.GetGuitarTunings(&tunings, userID); err != nil {
+	if err := d.userDataRepository.GetGuitarTunings(&tunings, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,11 +52,17 @@ func (d DeleteGuitarTuning) Handle(id uuid.UUID, token string) *httperror.ErrorC
 		tunings[i].Order = tunings[i].Order - 1
 	}
 
-	if err := d.repository.UpdateAllGuitarTunings(&tunings); err != nil {
-		return httperror.DatabaseError(err)
-	}
-
-	if err := d.repository.DeleteGuitarTuning(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txUserDataRepo := factory.NewUserDataRepository()
+		if err := txUserDataRepo.UpdateAllGuitarTunings(&tunings); err != nil {
+			return err
+		}
+		if err := txUserDataRepo.DeleteGuitarTuning(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

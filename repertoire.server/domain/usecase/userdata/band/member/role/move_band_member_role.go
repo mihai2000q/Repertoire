@@ -10,17 +10,17 @@ import (
 )
 
 type MoveBandMemberRole struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewMoveBandMemberRole(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveBandMemberRole {
 	return MoveBandMemberRole{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -31,7 +31,7 @@ func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, t
 	}
 
 	var roles []model.BandMemberRole
-	if err := m.repository.GetBandMemberRoles(&roles, userID); err != nil {
+	if err := m.userDataRepository.GetBandMemberRoles(&roles, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,7 +48,7 @@ func (m MoveBandMemberRole) Handle(request requests.MoveBandMemberRoleRequest, t
 		return errCode
 	}
 
-	if err := m.repository.UpdateAllBandMemberRoles(&roles); err != nil {
+	if err := m.userDataRepository.UpdateAllBandMemberRoles(&roles); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

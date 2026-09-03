@@ -4,6 +4,7 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/httperror"
@@ -14,19 +15,21 @@ import (
 )
 
 type UpdateAlbum struct {
-	songRepository          repository.SongRepository
 	albumRepository         repository.AlbumRepository
+	transactionManager      transaction.Manager
 	messagePublisherService service.MessagePublisherService
+
+	txSongRepo repository.SongRepository
 }
 
 func NewUpdateAlbum(
-	songRepository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
+	transactionManager transaction.Manager,
 	messagePublisherService service.MessagePublisherService,
 ) UpdateAlbum {
 	return UpdateAlbum{
-		songRepository:          songRepository,
 		albumRepository:         albumRepository,
+		transactionManager:      transactionManager,
 		messagePublisherService: messagePublisherService,
 	}
 }
@@ -40,22 +43,32 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *httperror.Erro
 		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
-	artistHasChanged := album.ArtistID != nil && request.ArtistID == nil ||
-		album.ArtistID == nil && request.ArtistID != nil ||
-		album.ArtistID != nil && request.ArtistID != nil && *album.ArtistID != *request.ArtistID
+	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txAlbumRepo := factory.NewAlbumRepository()
 
-	album.Title = request.Title
-	album.ReleaseDate = request.ReleaseDate
-	album.ArtistID = request.ArtistID
+		artistHasChanged := album.ArtistID != nil && request.ArtistID == nil ||
+			album.ArtistID == nil && request.ArtistID != nil ||
+			album.ArtistID != nil && request.ArtistID != nil && *album.ArtistID != *request.ArtistID
 
-	if err := u.repository.Update(&album); err != nil {
-		return httperror.DatabaseError(err)
-	}
+		album.Title = request.Title
+		album.ReleaseDate = request.ReleaseDate
+		album.ArtistID = request.ArtistID
 
-	if artistHasChanged {
-		if errCode := u.updateAlbumSongsArtist(request); errCode != nil {
-			return errCode
+		if err := txAlbumRepo.Update(&album); err != nil {
+			return err
 		}
+
+		if artistHasChanged {
+			u.txSongRepo = factory.NewSongRepository()
+			if errCode := u.updateAlbumSongsArtist(request); errCode != nil {
+				return errCode
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	if err := u.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, []uuid.UUID{album.ID}); err != nil {
@@ -65,17 +78,17 @@ func (u UpdateAlbum) Handle(request requests.UpdateAlbumRequest) *httperror.Erro
 	return nil
 }
 
-func (u UpdateAlbum) updateAlbumSongsArtist(request requests.UpdateAlbumRequest) *httperror.ErrorCode {
+func (u UpdateAlbum) updateAlbumSongsArtist(request requests.UpdateAlbumRequest) error {
 	var songs []model.Song
-	if err := u.songRepository.GetAllByAlbum(&songs, request.ID); err != nil {
-		return httperror.DatabaseError(err)
+	if err := u.txSongRepo.GetAllByAlbum(&songs, request.ID); err != nil {
+		return err
 	}
 
 	for i := range songs {
 		songs[i].ArtistID = request.ArtistID
 	}
-	if err := u.songRepository.UpdateAll(&songs); err != nil {
-		return httperror.DatabaseError(err)
+	if err := u.txSongRepo.UpdateAll(&songs); err != nil {
+		return err
 	}
 
 	return nil

@@ -11,17 +11,17 @@ import (
 )
 
 type CreateSongSectionType struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewCreateSongSectionType(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) CreateSongSectionType {
 	return CreateSongSectionType{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -35,7 +35,7 @@ func (c CreateSongSectionType) Handle(
 	}
 
 	var count int64
-	if err := c.repository.CountSectionTypes(&count, userID); err != nil {
+	if err := c.userDataRepository.CountSectionTypes(&count, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -46,7 +46,7 @@ func (c CreateSongSectionType) Handle(
 		UserID: userID,
 	}
 
-	if err := c.repository.CreateSectionType(&sectionType); err != nil {
+	if err := c.userDataRepository.CreateSectionType(&sectionType); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

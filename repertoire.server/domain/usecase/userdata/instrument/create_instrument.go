@@ -11,17 +11,17 @@ import (
 )
 
 type CreateInstrument struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewCreateInstrument(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) CreateInstrument {
 	return CreateInstrument{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -32,7 +32,7 @@ func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token
 	}
 
 	var count int64
-	if err := c.repository.GetInstrumentsCount(&count, userID); err != nil {
+	if err := c.userDataRepository.GetInstrumentsCount(&count, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -42,7 +42,7 @@ func (c CreateInstrument) Handle(request requests.CreateInstrumentRequest, token
 		Order:  uint(count),
 		UserID: userID,
 	}
-	if err := c.repository.CreateInstrument(guitarTuning); err != nil {
+	if err := c.userDataRepository.CreateInstrument(guitarTuning); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

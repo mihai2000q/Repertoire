@@ -10,17 +10,17 @@ import (
 )
 
 type MoveSongSectionType struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewMoveSongSectionType(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveSongSectionType {
 	return MoveSongSectionType{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -31,7 +31,7 @@ func (m MoveSongSectionType) Handle(request requests.MoveSongSectionTypeRequest,
 	}
 
 	var types []model.SongSectionType
-	if err := m.repository.GetSectionTypes(&types, userID); err != nil {
+	if err := m.userDataRepository.GetSectionTypes(&types, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,7 +48,7 @@ func (m MoveSongSectionType) Handle(request requests.MoveSongSectionTypeRequest,
 		return errCode
 	}
 
-	if err := m.repository.UpdateAllSectionTypes(&types); err != nil {
+	if err := m.userDataRepository.UpdateAllSectionTypes(&types); err != nil {
 		return httperror.DatabaseError(err)
 	}
 

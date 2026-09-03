@@ -2,6 +2,7 @@ package role
 
 import (
 	"errors"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/httperror"
@@ -12,17 +13,20 @@ import (
 )
 
 type DeleteBandMemberRole struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
+	transactionManager transaction.Manager
 }
 
 func NewDeleteBandMemberRole(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
+	transactionManager transaction.Manager,
 ) DeleteBandMemberRole {
 	return DeleteBandMemberRole{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -33,7 +37,7 @@ func (d DeleteBandMemberRole) Handle(id uuid.UUID, token string) *httperror.Erro
 	}
 
 	var roles []model.BandMemberRole
-	if err := d.repository.GetBandMemberRoles(&roles, userID); err != nil {
+	if err := d.userDataRepository.GetBandMemberRoles(&roles, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,11 +52,17 @@ func (d DeleteBandMemberRole) Handle(id uuid.UUID, token string) *httperror.Erro
 		roles[i].Order = roles[i].Order - 1
 	}
 
-	if err := d.repository.UpdateAllBandMemberRoles(&roles); err != nil {
-		return httperror.DatabaseError(err)
-	}
-
-	if err := d.repository.DeleteBandMemberRole(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txUserDataRepo := factory.NewUserDataRepository()
+		if err := txUserDataRepo.UpdateAllBandMemberRoles(&roles); err != nil {
+			return err
+		}
+		if err := txUserDataRepo.DeleteBandMemberRole(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

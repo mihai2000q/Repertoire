@@ -2,6 +2,7 @@ package instrument
 
 import (
 	"errors"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/httperror"
@@ -12,17 +13,20 @@ import (
 )
 
 type DeleteInstrument struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
+	transactionManager transaction.Manager
 }
 
 func NewDeleteInstrument(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
+	transactionManager transaction.Manager,
 ) DeleteInstrument {
 	return DeleteInstrument{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -33,7 +37,7 @@ func (d DeleteInstrument) Handle(id uuid.UUID, token string) *httperror.ErrorCod
 	}
 
 	var instruments []model.Instrument
-	if err := d.repository.GetInstruments(&instruments, userID); err != nil {
+	if err := d.userDataRepository.GetInstruments(&instruments, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,11 +52,17 @@ func (d DeleteInstrument) Handle(id uuid.UUID, token string) *httperror.ErrorCod
 		instruments[i].Order = instruments[i].Order - 1
 	}
 
-	if err := d.repository.UpdateAllInstruments(&instruments); err != nil {
-		return httperror.DatabaseError(err)
-	}
-
-	if err := d.repository.DeleteInstrument(id); err != nil {
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txUserDataRepo := factory.NewUserDataRepository()
+		if err := txUserDataRepo.UpdateAllInstruments(&instruments); err != nil {
+			return err
+		}
+		if err := txUserDataRepo.DeleteInstrument(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

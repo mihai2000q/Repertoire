@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/usecase/userdata/band/member/role"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"slices"
@@ -20,7 +21,7 @@ import (
 func TestDeleteBandMemberRole_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
-	_uut := role.NewDeleteBandMemberRole(nil, jwtService)
+	_uut := role.NewDeleteBandMemberRole(nil, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -42,7 +43,7 @@ func TestDeleteBandMemberRole_WhenGetBandMemberRolesFails_ShouldReturnInternalSe
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -71,7 +72,7 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, nil)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -98,11 +99,12 @@ func TestDeleteBandMemberRole_WhenRoleIsNotFound_ShouldReturnNotFoundError(t *te
 	userDataRepository.AssertExpectations(t)
 }
 
-func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteBandMemberRole_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, transactionManager)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -118,7 +120,49 @@ func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInte
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(id, token)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	jwtService.AssertExpectations(t)
+	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	jwtService := new(service.JwtServiceMock)
+	userDataRepository := new(repository.UserDataRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
+
+	id := uuid.New()
+	token := "this is a token"
+
+	userID := uuid.New()
+	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
+
+	bandMemberRoles := &[]model.BandMemberRole{
+		{ID: id},
+	}
+	userDataRepository.On("GetBandMemberRoles", new([]model.BandMemberRole), userID).
+		Return(nil, bandMemberRoles).
+		Once()
+
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	txUserDataRepo.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Return(internalError).
 		Once()
 
@@ -132,13 +176,20 @@ func TestDeleteBandMemberRole_WhenUpdateAllBandMemberRolesFails_ShouldReturnInte
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }
 
 func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -153,12 +204,15 @@ func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternal
 		Return(nil, bandMemberRoles).
 		Once()
 
-	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txUserDataRepo.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	userDataRepository.On("DeleteBandMemberRole", id).
+	txUserDataRepo.On("DeleteBandMemberRole", id).
 		Return(internalError).
 		Once()
 
@@ -172,13 +226,20 @@ func TestDeleteBandMemberRole_WhenDeleteBandMemberRoleFails_ShouldReturnInternal
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }
 
 func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userDataRepository := new(repository.UserDataRepositoryMock)
-	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := role.NewDeleteBandMemberRole(userDataRepository, jwtService, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txUserDataRepo := new(repository.UserDataRepositoryMock)
 
 	id := uuid.New()
 	token := "this is a token"
@@ -193,7 +254,10 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testin
 		Return(nil, bandMemberRoles).
 		Once()
 
-	userDataRepository.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
+	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txUserDataRepo.On("UpdateAllBandMemberRoles", mock.IsType(bandMemberRoles)).
 		Run(func(args mock.Arguments) {
 			newBandMemberRoles := args.Get(0).(*[]model.BandMemberRole)
 			sortedBandMemberRoles := slices.DeleteFunc(*newBandMemberRoles, func(s model.BandMemberRole) bool {
@@ -206,7 +270,7 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testin
 		Return(nil).
 		Once()
 
-	userDataRepository.On("DeleteBandMemberRole", id).
+	txUserDataRepo.On("DeleteBandMemberRole", id).
 		Return(nil).
 		Once()
 
@@ -218,4 +282,7 @@ func TestDeleteBandMemberRole_WhenSuccessful_ShouldReturnGuitarTunings(t *testin
 
 	jwtService.AssertExpectations(t)
 	userDataRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txUserDataRepo.AssertExpectations(t)
 }

@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"testing"
 
@@ -18,7 +19,7 @@ import (
 func TestUpdateBandMember_WhenGetBandMembersFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, nil)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -45,7 +46,7 @@ func TestUpdateBandMember_WhenGetBandMembersFails_ShouldReturnInternalServerErro
 func TestUpdateBandMember_WhenBandMembersIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, nil)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -68,10 +69,11 @@ func TestUpdateBandMember_WhenBandMembersIsEmpty_ShouldReturnNotFoundError(t *te
 	artistRepository.AssertExpectations(t)
 }
 
-func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateBandMember_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, transactionManager)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -86,7 +88,46 @@ func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *t
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	artistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	artistRepository := new(repository.ArtistRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
+
+	request := requests.UpdateBandMemberRequest{
+		ID:      uuid.New(),
+		Name:    "Some Artist",
+		RoleIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// given - mocking
+	mockBandMember := &model.BandMember{ID: request.ID}
+	artistRepository.On("GetBandMember", new(model.BandMember), request.ID).
+		Return(nil, mockBandMember).
+		Once()
+
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	txArtistRepo.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
 		Return(internalError).
 		Once()
 
@@ -99,12 +140,19 @@ func TestUpdateBandMember_WhenGetRolesFails_ShouldReturnInternalServerError(t *t
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -118,12 +166,15 @@ func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(
 		Return(nil, mockBandMember).
 		Once()
 
-	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txArtistRepo.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.
+	txArtistRepo.
 		On(
 			"ReplaceRolesFromBandMember",
 			mock.IsType([]model.BandMemberRole{}),
@@ -141,12 +192,19 @@ func TestUpdateBandMember_WhenReplaceRolesFails_ShouldReturnInternalServerError(
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -160,11 +218,14 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 		Return(nil, mockBandMember).
 		Once()
 
-	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txArtistRepo.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
 		Return(nil).
 		Once()
 
-	artistRepository.
+	txArtistRepo.
 		On(
 			"ReplaceRolesFromBandMember",
 			mock.IsType([]model.BandMemberRole{}),
@@ -174,7 +235,7 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 		Once()
 
 	internalError := errors.New("internal error")
-	artistRepository.On("UpdateBandMember", mock.IsType(new(model.BandMember))).
+	txArtistRepo.On("UpdateBandMember", mock.IsType(new(model.BandMember))).
 		Return(internalError).
 		Once()
 
@@ -187,12 +248,19 @@ func TestUpdateBandMember_WhenUpdateBandMemberFails_ShouldReturnInternalServerEr
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestUpdateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := bandmember.NewUpdateBandMember(artistRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := bandmember.NewUpdateBandMember(artistRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.UpdateBandMemberRequest{
 		ID:      uuid.New(),
@@ -206,18 +274,21 @@ func TestUpdateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Return(nil, mockBandMember).
 		Once()
 
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
 	roles := []model.BandMemberRole{
 		{ID: request.RoleIDs[0]},
 	}
-	artistRepository.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
+	txArtistRepo.On("GetBandMemberRolesByIDs", new([]model.BandMemberRole), request.RoleIDs).
 		Return(nil, &roles).
 		Once()
 
-	artistRepository.On("ReplaceRolesFromBandMember", roles, mockBandMember).
+	txArtistRepo.On("ReplaceRolesFromBandMember", roles, mockBandMember).
 		Return(nil).
 		Once()
 
-	artistRepository.On("UpdateBandMember", mock.IsType(new(model.BandMember))).
+	txArtistRepo.On("UpdateBandMember", mock.IsType(new(model.BandMember))).
 		Run(func(args mock.Arguments) {
 			newBandMember := args.Get(0).(*model.BandMember)
 			assertUpdatedBandMember(t, request, *newBandMember)
@@ -232,6 +303,9 @@ func TestUpdateBandMember_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	assert.Nil(t, errCode)
 
 	artistRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func assertUpdatedBandMember(

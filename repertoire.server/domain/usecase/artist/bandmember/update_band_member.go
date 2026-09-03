@@ -4,18 +4,24 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type UpdateBandMember struct {
-	artistRepository repository.ArtistRepository
+	artistRepository   repository.ArtistRepository
+	transactionManager transaction.Manager
 }
 
-func NewUpdateBandMember(artistRepository repository.ArtistRepository) UpdateBandMember {
+func NewUpdateBandMember(
+	artistRepository repository.ArtistRepository,
+	transactionManager transaction.Manager,
+) UpdateBandMember {
 	return UpdateBandMember{
-		artistRepository: artistRepository,
+		artistRepository:   artistRepository,
+		transactionManager: transactionManager,
 	}
 }
 
@@ -28,18 +34,26 @@ func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *http
 		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 
-	var roles []model.BandMemberRole
-	if err := u.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
-		return httperror.DatabaseError(err)
-	}
+	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txArtistRepo := factory.NewArtistRepository()
 
-	if err := u.artistRepository.ReplaceRolesFromBandMember(roles, &bandMember); err != nil {
-		return httperror.DatabaseError(err)
-	}
+		var roles []model.BandMemberRole
+		if err := txArtistRepo.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
+			return err
+		}
+		if err := txArtistRepo.ReplaceRolesFromBandMember(roles, &bandMember); err != nil {
+			return err
+		}
 
-	bandMember.Name = request.Name
-	bandMember.Color = request.Color
-	if err := u.artistRepository.UpdateBandMember(&bandMember); err != nil {
+		bandMember.Name = request.Name
+		bandMember.Color = request.Color
+		if err := txArtistRepo.UpdateBandMember(&bandMember); err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
 		return httperror.DatabaseError(err)
 	}
 

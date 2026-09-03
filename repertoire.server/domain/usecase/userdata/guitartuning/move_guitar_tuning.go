@@ -10,17 +10,17 @@ import (
 )
 
 type MoveGuitarTuning struct {
-	repository repository.UserDataRepository
-	jwtService service.JwtService
+	userDataRepository repository.UserDataRepository
+	jwtService         service.JwtService
 }
 
 func NewMoveGuitarTuning(
-	repository repository.UserDataRepository,
+	userDataRepository repository.UserDataRepository,
 	jwtService service.JwtService,
 ) MoveGuitarTuning {
 	return MoveGuitarTuning{
-		repository: repository,
-		jwtService: jwtService,
+		userDataRepository: userDataRepository,
+		jwtService:         jwtService,
 	}
 }
 
@@ -31,7 +31,7 @@ func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token
 	}
 
 	var tunings []model.GuitarTuning
-	if err := m.repository.GetGuitarTunings(&tunings, userID); err != nil {
+	if err := m.userDataRepository.GetGuitarTunings(&tunings, userID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
@@ -48,7 +48,7 @@ func (m MoveGuitarTuning) Handle(request requests.MoveGuitarTuningRequest, token
 		return errCode
 	}
 
-	if err := m.repository.UpdateAllGuitarTunings(&tunings); err != nil {
+	if err := m.userDataRepository.UpdateAllGuitarTunings(&tunings); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
