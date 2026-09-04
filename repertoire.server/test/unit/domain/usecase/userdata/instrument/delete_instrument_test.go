@@ -247,23 +247,23 @@ func TestDeleteInstrument_WhenSuccessful_ShouldReturnInstruments(t *testing.T) {
 	userID := uuid.New()
 	jwtService.On("GetUserIdFromJwt", token).Return(userID, nil).Once()
 
-	instruments := &[]model.Instrument{
+	mockInstruments := &[]model.Instrument{
 		{ID: id},
 	}
 	userDataRepository.On("GetInstruments", new([]model.Instrument), userID).
-		Return(nil, instruments).
+		Return(nil, mockInstruments).
 		Once()
 
 	repositoryFactory.On("NewUserDataRepository").Return(txUserDataRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	txUserDataRepo.On("UpdateAllInstruments", mock.IsType(instruments)).
+	txUserDataRepo.On("UpdateAllInstruments", mock.IsType(mockInstruments)).
 		Run(func(args mock.Arguments) {
 			newInstruments := args.Get(0).(*[]model.Instrument)
-			guitarTunings := slices.DeleteFunc(*newInstruments, func(t model.Instrument) bool {
+			instruments := slices.DeleteFunc(*newInstruments, func(t model.Instrument) bool {
 				return t.ID == id
 			})
-			for i, tune := range guitarTunings {
+			for i, tune := range instruments {
 				assert.Equal(t, i, tune.Order)
 			}
 		}).
