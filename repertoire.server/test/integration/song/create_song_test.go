@@ -255,10 +255,10 @@ func assertCreatedSong(
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
 	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
-	assert.Len(t, request.Parts, len(song.Sections))
+	assert.Len(t, request.Parts, len(song.Parts))
 	for i, partRequest := range request.Parts {
 		assert.NotEmpty(t, song.Parts[i].ID)
-		assert.Equal(t, partRequest.Name, song.Sections[i].Name)
+		assert.Equal(t, partRequest.Name, song.Parts[i].Name)
 		assert.Equal(t, uint(i), song.Parts[i].SongOrder)
 		assert.Equal(t, song.ID, song.Parts[i].SongID)
 	}
