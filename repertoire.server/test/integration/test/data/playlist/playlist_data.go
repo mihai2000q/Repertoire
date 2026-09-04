@@ -74,6 +74,11 @@ var Playlists = []model.Playlist{
 		Title:  "Test Playlist 3",
 		UserID: Users[0].ID,
 	},
+	{
+		ID:     uuid.New(),
+		Title:  "Test Playlist 4 - No Songs",
+		UserID: Users[0].ID,
+	},
 }
 
 var Songs = []model.Song{

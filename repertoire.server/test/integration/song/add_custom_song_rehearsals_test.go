@@ -16,25 +16,6 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestAddCustomSongRehearsals_WhenNoSongsAreFound_ShouldReturnNotFoundError(t *testing.T) {
-	// given
-	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
-
-	request := requests.AddCustomSongRehearsalsRequest{
-		Requests: []requests.AddCustomSongRehearsalRequest{
-			{ID: uuid.New(), ArrangementID: uuid.New()},
-			{ID: uuid.New(), ArrangementID: uuid.New()},
-		},
-	}
-
-	// when
-	w := httptest.NewRecorder()
-	core.NewTestHandler().POST(w, "/api/songs/custom-rehearsals", request)
-
-	// then
-	assert.Equal(t, http.StatusNotFound, w.Code)
-}
-
 func TestAddCustomSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)

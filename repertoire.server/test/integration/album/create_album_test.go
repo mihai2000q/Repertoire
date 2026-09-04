@@ -19,6 +19,41 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreateAlbum_WhenUserIsNotFound_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.CreateAlbumRequest{
+		Title: "New Album",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithInvalidToken().
+		POST(w, "/api/albums", request)
+
+	// then
+	assert.Equal(t, http.StatusForbidden, w.Code)
+}
+
+func TestCreateAlbum_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.CreateAlbumRequest{
+		Title:    "New Album with Artist",
+		ArtistID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestCreateAlbum_WhenSuccessful_ShouldCreateAlbum(t *testing.T) {
 	tests := []struct {
 		name    string

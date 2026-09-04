@@ -146,6 +146,14 @@ var Artists = []model.Artist{
 		ID:     uuid.New(),
 		Name:   "Metal",
 		UserID: Users[0].ID,
+		BandMembers: []model.BandMember{
+			{
+				ID:    uuid.New(),
+				Name:  "Member 1",
+				Order: 0,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[0]},
+			},
+		},
 	},
 }
 

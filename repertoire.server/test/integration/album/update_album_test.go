@@ -35,6 +35,24 @@ func TestUpdateAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T)
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestUpdateAlbum_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.UpdateAlbumRequest{
+		ID:       albumData.Albums[0].ID,
+		Title:    "New Title",
+		ArtistID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestUpdateAlbum_WhenSuccessful_ShouldUpdateAlbum(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)

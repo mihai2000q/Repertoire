@@ -11,6 +11,7 @@ import (
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
+	albumData "repertoire/server/test/integration/test/data/album"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
@@ -19,6 +20,87 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCreateSong_WhenUserIsNotFound_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.CreateSongRequest{
+		Title: "New Song",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithInvalidToken().
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusForbidden, w.Code)
+}
+
+func TestCreateSong_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:    "New Song with Artist",
+		ArtistID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSong_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:   "New Song with Album",
+		AlbumID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSong_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:          "New Song",
+		GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
 func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 	tests := []struct {

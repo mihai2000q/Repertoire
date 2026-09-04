@@ -35,6 +35,23 @@ func TestAddSongsToAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testin
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestAddSongsToAlbum_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.AddSongsToAlbumRequest{
+		ID:      albumData.Albums[1].ID,
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/albums/add-songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestAddSongsToAlbum_WhenSongAlreadyHasAnAlbum_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)

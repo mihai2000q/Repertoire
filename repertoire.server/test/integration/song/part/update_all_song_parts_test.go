@@ -30,6 +30,40 @@ func TestUpdateAllSongParts_WhenSongIsNotFound_ShouldReturnNotFoundError(t *test
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestUpdateAllSongParts_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateAllSongPartsRequest{
+		SongID:       songData.Songs[0].ID,
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/parts/all", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestUpdateAllSongParts_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateAllSongPartsRequest{
+		SongID:       songData.Songs[0].ID,
+		InstrumentID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/parts/all", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestUpdateAllSongParts_WhenSuccessful_ShouldUpdateAllSongParts(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)

@@ -17,6 +17,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreateArtist_WhenUserIsNotFound_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.CreateArtistRequest{
+		Name: "New Artist",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithInvalidToken().
+		POST(w, "/api/artists", request)
+
+	// then
+	assert.Equal(t, http.StatusForbidden, w.Code)
+}
+
 func TestCreateArtist_WhenSuccessful_ShouldCreateArtist(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)

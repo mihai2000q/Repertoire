@@ -34,6 +34,24 @@ func TestUpdateSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *te
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestUpdateSongSection_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateSongSectionRequest{
+		ID:     songData.SongSections[2].ID,
+		Name:   "New Chorus Name",
+		TypeID: uuid.New(),
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/sections", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestUpdateSongSection_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)

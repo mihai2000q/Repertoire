@@ -16,16 +16,30 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestAddPerfectPlaylistSongRehearsals_WhenPlaylistsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestAddPerfectPlaylistSongRehearsals_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	request := requests.AddPerfectPlaylistSongRehearsalsRequest{
 		PlaylistID: uuid.New(),
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs:        []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/songs/perfect-rehearsals", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestAddPerfectPlaylistSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.AddPerfectPlaylistSongRehearsalsRequest{
+		PlaylistID: playlistData.PlaylistsSongs[0].PlaylistID,
+		IDs:        []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
 	// when

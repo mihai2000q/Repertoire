@@ -16,6 +16,43 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestCreateSongSection_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongSectionRequest{
+		SongID: songData.Songs[0].ID,
+		Name:   "Chorus 1-New",
+		TypeID: uuid.New(),
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/sections", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSongSection_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongSectionRequest{
+		SongID:  songData.Songs[0].ID,
+		Name:    "Chorus 1-New",
+		TypeID:  songData.Users[0].SongSectionTypes[0].ID,
+		PartIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/sections", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	tests := []struct {
 		name    string

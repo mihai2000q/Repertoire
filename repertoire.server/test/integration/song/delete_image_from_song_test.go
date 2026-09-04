@@ -26,7 +26,7 @@ func TestDeleteImageFromSong_WhenSongIsNotFound_ShouldReturnNotFoundError(t *tes
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldDoNothing(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -37,7 +37,7 @@ func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *tes
 	core.NewTestHandler().DELETE(w, "/api/songs/images/"+song.ID.String())
 
 	// then
-	assert.Equal(t, http.StatusConflict, w.Code)
+	assert.Equal(t, http.StatusOK, w.Code)
 }
 
 func TestDeleteImageFromSong_WhenSuccessful_ShouldUpdateSongAndDeleteImage(t *testing.T) {

@@ -14,6 +14,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBulkUpdateSongArrangements_SongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.BulkUpdateSongArrangementsRequest{
+		SongID: uuid.New(),
+		Requests: []requests.UpdateSongArrangementRequest{
+			{
+				ID:   uuid.New(),
+				Name: "New Chorus Name",
+			},
+		},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/arrangements/bulk", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestBulkUpdateSongArrangements_WhenArrangementsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)

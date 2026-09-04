@@ -32,6 +32,42 @@ func TestCreateSongPart_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestCreateSongPart_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongPartRequest{
+		SongID:       songData.Songs[0].ID,
+		Name:         "Chorus 1-New",
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/parts", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSongPart_WhenInstrumentIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongPartRequest{
+		SongID:       songData.Songs[0].ID,
+		Name:         "Chorus 1-New",
+		InstrumentID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/parts", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestCreateSongPart_WhenSectionsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -69,39 +105,21 @@ func TestCreateSongPart_WhenSectionsDoNotBelongToSong_ShouldReturnNotConflictErr
 }
 
 func TestCreateSongPart_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
-	tests := []struct {
-		name string
-		song model.Song
-	}{
-		{
-			"Song without artist",
-			songData.Songs[4],
-		},
-		{
-			"Song with artist but without that member",
-			songData.Songs[0],
-		},
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongPartRequest{
+		SongID:       songData.Songs[0].ID,
+		Name:         "Chorus 1-New",
+		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			// given
-			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/parts", request)
 
-			request := requests.CreateSongPartRequest{
-				SongID:       test.song.ID,
-				Name:         "Chorus 1-New",
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
-			}
-
-			// when
-			w := httptest.NewRecorder()
-			core.NewTestHandler().POST(w, "/api/songs/parts", request)
-
-			// then
-			assert.Equal(t, http.StatusConflict, w.Code)
-		})
-	}
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
 func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {

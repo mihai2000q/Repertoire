@@ -17,6 +17,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestCreatePlaylist_WhenUserIsNotFound_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.CreatePlaylistRequest{
+		Title: "New Playlist",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithInvalidToken().
+		POST(w, "/api/playlists", request)
+
+	// then
+	assert.Equal(t, http.StatusForbidden, w.Code)
+}
+
 func TestCreatePlaylist_WhenSuccessful_ShouldCreatePlaylist(t *testing.T) {
 	tests := []struct {
 		name    string
