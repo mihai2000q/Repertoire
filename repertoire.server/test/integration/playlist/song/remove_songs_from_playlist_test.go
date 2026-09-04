@@ -55,7 +55,7 @@ func TestRemoveSongsFromPlaylist_WhenSuccessful_ShouldDeleteSongsFromPlaylist(t 
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	playlist := playlistData.Playlists[0]
-	oldSongsLength := len(slices.DeleteFunc(playlistData.PlaylistsSongs, func(playlistSong model.PlaylistSong) bool {
+	oldSongsLength := len(slices.DeleteFunc(slices.Clone(playlistData.PlaylistsSongs), func(playlistSong model.PlaylistSong) bool {
 		return playlistSong.PlaylistID != playlist.ID
 	}))
 

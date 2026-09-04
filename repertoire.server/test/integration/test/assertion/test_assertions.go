@@ -214,7 +214,7 @@ func ResponseEnhancedSong(
 		ResponsePlaylist(t, song.Playlists[i], response.Playlists[i])
 	}
 
-	solos := len(slices.DeleteFunc(song.Sections, func(section model.SongSection) bool {
+	solos := len(slices.DeleteFunc(slices.Clone(song.Sections), func(section model.SongSection) bool {
 		return section.SongSectionType.Name != "Solo"
 	}))
 	assert.Equal(t, len(song.Parts), response.PartsCount)
