@@ -84,7 +84,7 @@ func (s songPartRepository) Update(part *model.SongPart) error {
 func (s songPartRepository) UpdateAll(parts *[]model.SongPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, part := range *parts {
-			if err := tx.Save(part).Error; err != nil {
+			if err := tx.Save(&part).Error; err != nil {
 				return err
 			}
 		}

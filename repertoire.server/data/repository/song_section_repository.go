@@ -111,7 +111,7 @@ func (s songSectionRepository) UpdateWithAssociations(section *model.SongSection
 func (s songSectionRepository) UpdateAllWithAssociations(sections *[]model.SongSection) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *sections {
-			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(song).Error
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&song).Error
 			if err != nil {
 				return err
 			}
@@ -140,7 +140,7 @@ func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongS
 func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
-			if err := tx.Save(sectionPart).Error; err != nil {
+			if err := tx.Save(&sectionPart).Error; err != nil {
 				return err
 			}
 		}

@@ -64,7 +64,7 @@ func (u userDataRepository) CreateBandMemberRole(bandMemberRole *model.BandMembe
 func (u userDataRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error {
 	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionType := range *bandMemberRoles {
-			if err := tx.Save(sectionType).Error; err != nil {
+			if err := tx.Save(&sectionType).Error; err != nil {
 				return err
 			}
 		}
@@ -100,7 +100,7 @@ func (u userDataRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error
 func (u userDataRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
 	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, tuning := range *tunings {
-			if err := tx.Save(tuning).Error; err != nil {
+			if err := tx.Save(&tuning).Error; err != nil {
 				return err
 			}
 		}
@@ -135,8 +135,8 @@ func (u userDataRepository) CreateInstrument(instrument *model.Instrument) error
 
 func (u userDataRepository) UpdateAllInstruments(instruments *[]model.Instrument) error {
 	return u.client.Transaction(func(tx *gorm.DB) error {
-		for _, tuning := range *instruments {
-			if err := tx.Save(tuning).Error; err != nil {
+		for _, instrument := range *instruments {
+			if err := tx.Save(&instrument).Error; err != nil {
 				return err
 			}
 		}
@@ -172,7 +172,7 @@ func (u userDataRepository) CreateSectionType(sectionType *model.SongSectionType
 func (u userDataRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {
 	return u.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionType := range *sectionTypes {
-			if err := tx.Save(sectionType).Error; err != nil {
+			if err := tx.Save(&sectionType).Error; err != nil {
 				return err
 			}
 		}

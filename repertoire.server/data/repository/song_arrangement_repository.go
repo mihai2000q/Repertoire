@@ -70,7 +70,7 @@ func (s songArrangementRepository) Create(arrangement *model.SongArrangement) er
 func (s songArrangementRepository) UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, arrangement := range *arrangements {
-			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(arrangement).Error
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&arrangement).Error
 			if err != nil {
 				return err
 			}

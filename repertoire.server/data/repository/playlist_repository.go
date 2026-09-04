@@ -205,7 +205,7 @@ func (p playlistRepository) Update(playlist *model.Playlist) error {
 func (p playlistRepository) UpdateAllPlaylistSongs(playlistSongs *[]model.PlaylistSong) error {
 	return p.client.Transaction(func(tx *gorm.DB) error {
 		for _, playlistSong := range *playlistSongs {
-			if err := tx.Save(playlistSong).Error; err != nil {
+			if err := tx.Save(&playlistSong).Error; err != nil {
 				return err
 			}
 		}

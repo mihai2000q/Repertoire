@@ -390,7 +390,7 @@ func (s songRepository) Update(song *model.Song) error {
 func (s songRepository) UpdateAll(songs *[]model.Song) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
-			if err := tx.Save(song).Error; err != nil {
+			if err := tx.Save(&song).Error; err != nil {
 				return err
 			}
 		}
@@ -408,7 +408,7 @@ func (s songRepository) UpdateWithAssociations(song *model.Song) error {
 func (s songRepository) UpdateAllWithAssociations(songs *[]model.Song) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
-			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(song).Error
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&song).Error
 			if err != nil {
 				return err
 			}

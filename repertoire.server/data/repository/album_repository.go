@@ -210,11 +210,11 @@ func (a albumRepository) UpdateWithAssociations(album *model.Album) error {
 func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 	return a.client.Transaction(func(tx *gorm.DB) error {
 		for _, album := range *albums {
-			if err := tx.Save(album).Error; err != nil {
+			if err := tx.Save(&album).Error; err != nil {
 				return err
 			}
 			for _, song := range album.Songs {
-				if err := tx.Save(song).Error; err != nil {
+				if err := tx.Save(&song).Error; err != nil {
 					return err
 				}
 			}
