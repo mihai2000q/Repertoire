@@ -3,6 +3,7 @@ package httperror
 import (
 	"errors"
 	"fmt"
+	"regexp"
 
 	"github.com/jackc/pgx/v5/pgconn"
 	"gorm.io/gorm"
@@ -53,6 +54,13 @@ func DatabaseErrorWithOptions(err error, opts DatabaseErrorOptions) *ErrorCode {
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
 		case pgForeignKeyViolation:
+			if column, table, ok := parseForeignKeyDetail(pgErr.Detail); ok {
+				msg := fmt.Errorf("%s (%s) does not reference an existing row", table, column)
+				if column == "user_id" && table == "users" {
+					return ForbiddenError(msg)
+				}
+				return onFK(msg)
+			}
 			return onFK(pgMessage(pgErr))
 		case pgUniqueViolation:
 			return onUnique(pgMessage(pgErr))
@@ -69,4 +77,14 @@ func pgMessage(pgErr *pgconn.PgError) error {
 		return fmt.Errorf("%s: %s", pgErr.Message, pgErr.Detail)
 	}
 	return errors.New(pgErr.Message)
+}
+
+var fkDetailPattern = regexp.MustCompile(`\(([^)]+)\)=\([^)]*\) is not present in table "([^"]+)"`)
+
+func parseForeignKeyDetail(detail string) (column, table string, ok bool) {
+	m := fkDetailPattern.FindStringSubmatch(detail)
+	if m == nil {
+		return "", "", false
+	}
+	return m[1], m[2], true
 }
