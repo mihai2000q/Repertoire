@@ -10,6 +10,7 @@ import (
 	"repertoire/server/test/integration/test/core"
 	artistData "repertoire/server/test/integration/test/data/artist"
 	"repertoire/server/test/integration/test/utils"
+	"slices"
 	"testing"
 
 	"github.com/google/uuid"
@@ -88,10 +89,12 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldAddSongsToArtist(t *testing.T) {
 			artistData.Songs[0].ID,
 			artistData.Songs[1].ID,
 			artistData.Albums[1].Songs[0].ID,
+			artistData.Albums[1].Songs[1].ID,
 		},
 	}
 
-	messages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
+	songMessages := utils.SubscribeToTopic(topics.SongsUpdatedTopic)
+	albumMessages := utils.SubscribeToTopic(topics.AlbumsUpdatedTopic)
 
 	// when
 	w := httptest.NewRecorder()
@@ -113,8 +116,26 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldAddSongsToArtist(t *testing.T) {
 
 	assertAddedSongsToArtist(t, request, artist, oldSongsLength, albumSongs)
 
-	assertion.AssertMessage(t, messages, func(ids []uuid.UUID) {
-		assert.Equal(t, request.SongIDs, ids)
+	assertion.AssertMessage(t, songMessages, func(ids []uuid.UUID) {
+		var songIDs []uuid.UUID
+		for _, id := range request.SongIDs {
+			songIDs = append(songIDs, id)
+		}
+		for _, albumSong := range albumSongs {
+			songIDs = slices.DeleteFunc(songIDs, func(id uuid.UUID) bool { return id == albumSong.ID })
+		}
+		assert.ElementsMatch(t, songIDs, ids)
+	})
+	assertion.AssertMessage(t, albumMessages, func(ids []uuid.UUID) {
+		var albumIDs []uuid.UUID
+		albumsSet := make(map[uuid.UUID]bool)
+		for _, song := range albumSongs {
+			if !albumsSet[song.ID] {
+				albumIDs = append(albumIDs, *song.AlbumID)
+				albumsSet[*song.AlbumID] = true
+			}
+		}
+		assert.ElementsMatch(t, albumIDs, ids)
 	})
 }
 
@@ -128,28 +149,38 @@ func assertAddedSongsToArtist(
 	// calculate the number of nested songs, as the whole album is added to artist
 	// (including other non-mentioned songs in the request)
 	var nestedSongIDs []uuid.UUID
+	albumsVisited := make(map[uuid.UUID]bool)
 	for _, s := range albumSongs {
+		if albumsVisited[s.Album.ID] {
+			continue
+		}
 		for _, albumSong := range s.Album.Songs {
-			if albumSong.ID == s.ID {
-				continue
-			}
 			nestedSongIDs = append(nestedSongIDs, albumSong.ID)
 		}
+		albumsVisited[s.Album.ID] = true
 	}
 
 	assert.Equal(t, artist.ID, request.ID)
 
-	totalSongs := int(oldSongsLength) + len(request.SongIDs) + len(nestedSongIDs)
-	assert.Len(t, artist.Songs, totalSongs)
+	totalNewSongIDs := slices.Clone(nestedSongIDs)
+	for _, songID := range request.SongIDs {
+		if !slices.Contains(totalNewSongIDs, songID) {
+			totalNewSongIDs = append(totalNewSongIDs, songID)
+		}
+	}
 
-	var songIDs []uuid.UUID
+	totalSongsLen := int(oldSongsLength) + len(totalNewSongIDs)
+	assert.Len(t, artist.Songs, totalSongsLen)
+
+	var allSongIDs []uuid.UUID
 	for _, song := range artist.Songs {
-		songIDs = append(songIDs, song.ID)
+		allSongIDs = append(allSongIDs, song.ID)
 		assert.Equal(t, artist.ID, *song.ArtistID)
 		if song.Album != nil {
 			assert.Equal(t, artist.ID, *song.Album.ArtistID)
 		}
 	}
-	assert.Subset(t, songIDs, request.SongIDs)
-	assert.Subset(t, songIDs, nestedSongIDs)
+	assert.Subset(t, allSongIDs, request.SongIDs)
+	assert.Subset(t, allSongIDs, nestedSongIDs)
+	assert.Subset(t, allSongIDs, totalNewSongIDs)
 }

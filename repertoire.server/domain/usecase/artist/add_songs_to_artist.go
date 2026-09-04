@@ -8,6 +8,8 @@ import (
 	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+
+	"github.com/google/uuid"
 )
 
 type AddSongsToArtist struct {
@@ -34,19 +36,24 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *http
 		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
+	var albumIDs []uuid.UUID
+	var songIDs []uuid.UUID
 	for i, song := range songs {
 		if song.ArtistID != nil {
-			return httperror.ConflictError(errors.New("song " + song.ID.String() + "already has an artist"))
+			return httperror.ConflictError(errors.New("song " + song.ID.String() + " already has an artist"))
 		}
+
+		songs[i].ArtistID = &request.ID
 
 		// update the whole album's artist, including the other songs
 		if song.Album != nil {
 			songs[i].Album.ArtistID = &request.ID
+			albumIDs = append(albumIDs, song.Album.ID)
 			for j := range song.Album.Songs {
 				songs[i].Album.Songs[j].ArtistID = &request.ID
 			}
 		} else {
-			songs[i].ArtistID = &request.ID
+			songIDs = append(songIDs, song.ID)
 		}
 	}
 
@@ -54,8 +61,15 @@ func (a AddSongsToArtist) Handle(request requests.AddSongsToArtistRequest) *http
 		return httperror.DatabaseError(err)
 	}
 
-	if err := a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs); err != nil {
-		return httperror.MessagePublisherError(err)
+	if len(songIDs) > 0 {
+		if err := a.messagePublisherService.Publish(topics.SongsUpdatedTopic, songIDs); err != nil {
+			return httperror.MessagePublisherError(err)
+		}
+	}
+	if len(albumIDs) > 0 {
+		if err := a.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, albumIDs); err != nil {
+			return httperror.MessagePublisherError(err)
+		}
 	}
 
 	return nil
