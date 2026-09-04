@@ -40,19 +40,19 @@ func NewSongSectionRepository(client database.Client) SongSectionRepository {
 }
 
 func (s songSectionRepository) Get(section *model.SongSection, id uuid.UUID) error {
-	return s.client.Find(&section, model.SongSection{ID: id}).Error
+	return s.client.Find(section, model.SongSection{ID: id}).Error
 }
 func (s songSectionRepository) GetWithSectionParts(section *model.SongSection, id uuid.UUID) error {
 	return s.client.
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("\"order\"")
 		}).
-		Find(&section, model.SongSection{ID: id}).
+		Find(section, model.SongSection{ID: id}).
 		Error
 }
 
 func (s songSectionRepository) GetAllByIDs(sections *[]model.SongSection, ids []uuid.UUID) error {
-	return s.client.Find(&sections, ids).Error
+	return s.client.Find(sections, ids).Error
 }
 
 func (s songSectionRepository) GetAllByIDsWithSectionParts(sections *[]model.SongSection, ids []uuid.UUID) error {
@@ -60,7 +60,7 @@ func (s songSectionRepository) GetAllByIDsWithSectionParts(sections *[]model.Son
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("\"order\"")
 		}).
-		Find(&sections, ids).
+		Find(sections, ids).
 		Error
 }
 
@@ -71,7 +71,7 @@ func (s songSectionRepository) GetAllByPartWithSectionParts(sections *[]model.So
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_section_parts.order")
 		}).
-		Find(&sections).
+		Find(sections).
 		Error
 }
 
@@ -82,7 +82,7 @@ func (s songSectionRepository) GetAllByPartIDsWithSectionParts(sections *[]model
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_section_parts.order")
 		}).
-		Find(&sections).
+		Find(sections).
 		Error
 }
 
@@ -94,11 +94,11 @@ func (s songSectionRepository) CountAllBySong(count *int64, songID uuid.UUID) er
 }
 
 func (s songSectionRepository) Create(section *model.SongSection) error {
-	return s.client.Create(&section).Error
+	return s.client.Create(section).Error
 }
 
 func (s songSectionRepository) Update(section *model.SongSection) error {
-	return s.client.Save(&section).Error
+	return s.client.Save(section).Error
 }
 
 func (s songSectionRepository) UpdateWithAssociations(section *model.SongSection) error {
@@ -129,7 +129,7 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
-			if err := tx.Create(&sectionPart).Error; err != nil {
+			if err := tx.Create(sectionPart).Error; err != nil {
 				return err
 			}
 		}
@@ -140,7 +140,7 @@ func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongS
 func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
-			if err := tx.Save(&sectionPart).Error; err != nil {
+			if err := tx.Save(sectionPart).Error; err != nil {
 				return err
 			}
 		}
@@ -149,7 +149,7 @@ func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongS
 }
 
 func (s songSectionRepository) DeleteSectionParts(sectionParts *[]model.SongSectionPart) error {
-	return s.client.Delete(&sectionParts).Error
+	return s.client.Delete(sectionParts).Error
 }
 
 // Types
@@ -158,6 +158,6 @@ func (s songSectionRepository) GetTypes(types *[]model.SongSectionType, userID u
 	return s.client.Model(&model.SongSectionType{}).
 		Where(model.SongSectionType{UserID: userID}).
 		Order("\"order\"").
-		Find(&types).
+		Find(types).
 		Error
 }

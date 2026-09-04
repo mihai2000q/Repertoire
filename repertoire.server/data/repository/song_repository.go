@@ -66,7 +66,7 @@ func NewSongRepository(client database.Client) SongRepository {
 }
 
 func (s songRepository) Get(song *model.Song, id uuid.UUID) error {
-	return s.client.Find(&song, model.Song{ID: id}).Error
+	return s.client.Find(song, model.Song{ID: id}).Error
 }
 
 func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID) error {
@@ -75,7 +75,7 @@ func (s songRepository) GetWithPlaylistsAndSongs(song *model.Song, id uuid.UUID)
 		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_track_no")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -84,7 +84,7 @@ func (s songRepository) GetWithParts(song *model.Song, id uuid.UUID) error {
 		Preload("Parts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_parts.song_order")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -93,7 +93,7 @@ func (s songRepository) GetWithSections(song *model.Song, id uuid.UUID) error {
 		Preload("Sections", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_sections.order")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -107,7 +107,7 @@ func (s songRepository) GetWithPartsAndDefaultOccurrences(song *model.Song, id u
 				Joins("LEFT JOIN songs ON songs.id = song_parts.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -123,7 +123,7 @@ func (s songRepository) GetWithPartsAndArrangementOccurrences(
 		Preload("Parts.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.Where(model.SongPartOccurrences{ArrangementID: arrangementID})
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -132,7 +132,7 @@ func (s songRepository) GetWithArrangements(song *model.Song, id uuid.UUID) erro
 		Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_arrangements.order")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -165,7 +165,7 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 				}).
 				Order("song_sections.order")
 		}).
-		Find(&song, model.Song{ID: id}).
+		Find(song, model.Song{ID: id}).
 		Error
 }
 
@@ -210,7 +210,7 @@ func (s songRepository) GetFiltersMetadata(
 	searchBy = s.addInstrumentsFilter(tx, searchBy)
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundSongsFields)
 	database.SearchBy(tx, searchBy)
-	err := tx.Scan(&metadata).Error
+	err := tx.Scan(metadata).Error
 	if err != nil {
 		return err
 	}
@@ -282,7 +282,7 @@ func (s songRepository) GetAllByUser(
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
 	database.Paginate(tx, currentPage, pageSize)
-	return tx.Find(&songs).Error
+	return tx.Find(songs).Error
 }
 
 func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
@@ -301,12 +301,12 @@ func (s songRepository) GetAllByUserCount(count *int64, userID uuid.UUID, search
 }
 
 func (s songRepository) GetAllByIDs(songs *[]model.Song, ids []uuid.UUID) error {
-	return s.client.Model(&model.Song{}).Find(&songs, ids).Error
+	return s.client.Model(&model.Song{}).Find(songs, ids).Error
 }
 
 func (s songRepository) GetAllByAlbum(songs *[]model.Song, albumID uuid.UUID) error {
 	return s.client.Model(&model.Song{}).
-		Find(&songs, model.Song{AlbumID: &albumID}).
+		Find(songs, model.Song{AlbumID: &albumID}).
 		Error
 }
 
@@ -315,7 +315,7 @@ func (s songRepository) GetAllByAlbumAndTrackNo(songs *[]model.Song, albumID uui
 		Where(model.Song{AlbumID: &albumID}).
 		Where("album_track_no > ?", trackNo).
 		Order("album_track_no").
-		Find(&songs).
+		Find(songs).
 		Error
 }
 
@@ -323,7 +323,7 @@ func (s songRepository) GetAllByIDsWithAlbumSongs(songs *[]model.Song, ids []uui
 	return s.client.Model(&model.Song{}).
 		Joins("Album").
 		Preload("Album.Songs").
-		Find(&songs, ids).
+		Find(songs, ids).
 		Error
 }
 
@@ -331,7 +331,7 @@ func (s songRepository) GetAllByIDsWithArtistAndAlbum(songs *[]model.Song, ids [
 	return s.client.
 		Joins("Artist").
 		Joins("Album").
-		Find(&songs, ids).
+		Find(songs, ids).
 		Error
 }
 
@@ -345,7 +345,7 @@ func (s songRepository) GetAllByIDsWithAlbumsAndPlaylists(songs *[]model.Song, i
 		Preload("Playlists.PlaylistSongs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("song_track_no")
 		}).
-		Find(&songs, ids).
+		Find(songs, ids).
 		Error
 }
 
@@ -359,7 +359,7 @@ func (s songRepository) GetAllByIDsWithPartsAndDefaultOccurrences(songs *[]model
 				Joins("LEFT JOIN songs ON songs.id = song_parts.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
-		Find(&songs, ids).
+		Find(songs, ids).
 		Error
 }
 
@@ -369,7 +369,7 @@ func (s songRepository) GetAllByIDsWithPartsAndArrangementOccurrences(songs *[]m
 			return db.Order("song_parts.song_order")
 		}).
 		Preload("Parts.ArrangementOccurrences").
-		Find(&songs, ids).
+		Find(songs, ids).
 		Error
 }
 
@@ -394,17 +394,17 @@ func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMem
 }
 
 func (s songRepository) Create(song *model.Song) error {
-	return s.client.Create(&song).Error
+	return s.client.Create(song).Error
 }
 
 func (s songRepository) Update(song *model.Song) error {
-	return s.client.Save(&song).Error
+	return s.client.Save(song).Error
 }
 
 func (s songRepository) UpdateAll(songs *[]model.Song) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, song := range *songs {
-			if err := tx.Save(&song).Error; err != nil {
+			if err := tx.Save(song).Error; err != nil {
 				return err
 			}
 		}
@@ -438,11 +438,11 @@ func (s songRepository) Delete(ids []uuid.UUID) error {
 // Settings
 
 func (s songRepository) GetSettings(settings *model.SongSettings, settingsID uuid.UUID) error {
-	return s.client.Find(&settings, settingsID).Error
+	return s.client.Find(settings, settingsID).Error
 }
 
 func (s songRepository) UpdateSettings(settings *model.SongSettings) error {
-	return s.client.Save(&settings).Error
+	return s.client.Save(settings).Error
 }
 
 // Guitar Tunings
@@ -451,7 +451,7 @@ func (s songRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, userID u
 	return s.client.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
 		Order("\"order\"").
-		Find(&tunings).
+		Find(tunings).
 		Error
 }
 
@@ -461,7 +461,7 @@ func (s songRepository) GetInstruments(instruments *[]model.Instrument, userID u
 	return s.client.Model(&model.Instrument{}).
 		Where(model.Instrument{UserID: userID}).
 		Order("\"order\"").
-		Find(&instruments).
+		Find(instruments).
 		Error
 }
 

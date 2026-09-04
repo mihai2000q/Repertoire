@@ -41,7 +41,7 @@ func (s songPartRepository) Get(part *model.SongPart, id uuid.UUID) error {
 }
 
 func (s songPartRepository) GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID) error {
-	return s.client.Find(&parts, ids).Error
+	return s.client.Find(parts, ids).Error
 }
 
 func (s songPartRepository) CountAllBySong(count *int64, songID uuid.UUID) error {
@@ -61,7 +61,7 @@ func (s songPartRepository) CountBySectionIDs(sectionIDs []uuid.UUID) (map[uuid.
 		Select("section_id, COUNT(*) AS count").
 		Where("section_id IN ?", sectionIDs).
 		Group("section_id").
-		Scan(&results).Error
+		Scan(results).Error
 	if err != nil {
 		return nil, err
 	}
@@ -74,17 +74,17 @@ func (s songPartRepository) CountBySectionIDs(sectionIDs []uuid.UUID) (map[uuid.
 }
 
 func (s songPartRepository) Create(part *model.SongPart) error {
-	return s.client.Create(&part).Error
+	return s.client.Create(part).Error
 }
 
 func (s songPartRepository) Update(part *model.SongPart) error {
-	return s.client.Save(&part).Error
+	return s.client.Save(part).Error
 }
 
 func (s songPartRepository) UpdateAll(parts *[]model.SongPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, part := range *parts {
-			if err := tx.Save(&part).Error; err != nil {
+			if err := tx.Save(part).Error; err != nil {
 				return err
 			}
 		}
@@ -105,10 +105,10 @@ func (s songPartRepository) GetHistory(
 ) error {
 	return s.client.
 		Order("created_at").
-		Find(&history, model.SongPartHistory{PartID: partID, Property: property}).
+		Find(history, model.SongPartHistory{PartID: partID, Property: property}).
 		Error
 }
 
 func (s songPartRepository) CreateHistory(history *model.SongPartHistory) error {
-	return s.client.Create(&history).Error
+	return s.client.Create(history).Error
 }

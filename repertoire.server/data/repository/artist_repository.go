@@ -55,7 +55,7 @@ func NewArtistRepository(client database.Client) ArtistRepository {
 }
 
 func (a artistRepository) Get(artist *model.Artist, id uuid.UUID) error {
-	return a.client.Find(&artist, model.Artist{ID: id}).Error
+	return a.client.Find(artist, model.Artist{ID: id}).Error
 }
 
 func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID) error {
@@ -64,7 +64,7 @@ func (a artistRepository) GetWithAssociations(artist *model.Artist, id uuid.UUID
 			return db.Order("band_members.order")
 		}).
 		Preload("BandMembers.Roles").
-		Find(&artist, model.Artist{ID: id}).
+		Find(artist, model.Artist{ID: id}).
 		Error
 }
 
@@ -73,7 +73,7 @@ func (a artistRepository) GetWithBandMembers(artist *model.Artist, id uuid.UUID)
 		Preload("BandMembers", func(db *gorm.DB) *gorm.DB {
 			return db.Order("band_members.order")
 		}).
-		Find(&artist, model.Artist{ID: id}).
+		Find(artist, model.Artist{ID: id}).
 		Error
 }
 
@@ -92,7 +92,7 @@ func (a artistRepository) GetWithSongsOrAlbums(
 		tx = tx.Preload("Songs").Preload("Songs.Album")
 	}
 
-	return tx.Find(&artist, id).Error
+	return tx.Find(artist, id).Error
 }
 
 func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetadata, userID uuid.UUID, searchBy []string) error {
@@ -121,7 +121,7 @@ func (a artistRepository) GetFiltersMetadata(metadata *model.ArtistFiltersMetada
 
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundArtistsFields)
 	database.SearchBy(tx, searchBy)
-	return tx.Scan(&metadata).Error
+	return tx.Scan(metadata).Error
 }
 
 func (a artistRepository) GetAllByIDs(
@@ -139,13 +139,13 @@ func (a artistRepository) GetAllByIDs(
 		tx = tx.Preload("Songs").Preload("Songs.Album")
 	}
 
-	return tx.Find(&artists, ids).Error
+	return tx.Find(artists, ids).Error
 }
 
 func (a artistRepository) GetAllByIDsWithSongs(artists *[]model.Artist, ids []uuid.UUID) error {
 	return a.client.Model(&model.Artist{}).
 		Preload("Songs").
-		Find(&artists, ids).
+		Find(artists, ids).
 		Error
 }
 
@@ -162,7 +162,7 @@ func (a artistRepository) GetAllByIDsWithSongPartsAndDefaultOccurrences(artists 
 				Joins("LEFT JOIN songs ON songs.id = song_parts.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
-		Find(&artists, ids).
+		Find(artists, ids).
 		Error
 }
 
@@ -192,7 +192,7 @@ func (a artistRepository) GetAllByUser(
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
 	database.Paginate(tx, currentPage, pageSize)
-	return tx.Find(&artists).Error
+	return tx.Find(artists).Error
 }
 
 func (a artistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
@@ -212,17 +212,17 @@ func (a artistRepository) GetAllByUserCount(count *int64, userID uuid.UUID, sear
 }
 
 func (a artistRepository) Create(artist *model.Artist) error {
-	return a.client.Create(&artist).Error
+	return a.client.Create(artist).Error
 }
 
 func (a artistRepository) Update(artist *model.Artist) error {
-	return a.client.Save(&artist).Error
+	return a.client.Save(artist).Error
 }
 
 func (a artistRepository) UpdateWithAssociations(artist *model.Artist) error {
 	return a.client.
 		Session(&gorm.Session{FullSaveAssociations: true}).
-		Updates(&artist).
+		Save(artist).
 		Error
 }
 
@@ -241,23 +241,23 @@ func (a artistRepository) DeleteSongs(ids []uuid.UUID) error {
 // Band Member
 
 func (a artistRepository) GetBandMember(bandMember *model.BandMember, id uuid.UUID) error {
-	return a.client.Find(&bandMember, id).Error
+	return a.client.Find(bandMember, id).Error
 }
 
 func (a artistRepository) GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error {
-	return a.client.Preload("Artist").Find(&bandMember, id).Error
+	return a.client.Preload("Artist").Find(bandMember, id).Error
 }
 
 func (a artistRepository) CreateBandMember(bandMember *model.BandMember) error {
-	return a.client.Create(&bandMember).Error
+	return a.client.Create(bandMember).Error
 }
 
 func (a artistRepository) UpdateBandMember(bandMember *model.BandMember) error {
-	return a.client.Save(&bandMember).Error
+	return a.client.Save(bandMember).Error
 }
 
 func (a artistRepository) ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error {
-	return a.client.Model(&bandMember).Association("Roles").Replace(roles)
+	return a.client.Model(bandMember).Association("Roles").Replace(roles)
 }
 
 func (a artistRepository) DeleteBandMember(id uuid.UUID) error {
@@ -267,11 +267,11 @@ func (a artistRepository) DeleteBandMember(id uuid.UUID) error {
 // Band Member - Roles
 
 func (a artistRepository) GetBandMemberRoles(bandMemberRoles *[]model.BandMemberRole, userID uuid.UUID) error {
-	return a.client.Find(&bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
+	return a.client.Find(bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
 }
 
 func (a artistRepository) GetBandMemberRolesByIDs(bandMemberRoles *[]model.BandMemberRole, ids []uuid.UUID) error {
-	return a.client.Find(&bandMemberRoles, ids).Error
+	return a.client.Find(bandMemberRoles, ids).Error
 }
 
 func (a artistRepository) addBandMembersSubQuery(tx *gorm.DB, userID uuid.UUID) string {

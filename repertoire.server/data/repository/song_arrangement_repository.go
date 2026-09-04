@@ -39,7 +39,7 @@ func (s songArrangementRepository) GetAllBySongWithPartOccurrences(
 	return s.client.
 		Preload("PartOccurrences").
 		Where("song_id = ?", songID).
-		Find(&arrangements, ids).
+		Find(arrangements, ids).
 		Error
 }
 
@@ -64,7 +64,7 @@ func (s songArrangementRepository) CountBySong(count *int64, songID uuid.UUID) e
 }
 
 func (s songArrangementRepository) Create(arrangement *model.SongArrangement) error {
-	return s.client.Create(&arrangement).Error
+	return s.client.Create(arrangement).Error
 }
 
 func (s songArrangementRepository) UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error {

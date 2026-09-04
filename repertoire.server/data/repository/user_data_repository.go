@@ -47,7 +47,7 @@ func NewUserDataRepository(client database.Client) UserDataRepository {
 // Band Member - Roles
 
 func (u userDataRepository) GetBandMemberRoles(bandMemberRoles *[]model.BandMemberRole, userID uuid.UUID) error {
-	return u.client.Find(&bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
+	return u.client.Find(bandMemberRoles, model.BandMemberRole{UserID: userID}).Error
 }
 
 func (u userDataRepository) CountBandMemberRoles(count *int64, userID uuid.UUID) error {
@@ -58,7 +58,7 @@ func (u userDataRepository) CountBandMemberRoles(count *int64, userID uuid.UUID)
 }
 
 func (u userDataRepository) CreateBandMemberRole(bandMemberRole *model.BandMemberRole) error {
-	return u.client.Create(&bandMemberRole).Error
+	return u.client.Create(bandMemberRole).Error
 }
 
 func (u userDataRepository) UpdateAllBandMemberRoles(bandMemberRoles *[]model.BandMemberRole) error {
@@ -82,7 +82,7 @@ func (u userDataRepository) GetGuitarTunings(tunings *[]model.GuitarTuning, user
 	return u.client.Model(&model.GuitarTuning{}).
 		Where(model.GuitarTuning{UserID: userID}).
 		Order("\"order\"").
-		Find(&tunings).
+		Find(tunings).
 		Error
 }
 
@@ -94,7 +94,7 @@ func (u userDataRepository) GetGuitarTuningsCount(count *int64, userID uuid.UUID
 }
 
 func (u userDataRepository) CreateGuitarTuning(tuning *model.GuitarTuning) error {
-	return u.client.Create(&tuning).Error
+	return u.client.Create(tuning).Error
 }
 
 func (u userDataRepository) UpdateAllGuitarTunings(tunings *[]model.GuitarTuning) error {
@@ -118,7 +118,7 @@ func (u userDataRepository) GetInstruments(instruments *[]model.Instrument, user
 	return u.client.Model(&model.Instrument{}).
 		Where(model.Instrument{UserID: userID}).
 		Order("\"order\"").
-		Find(&instruments).
+		Find(instruments).
 		Error
 }
 
@@ -130,7 +130,7 @@ func (u userDataRepository) GetInstrumentsCount(count *int64, userID uuid.UUID) 
 }
 
 func (u userDataRepository) CreateInstrument(instrument *model.Instrument) error {
-	return u.client.Create(&instrument).Error
+	return u.client.Create(instrument).Error
 }
 
 func (u userDataRepository) UpdateAllInstruments(instruments *[]model.Instrument) error {
@@ -154,7 +154,7 @@ func (u userDataRepository) GetSectionTypes(types *[]model.SongSectionType, user
 	return u.client.Model(&model.SongSectionType{}).
 		Where(model.SongSectionType{UserID: userID}).
 		Order("\"order\"").
-		Find(&types).
+		Find(types).
 		Error
 }
 
@@ -166,7 +166,7 @@ func (u userDataRepository) CountSectionTypes(count *int64, userID uuid.UUID) er
 }
 
 func (u userDataRepository) CreateSectionType(sectionType *model.SongSectionType) error {
-	return u.client.Create(&sectionType).Error
+	return u.client.Create(sectionType).Error
 }
 
 func (u userDataRepository) UpdateAllSectionTypes(sectionTypes *[]model.SongSectionType) error {

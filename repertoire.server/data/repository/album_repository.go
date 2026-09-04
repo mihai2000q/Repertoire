@@ -48,7 +48,7 @@ func NewAlbumRepository(client database.Client) AlbumRepository {
 }
 
 func (a albumRepository) Get(album *model.Album, id uuid.UUID) error {
-	return a.client.Find(&album, model.Album{ID: id}).Error
+	return a.client.Find(album, model.Album{ID: id}).Error
 }
 
 func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
@@ -56,7 +56,7 @@ func (a albumRepository) GetWithSongs(album *model.Album, id uuid.UUID) error {
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
-		Find(&album, model.Album{ID: id}).
+		Find(album, model.Album{ID: id}).
 		Error
 }
 
@@ -66,7 +66,7 @@ func (a albumRepository) GetWithSongsAndArtist(album *model.Album, id uuid.UUID)
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Joins("Artist")
 		}).
-		Find(&album, model.Album{ID: id}).
+		Find(album, model.Album{ID: id}).
 		Error
 }
 
@@ -76,7 +76,7 @@ func (a albumRepository) GetWithAssociations(album *model.Album, id uuid.UUID, s
 			return database.OrderBy(db, songsOrderBy)
 		}).
 		Joins("Artist").
-		Find(&album, model.Album{ID: id}).
+		Find(album, model.Album{ID: id}).
 		Error
 }
 
@@ -103,7 +103,7 @@ func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata
 
 	searchBy = database.AddCoalesceToCompoundFields(searchBy, compoundAlbumsFields)
 	database.SearchBy(tx, searchBy)
-	err := tx.Scan(&metadata).Error
+	err := tx.Scan(metadata).Error
 	if err != nil {
 		return err
 	}
@@ -114,7 +114,7 @@ func (a albumRepository) GetFiltersMetadata(metadata *model.AlbumFiltersMetadata
 }
 
 func (a albumRepository) GetAllByIDs(albums *[]model.Album, ids []uuid.UUID) error {
-	return a.client.Model(&model.Album{}).Find(&albums, ids).Error
+	return a.client.Model(&model.Album{}).Find(albums, ids).Error
 }
 
 func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.UUID) error {
@@ -122,7 +122,7 @@ func (a albumRepository) GetAllByIDsWithSongs(albums *[]model.Album, ids []uuid.
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Order("songs.album_track_no")
 		}).
-		Find(&albums, ids).
+		Find(albums, ids).
 		Error
 }
 
@@ -132,7 +132,7 @@ func (a albumRepository) GetAllByIDsWithSongsAndArtist(albums *[]model.Album, id
 		Preload("Songs", func(db *gorm.DB) *gorm.DB {
 			return db.Joins("Artist")
 		}).
-		Find(&albums, ids).
+		Find(albums, ids).
 		Error
 }
 
@@ -149,7 +149,7 @@ func (a albumRepository) GetAllByIDsWithSongPartsAndDefaultOccurrences(albums *[
 				Joins("LEFT JOIN songs ON songs.id = song_parts.song_id").
 				Where("arrangement_id = default_arrangement_id")
 		}).
-		Find(&albums, ids).
+		Find(albums, ids).
 		Error
 }
 
@@ -176,7 +176,7 @@ func (a albumRepository) GetAllByUser(
 	database.SearchBy(tx, searchBy)
 	database.OrderBy(tx, orderBy)
 	database.Paginate(tx, currentPage, pageSize)
-	return tx.Find(&albums).Error
+	return tx.Find(albums).Error
 }
 
 func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searchBy []string) error {
@@ -193,28 +193,28 @@ func (a albumRepository) GetAllByUserCount(count *int64, userID uuid.UUID, searc
 }
 
 func (a albumRepository) Create(album *model.Album) error {
-	return a.client.Create(&album).Error
+	return a.client.Create(album).Error
 }
 
 func (a albumRepository) Update(album *model.Album) error {
-	return a.client.Save(&album).Error
+	return a.client.Save(album).Error
 }
 
 func (a albumRepository) UpdateWithAssociations(album *model.Album) error {
 	return a.client.
 		Session(&gorm.Session{FullSaveAssociations: true}).
-		Updates(&album).
+		Save(album).
 		Error
 }
 
 func (a albumRepository) UpdateAllWithSongs(albums *[]model.Album) error {
 	return a.client.Transaction(func(tx *gorm.DB) error {
 		for _, album := range *albums {
-			if err := tx.Save(&album).Error; err != nil {
+			if err := tx.Save(album).Error; err != nil {
 				return err
 			}
 			for _, song := range album.Songs {
-				if err := tx.Save(&song).Error; err != nil {
+				if err := tx.Save(song).Error; err != nil {
 					return err
 				}
 			}
@@ -243,7 +243,7 @@ func (a albumRepository) DeleteWithSongs(ids []uuid.UUID) error {
 }
 
 func (a albumRepository) RemoveSongs(album *model.Album, songs *[]model.Song) error {
-	return a.client.Model(&album).Association("Songs").Delete(&songs)
+	return a.client.Model(album).Association("Songs").Delete(songs)
 }
 
 func (a albumRepository) addSongsSubQuery(tx *gorm.DB, userID uuid.UUID) {
