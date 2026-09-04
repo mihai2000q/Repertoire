@@ -11,7 +11,7 @@ type SongPartRepositoryMock struct {
 	mock.Mock
 }
 
-func (s *SongPartRepositoryMock) Get(part *model.SongPart, id uuid.UUID) error {
+func (s *SongPartRepositoryMock) GetWithSong(part *model.SongPart, id uuid.UUID) error {
 	args := s.Called(part, id)
 
 	if len(args) > 1 {

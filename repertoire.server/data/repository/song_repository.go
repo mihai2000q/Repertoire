@@ -40,7 +40,6 @@ type SongRepository interface {
 	GetAllByIDsWithPartsAndDefaultOccurrences(songs *[]model.Song, ids []uuid.UUID) error
 	GetAllByIDsWithPartsAndArrangementOccurrences(songs *[]model.Song, ids []uuid.UUID) error
 	CountByAlbum(count *int64, albumID uuid.UUID) error
-	IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error)
 	Create(song *model.Song) error
 	Update(song *model.Song) error
 	UpdateAll(songs *[]model.Song) error
@@ -378,19 +377,6 @@ func (s songRepository) CountByAlbum(count *int64, albumID uuid.UUID) error {
 		Where(model.Song{AlbumID: &albumID}).
 		Count(count).
 		Error
-}
-
-func (s songRepository) IsBandMemberAssociatedWithSong(songID uuid.UUID, bandMemberID uuid.UUID) (bool, error) {
-	var count int64
-	err := s.client.
-		Model(&model.Song{}).
-		Joins("JOIN artists ON artists.id = songs.artist_id").
-		Joins("JOIN band_members ON artists.id = band_members.artist_id").
-		Where("songs.id = ?", songID).
-		Where("band_members.id = ?", bandMemberID).
-		Count(&count).
-		Error
-	return count != 0, err
 }
 
 func (s songRepository) Create(song *model.Song) error {

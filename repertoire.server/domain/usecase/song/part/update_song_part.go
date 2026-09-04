@@ -16,7 +16,7 @@ import (
 
 type UpdateSongPart struct {
 	songPartRepository repository.SongPartRepository
-	songRepository     repository.SongRepository
+	artistRepository   repository.ArtistRepository
 	progressProcessor  processor.ProgressProcessor
 	transactionManager transaction.Manager
 
@@ -26,13 +26,13 @@ type UpdateSongPart struct {
 
 func NewUpdateSongPart(
 	songPartRepository repository.SongPartRepository,
-	songRepository repository.SongRepository,
+	artistRepository repository.ArtistRepository,
 	progressProcessor processor.ProgressProcessor,
 	transactionManager transaction.Manager,
 ) UpdateSongPart {
 	return UpdateSongPart{
 		songPartRepository: songPartRepository,
-		songRepository:     songRepository,
+		artistRepository:   artistRepository,
 		progressProcessor:  progressProcessor,
 		transactionManager: transactionManager,
 	}
@@ -40,7 +40,7 @@ func NewUpdateSongPart(
 
 func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperror.ErrorCode {
 	var part model.SongPart
-	if err := u.songPartRepository.Get(&part, request.ID); err != nil {
+	if err := u.songPartRepository.GetWithSong(&part, request.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(part).IsZero() {
@@ -57,12 +57,8 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 		part.BandMemberID != nil && request.BandMemberID != nil && *part.BandMemberID != *request.BandMemberID
 
 	if hasBandMemberChanged && request.BandMemberID != nil {
-		res, err := u.songRepository.IsBandMemberAssociatedWithSong(part.SongID, *request.BandMemberID)
-		if err != nil {
-			return httperror.DatabaseError(err)
-		}
-		if !res {
-			return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
+		if errCode := u.validateBandMember(*request.BandMemberID, part.Song); errCode != nil {
+			return errCode
 		}
 	}
 
@@ -113,6 +109,22 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 	})
 	if err != nil {
 		return httperror.DatabaseError(err)
+	}
+
+	return nil
+}
+
+func (u UpdateSongPart) validateBandMember(id uuid.UUID, song model.Song) *httperror.ErrorCode {
+	var member model.BandMember
+	if err := u.artistRepository.GetBandMember(&member, id); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(member).IsZero() {
+		return httperror.NotFoundError(errors.New("band member not found"))
+	}
+
+	if song.ArtistID == nil || *song.ArtistID != member.ArtistID {
+		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 	}
 
 	return nil
@@ -174,14 +186,12 @@ func (u UpdateSongPart) updateConfidence(
 
 func (u UpdateSongPart) updateSongStats(oldPart model.SongPart, newPart model.SongPart) error {
 	// fetch song and the number of parts in it
-	var song model.Song
 	var songPartsCount int64
-	if err := u.txSongRepo.Get(&song, newPart.SongID); err != nil {
-		return err
-	}
 	if err := u.txSongPartRepo.CountAllBySong(&songPartsCount, newPart.SongID); err != nil {
 		return err
 	}
+
+	song := newPart.Song
 
 	// recalculate song medians using old and new values
 	totalConfidence := song.Confidence*float64(songPartsCount) - float64(oldPart.Confidence) + float64(newPart.Confidence)

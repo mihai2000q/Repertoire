@@ -15,6 +15,7 @@ import (
 type CreateSongPart struct {
 	songSectionRepository repository.SongSectionRepository
 	songRepository        repository.SongRepository
+	artistRepository      repository.ArtistRepository
 	transactionManager    transaction.Manager
 
 	txSongRepo            repository.SongRepository
@@ -25,57 +26,42 @@ type CreateSongPart struct {
 func NewCreateSongPart(
 	songSectionRepository repository.SongSectionRepository,
 	songRepository repository.SongRepository,
+	artistRepository repository.ArtistRepository,
 	transactionManager transaction.Manager,
 ) CreateSongPart {
 	return CreateSongPart{
 		songSectionRepository: songSectionRepository,
 		songRepository:        songRepository,
+		artistRepository:      artistRepository,
 		transactionManager:    transactionManager,
 	}
 }
 
 func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *httperror.ErrorCode {
-	// Validate sections
 	if len(request.SectionIDs) > 0 {
-		var sections []model.SongSection
-		if err := c.songSectionRepository.GetAllByIDs(&sections, request.SectionIDs); err != nil {
-			return httperror.DatabaseError(err)
-		}
-		if len(sections) != len(request.SectionIDs) {
-			return httperror.NotFoundError(errors.New("sections not found"))
-		}
-		for _, section := range sections {
-			if section.SongID != request.SongID {
-				return httperror.ConflictError(errors.New("section does not belong to the same song"))
-			}
+		if errCode := c.validateSections(request); errCode != nil {
+			return errCode
 		}
 	}
 
-	// Validate band member
+	var song model.Song
+	if err := c.songRepository.Get(&song, request.SongID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(song).IsZero() {
+		return httperror.NotFoundError(errors.New("song not found"))
+	}
+
 	if request.BandMemberID != nil {
-		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
-		if err != nil {
-			return httperror.DatabaseError(err)
-		}
-		if !res {
-			return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
+		if errCode := c.validateBandMember(*request.BandMemberID, song); errCode != nil {
+			return errCode
 		}
 	}
 
-	var errCode *httperror.ErrorCode
 	err := c.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		c.txSongRepo = factory.NewSongRepository()
 		c.txSongPartRepo = factory.NewSongPartRepository()
 		c.txSongArrangementRepo = factory.NewSongArrangementRepository()
-
-		var song model.Song
-		if err := c.txSongRepo.Get(&song, request.SongID); err != nil {
-			return err
-		}
-		if reflect.ValueOf(song).IsZero() {
-			errCode = httperror.NotFoundError(errors.New("song not found"))
-			return errCode.Error
-		}
 
 		var songPartsCount int64
 		if err := c.txSongPartRepo.CountAllBySong(&songPartsCount, request.SongID); err != nil {
@@ -111,10 +97,39 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *httperro
 		return nil
 	})
 	if err != nil {
-		if errCode != nil {
-			return errCode
-		}
 		return httperror.DatabaseError(err)
+	}
+
+	return nil
+}
+
+func (c CreateSongPart) validateSections(request requests.CreateSongPartRequest) *httperror.ErrorCode {
+	var sections []model.SongSection
+	if err := c.songSectionRepository.GetAllByIDs(&sections, request.SectionIDs); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if len(sections) != len(request.SectionIDs) {
+		return httperror.NotFoundError(errors.New("sections not found"))
+	}
+	for _, section := range sections {
+		if section.SongID != request.SongID {
+			return httperror.ConflictError(errors.New("section does not belong to the same song"))
+		}
+	}
+	return nil
+}
+
+func (c CreateSongPart) validateBandMember(id uuid.UUID, song model.Song) *httperror.ErrorCode {
+	var member model.BandMember
+	if err := c.artistRepository.GetBandMember(&member, id); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(member).IsZero() {
+		return httperror.NotFoundError(errors.New("band member not found"))
+	}
+
+	if song.ArtistID == nil || *song.ArtistID != member.ArtistID {
+		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 	}
 
 	return nil
