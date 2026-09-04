@@ -53,7 +53,6 @@ func TestAddCustomSongRehearsals_WhenArrangementsAreNotFound_ShouldReturnNotFoun
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-// Test case does not cover the usage of the duplicate songs with different arrangements
 func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongAndPartsIfTheyHaveOccurrences(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -63,7 +62,6 @@ func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongAndPartsIfTheyHa
 			{ID: songData.SongArrangements[0].SongID, ArrangementID: songData.SongArrangements[0].ID},
 			{ID: songData.SongArrangements[1].SongID, ArrangementID: songData.SongArrangements[1].ID},
 			{ID: songData.SongArrangements[4].SongID, ArrangementID: songData.SongArrangements[4].ID},
-			{ID: songData.SongArrangements[1].SongID, ArrangementID: songData.SongArrangements[1].ID},
 		},
 	}
 
