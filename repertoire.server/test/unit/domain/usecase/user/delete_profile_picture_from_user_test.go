@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteProfilePictureFromUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -24,14 +25,14 @@ func TestDeleteProfilePictureFromUser_WhenGetUserIdFromJwtFails_ShouldReturnTheE
 	token := "this is a token"
 
 	// given - mocking
-	err := wrapper.ForbiddenError(errors.New("forbidden error"))
+	err := httperror.ForbiddenError(errors.New("forbidden error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
 
 	// when
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, err, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -56,7 +57,7 @@ func TestDeleteProfilePictureFromUser_WhenGetUserFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -82,7 +83,7 @@ func TestDeleteProfilePictureFromUser_WhenUserIsEmpty_ShouldReturnNotFoundError(
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 
@@ -90,7 +91,7 @@ func TestDeleteProfilePictureFromUser_WhenUserIsEmpty_ShouldReturnNotFoundError(
 	userRepository.AssertExpectations(t)
 }
 
-func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnNoError(t *testing.T) {
 	// given
 	jwtService := new(service.JwtServiceMock)
 	userRepository := new(repository.UserRepositoryMock)
@@ -109,9 +110,7 @@ func TestDeleteProfilePictureFromUser_WhenUserHasNoProfilePicture_ShouldReturnCo
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "user does not have a profile picture", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	jwtService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)
@@ -133,14 +132,14 @@ func TestDeleteProfilePictureFromUser_WhenDeleteProfilePictureFails_ShouldReturn
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"This is some url"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -175,7 +174,7 @@ func TestDeleteProfilePictureFromUser_WhenUpdateUserFails_ShouldReturnInternalSe
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -32,14 +32,12 @@ func NewSongsUpdatedHandler(
 
 func (s SongsUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	var ids []uuid.UUID
-	err := json.Unmarshal(msg.Payload, &ids)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &ids); err != nil {
 		return err
 	}
 
 	var songs []model.Song
-	err = s.songRepository.GetAllByIDsWithArtistAndAlbum(&songs, ids)
-	if err != nil {
+	if err := s.songRepository.GetAllByIDsWithArtistAndAlbum(&songs, ids); err != nil {
 		return err
 	}
 	if len(songs) == 0 {
@@ -51,7 +49,7 @@ func (s SongsUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 		songSearches = append(songSearches, song.ToSearch())
 	}
 
-	err = s.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, songSearches)
+	err := s.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, songSearches)
 	if err != nil {
 		return err
 	}

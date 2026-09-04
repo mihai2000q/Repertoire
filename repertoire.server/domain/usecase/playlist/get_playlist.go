@@ -5,27 +5,26 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type GetPlaylist struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewGetPlaylist(repository repository.PlaylistRepository) GetPlaylist {
+func NewGetPlaylist(playlistRepository repository.PlaylistRepository) GetPlaylist {
 	return GetPlaylist{
-		repository: repository,
+		playlistRepository: playlistRepository,
 	}
 }
 
-func (g GetPlaylist) Handle(request requests.GetPlaylistRequest) (playlist model.Playlist, e *wrapper.ErrorCode) {
-	err := g.repository.Get(&playlist, request.ID)
-	if err != nil {
-		return playlist, wrapper.InternalServerError(err)
+func (g GetPlaylist) Handle(request requests.GetPlaylistRequest) (playlist model.Playlist, e *httperror.ErrorCode) {
+	if err := g.playlistRepository.Get(&playlist, request.ID); err != nil {
+		return playlist, httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
-		return playlist, wrapper.NotFoundError(errors.New("playlist not found"))
+		return playlist, httperror.NotFoundError(errors.New("playlist not found"))
 	}
 	return playlist, nil
 }

@@ -34,7 +34,7 @@ func TestRemoveSongsFromAlbum_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *t
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestRemoveSongsFromAlbum_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveSongsFromAlbum_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 

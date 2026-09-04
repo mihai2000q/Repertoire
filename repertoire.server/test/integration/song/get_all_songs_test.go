@@ -35,6 +35,7 @@ func TestGetAllSongs_WhenSuccessful_ShouldReturnSongs(t *testing.T) {
 	db.Joins("Album").
 		Joins("Artist").
 		Joins("GuitarTuning").
+		Preload("Parts").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Find(&songs)
@@ -64,6 +65,7 @@ func TestGetAllSongs_WhenSuccessfulWithArrangements_ShouldReturnSongsWithArrange
 	db.Joins("Album").
 		Joins("Artist").
 		Joins("GuitarTuning").
+		Preload("Parts").
 		Preload("Sections").
 		Preload("Sections.SongSectionType").
 		Preload("Arrangements", func(db *gorm.DB) *gorm.DB {

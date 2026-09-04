@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSearchMeiliWebhook_WhenTaskHasNotSucceeded_ShouldReturnError(t *testing.T) {
@@ -35,7 +36,7 @@ func TestSearchMeiliWebhook_WhenTaskHasNotSucceeded_ShouldReturnError(t *testing
 	errCode := _uut.Handle(writeRequestBody(task))
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Contains(t, errCode.Error.Error(), "meilisearch task")
 	assert.Contains(t, errCode.Error.Error(), "failed")
@@ -74,7 +75,7 @@ func TestSearchMeiliWebhook_WhenPublishFails_ShouldReturnError(t *testing.T) {
 	errCode := _uut.Handle(writeRequestBody(task))
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

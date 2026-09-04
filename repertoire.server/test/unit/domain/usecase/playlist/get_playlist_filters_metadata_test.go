@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnInternalServerErrorError(t *testing.T) {
@@ -24,7 +25,7 @@ func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnIntern
 	request := requests.GetPlaylistFiltersMetadataRequest{}
 	token := "some token"
 
-	internalError := wrapper.InternalServerError(errors.New("some internal error"))
+	internalError := httperror.InternalServerError(errors.New("some internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalError).Once()
 
 	// when
@@ -32,7 +33,7 @@ func TestGetPlaylistFiltersMetadata_WhenGetUserIdFromJwtFails_ShouldReturnIntern
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -61,7 +62,7 @@ func TestGetPlaylistFiltersMetadata_WhenGetFails_ShouldReturnInternalServerError
 
 	// then
 	assert.Empty(t, result)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

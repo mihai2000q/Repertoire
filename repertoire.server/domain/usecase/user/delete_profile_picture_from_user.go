@@ -5,55 +5,52 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type DeleteProfilePictureFromUser struct {
-	repository     repository.UserRepository
+	userRepository repository.UserRepository
 	jwtService     service.JwtService
 	storageService service.StorageService
 }
 
 func NewDeleteProfilePictureFromUser(
-	repository repository.UserRepository,
+	userRepository repository.UserRepository,
 	jwtService service.JwtService,
 	storageService service.StorageService,
 ) DeleteProfilePictureFromUser {
 	return DeleteProfilePictureFromUser{
-		repository:     repository,
+		userRepository: userRepository,
 		jwtService:     jwtService,
 		storageService: storageService,
 	}
 }
 
-func (d DeleteProfilePictureFromUser) Handle(token string) *wrapper.ErrorCode {
+func (d DeleteProfilePictureFromUser) Handle(token string) *httperror.ErrorCode {
 	id, errCode := d.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return errCode
 	}
 
 	var user model.User
-	err := d.repository.Get(&user, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.userRepository.Get(&user, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
-		return wrapper.NotFoundError(errors.New("user not found"))
+		return httperror.NotFoundError(errors.New("user not found"))
 	}
 	if user.ProfilePictureURL == nil {
-		return wrapper.ConflictError(errors.New("user does not have a profile picture"))
+		return nil
 	}
 
-	errCode = d.storageService.DeleteFile(*user.ProfilePictureURL)
-	if errCode != nil {
+	if errCode = d.storageService.DeleteFile(*user.ProfilePictureURL); errCode != nil {
 		return errCode
 	}
 
 	user.ProfilePictureURL = nil
-	err = d.repository.Update(&user)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.userRepository.Update(&user); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

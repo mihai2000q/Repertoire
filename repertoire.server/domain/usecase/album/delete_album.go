@@ -6,55 +6,54 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )
 
 type DeleteAlbum struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteAlbum(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteAlbum {
 	return DeleteAlbum{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *wrapper.ErrorCode {
+func (d DeleteAlbum) Handle(request requests.DeleteAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
 	var err error
 	if request.WithSongs {
-		err = d.repository.GetWithSongs(&album, request.ID)
+		err = d.albumRepository.GetWithSongs(&album, request.ID)
 	} else {
-		err = d.repository.Get(&album, request.ID)
+		err = d.albumRepository.Get(&album, request.ID)
 	}
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	if request.WithSongs {
-		err = d.repository.DeleteWithSongs([]uuid.UUID{request.ID})
+		err = d.albumRepository.DeleteWithSongs([]uuid.UUID{request.ID})
 	} else {
-		err = d.repository.Delete([]uuid.UUID{request.ID})
+		err = d.albumRepository.Delete([]uuid.UUID{request.ID})
 	}
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err = d.messagePublisherService.Publish(topics.AlbumsDeletedTopic, []model.Album{album}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestMoveSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestMoveSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -76,7 +77,12 @@ func TestMoveSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundError
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := arrangement.NewMoveSongArrangement(songRepository)
 
-	song := &model.Song{ID: uuid.New()}
+	song := &model.Song{
+		ID: uuid.New(),
+		Arrangements: []model.SongArrangement{
+			{ID: uuid.New()},
+		},
+	}
 
 	request := requests.MoveSongArrangementRequest{
 		ID:     uuid.New(),
@@ -93,7 +99,7 @@ func TestMoveSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "arrangement not found", errCode.Error.Error())
 
@@ -127,7 +133,7 @@ func TestMoveSongArrangement_WhenOverArrangementIsNotFound_ShouldReturnNotFoundE
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over arrangement not found", errCode.Error.Error())
 
@@ -167,7 +173,7 @@ func TestMoveSongArrangement_WhenUpdateFails_ShouldReturnInternalServerError(t *
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

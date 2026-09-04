@@ -8,6 +8,7 @@ import (
 	"repertoire/server/test/integration/test/core"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
+	"slices"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,12 +16,12 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestCreateSongSection_WhenTypeIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.CreateSongSectionRequest{
-		SongID: uuid.New(),
+		SongID: songData.Songs[0].ID,
 		Name:   "Chorus 1-New",
 		TypeID: uuid.New(),
 	}
@@ -33,67 +34,46 @@ func TestCreateSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testi
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCreateSongSection_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
-	tests := []struct {
-		name string
-		song model.Song
-	}{
-		{
-			"Song without artist",
-			songData.Songs[4],
-		},
-		{
-			"Song with artist but without that member",
-			songData.Songs[0],
-		},
+func TestCreateSongSection_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongSectionRequest{
+		SongID:  songData.Songs[0].ID,
+		Name:    "Chorus 1-New",
+		TypeID:  songData.Users[0].SongSectionTypes[0].ID,
+		PartIDs: []uuid.UUID{uuid.New()},
 	}
 
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			// given
-			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/sections", request)
 
-			request := requests.CreateSongSectionRequest{
-				SongID:       test.song.ID,
-				Name:         "Chorus 1-New",
-				TypeID:       uuid.New(),
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
-			}
-
-			// when
-			w := httptest.NewRecorder()
-			core.NewTestHandler().POST(w, "/api/songs/sections", request)
-
-			// then
-			assert.Equal(t, http.StatusConflict, w.Code)
-		})
-	}
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 	tests := []struct {
-		name         string
-		song         model.Song
-		bandMemberID *uuid.UUID
-		instrumentID *uuid.UUID
+		name    string
+		request requests.CreateSongSectionRequest
 	}{
 		{
-			"Without Band Member or Instrument",
-			songData.Songs[0],
-			nil,
-			nil,
+			"Without Parts",
+			requests.CreateSongSectionRequest{
+				SongID: songData.Songs[0].ID,
+				Name:   "Chorus 1-New",
+				TypeID: songData.Users[0].SongSectionTypes[0].ID,
+			},
 		},
 		{
-			"With Band Member",
-			songData.Songs[0],
-			&songData.Artists[0].BandMembers[0].ID,
-			nil,
-		},
-		{
-			"With Instrument",
-			songData.Songs[0],
-			nil,
-			&songData.Users[0].Instruments[0].ID,
+			"With Parts",
+			requests.CreateSongSectionRequest{
+				SongID:  songData.Songs[0].ID,
+				Name:    "Chorus 1-New",
+				TypeID:  songData.Users[0].SongSectionTypes[0].ID,
+				PartIDs: []uuid.UUID{songData.SongParts[0].ID},
+			},
 		},
 	}
 
@@ -102,58 +82,26 @@ func TestCreateSongSection_WhenSuccessful_ShouldCreateSection(t *testing.T) {
 			// given
 			utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
-			// song with sections and previous stats
-			song := songData.Songs[0]
-			request := requests.CreateSongSectionRequest{
-				SongID:       song.ID,
-				Name:         "Chorus 1-New",
-				TypeID:       songData.Users[0].SongSectionTypes[0].ID,
-				BandMemberID: test.bandMemberID,
-				InstrumentID: test.instrumentID,
-			}
-
-			db := utils.GetDatabase(t)
-			var oldArrangements []model.SongArrangement
-			var sectionsCount int64
-			db.Preload("SectionOccurrences").
-				Where(&model.SongArrangement{SongID: song.ID}).
-				Order("\"order\"").
-				Find(&oldArrangements)
-			db.Model(&model.SongSection{}).Where(&model.SongSection{SongID: song.ID}).Count(&sectionsCount)
+			sectionsCount := len(slices.Clone(slices.DeleteFunc(slices.Clone(songData.SongParts), func(part model.SongPart) bool {
+				return part.SongID != test.request.SongID
+			})))
 
 			// when
 			w := httptest.NewRecorder()
-			core.NewTestHandler().POST(w, "/api/songs/sections", request)
+			core.NewTestHandler().POST(w, "/api/songs/sections", test.request)
 
 			// then
 			assert.Equal(t, http.StatusOK, w.Code)
 
-			db = db.Session(&gorm.Session{NewDB: true})
-
+			db := utils.GetDatabase(t)
 			var section model.SongSection
-			db.Preload("Song").
-				Preload("Song.Arrangements", func(db *gorm.DB) *gorm.DB { return db.Order("\"order\"") }).
-				Preload("Song.Arrangements.SectionOccurrences", func(db *gorm.DB) *gorm.DB {
-					return db.
-						Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
-						Order("song_sections.order DESC")
+			db.
+				Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+					return db.Order("\"order\"")
 				}).
-				Preload("Song.Arrangements.SectionOccurrences.Section").
-				Find(&section, &model.SongSection{Name: request.Name})
+				Find(&section, &model.SongSection{Name: test.request.Name})
 
-			assert.LessOrEqual(t, section.Song.Confidence, song.Confidence)
-			assert.LessOrEqual(t, section.Song.Rehearsals, song.Rehearsals)
-			assert.LessOrEqual(t, section.Song.Progress, song.Progress)
-
-			for i, arrangement := range section.Song.Arrangements {
-				assert.Len(t, arrangement.SectionOccurrences, len(oldArrangements[i].SectionOccurrences)+1)
-				newOccurrence := arrangement.SectionOccurrences[0]
-				assert.Equal(t, section.ID, newOccurrence.SectionID)
-				assert.Equal(t, arrangement.ID, newOccurrence.ArrangementID)
-				assert.Zero(t, newOccurrence.Occurrences)
-			}
-
-			assertCreatedSongSection(t, section, request, sectionsCount)
+			assertCreatedSongSection(t, section, test.request, sectionsCount)
 		})
 	}
 }
@@ -162,18 +110,17 @@ func assertCreatedSongSection(
 	t *testing.T,
 	songSection model.SongSection,
 	request requests.CreateSongSectionRequest,
-	order int64,
+	order int,
 ) {
 	assert.NotEmpty(t, songSection.ID)
 	assert.Equal(t, request.SongID, songSection.SongID)
 	assert.Equal(t, request.Name, songSection.Name)
 	assert.Equal(t, request.TypeID, songSection.SongSectionTypeID)
-	assert.Equal(t, request.BandMemberID, songSection.BandMemberID)
-	assert.Equal(t, request.InstrumentID, songSection.InstrumentID)
-	assert.Zero(t, songSection.Rehearsals)
-	assert.Equal(t, model.DefaultSongSectionConfidence, songSection.Confidence)
-	assert.Zero(t, songSection.RehearsalsScore)
-	assert.Zero(t, songSection.ConfidenceScore)
-	assert.Zero(t, songSection.Progress)
 	assert.Equal(t, uint(order), songSection.Order)
+
+	for i, sectionPart := range songSection.SectionParts {
+		assert.Equal(t, request.PartIDs[i], sectionPart.PartID)
+		assert.Equal(t, songSection.ID, sectionPart.SectionID)
+		assert.Equal(t, uint(i), sectionPart.Order)
+	}
 }

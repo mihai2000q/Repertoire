@@ -30,7 +30,11 @@ func TestGetSongFiltersMetadata_WhenSuccessful_ShouldReturnSongFiltersMetadata(t
 
 	var songs []model.Song
 	db := utils.GetDatabase(t)
-	db.Preload("Sections").Preload("Sections.SongSectionType").Find(&songs)
+	db.
+		Preload("Parts").
+		Preload("Sections").
+		Preload("Sections.SongSectionType").
+		Find(&songs)
 
 	assertion.SongFiltersMetadata(t, metadata, songs)
 }

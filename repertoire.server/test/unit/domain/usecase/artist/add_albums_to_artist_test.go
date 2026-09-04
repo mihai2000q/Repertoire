@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddAlbumsToArtist_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,9 +36,34 @@ func TestAddAlbumsToArtist_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	albumRepository.AssertExpectations(t)
+}
+
+func TestAddAlbumsToArtist_WhenAlbumsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	_uut := artist.NewAddAlbumsToArtist(albumRepository, nil)
+
+	request := requests.AddAlbumsToArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	albumRepository.On("GetAllByIDsWithSongs", mock.Anything, request.AlbumIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "albums not found", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 }
@@ -66,7 +92,7 @@ func TestAddAlbumsToArtist_WhenOneAlbumAlreadyHasArtist_ShouldReturnConflictErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "album "+request.AlbumIDs[0].String()+" already has an artist", errCode.Error.Error())
 
@@ -97,7 +123,7 @@ func TestAddAlbumsToArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -133,7 +159,7 @@ func TestAddAlbumsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -5,39 +5,45 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
-	"slices"
+
+	"github.com/google/uuid"
 )
 
 type RemoveSongsFromPlaylist struct {
-	repository  repository.PlaylistRepository
-	transaction transaction.Manager
+	playlistRepository repository.PlaylistRepository
+	transaction        transaction.Manager
 }
 
 func NewRemoveSongsFromPlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	transaction transaction.Manager,
 ) RemoveSongsFromPlaylist {
 	return RemoveSongsFromPlaylist{
-		repository:  repository,
-		transaction: transaction,
+		playlistRepository: playlistRepository,
+		transaction:        transaction,
 	}
 }
 
-func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylistRequest) *wrapper.ErrorCode {
+func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylistRequest) *httperror.ErrorCode {
 	var playlistSongs []model.PlaylistSong
-	err := r.repository.GetPlaylistSongs(&playlistSongs, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := r.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+
+	// map for easy lookup
+	idsMap := make(map[uuid.UUID]bool)
+	for _, iD := range request.PlaylistSongIDs {
+		idsMap[iD] = true
 	}
 
 	var songsToDelete []model.PlaylistSong
 	var songsToPreserve []model.PlaylistSong
-
 	songTrackNo := uint(1)
+
 	for _, playlistSong := range playlistSongs {
-		if slices.Contains(request.PlaylistSongIDs, playlistSong.ID) {
+		if idsMap[playlistSong.ID] {
 			songsToDelete = append(songsToDelete, playlistSong)
 		} else {
 			// reorder preserved songs
@@ -48,22 +54,21 @@ func (r RemoveSongsFromPlaylist) Handle(request requests.RemoveSongsFromPlaylist
 	}
 
 	if len(songsToDelete) != len(request.PlaylistSongIDs) {
-		return wrapper.NotFoundError(errors.New("could not find all songs"))
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
-	err = r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
-		playlistRepo := factory.NewPlaylistRepository()
-
-		if err := playlistRepo.RemoveSongs(&songsToDelete); err != nil {
+	err := r.transaction.Execute(func(factory transaction.RepositoryFactory) error {
+		txPlaylistRepo := factory.NewPlaylistRepository()
+		if err := txPlaylistRepo.RemoveSongs(&songsToDelete); err != nil {
 			return err
 		}
-		if err := playlistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
+		if err := txPlaylistRepo.UpdateAllPlaylistSongs(&songsToPreserve); err != nil {
 			return err
-		} // preserver order
+		}
 		return nil
 	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

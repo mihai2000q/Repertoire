@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,9 +36,34 @@ func TestRemoveSongsFromArtist_WhenGetSongFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestRemoveSongsFromArtist_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := artist.NewRemoveSongsFromArtist(songRepository, nil)
+
+	request := requests.RemoveSongsFromArtistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+	}
+
+	songRepository.On("GetAllByIDs", mock.Anything, request.SongIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "songs not found", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }
@@ -49,7 +75,7 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflic
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
@@ -66,7 +92,7 @@ func TestRemoveSongsFromArtist_WhenOneSongArtistDoesNotMatch_ShouldReturnConflic
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" is not owned by this artist", errCode.Error.Error())
 
@@ -80,7 +106,7 @@ func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServe
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
@@ -102,7 +128,7 @@ func TestRemoveSongsFromArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -117,7 +143,7 @@ func TestRemoveSongsFromArtist_WhenPublishFails_ShouldReturnInternalServerError(
 
 	request := requests.RemoveSongsFromArtistRequest{
 		ID:      uuid.New(),
-		SongIDs: []uuid.UUID{uuid.New(), uuid.New()},
+		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	songs := &[]model.Song{
@@ -143,7 +169,7 @@ func TestRemoveSongsFromArtist_WhenPublishFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

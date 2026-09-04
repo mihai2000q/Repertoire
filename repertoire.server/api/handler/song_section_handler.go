@@ -45,23 +45,6 @@ func (s SongSectionHandler) Create(c *gin.Context) {
 	s.SendMessage(c, "song section has been created successfully!")
 }
 
-func (s SongSectionHandler) BulkRehearsals(c *gin.Context) {
-	var request requests.BulkRehearsalsSongSectionsRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = s.service.BulkRehearsals(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song sections' rehearsals have been updated successfully!")
-}
-
 func (s SongSectionHandler) Update(c *gin.Context) {
 	var request requests.UpdateSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)
@@ -77,23 +60,6 @@ func (s SongSectionHandler) Update(c *gin.Context) {
 	}
 
 	s.SendMessage(c, "song section has been updated successfully!")
-}
-
-func (s SongSectionHandler) UpdateAll(c *gin.Context) {
-	var request requests.UpdateAllSongSectionsRequest
-	errorCode := s.BindAndValidate(c, &request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	errorCode = s.service.UpdateAll(request)
-	if errorCode != nil {
-		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
-		return
-	}
-
-	s.SendMessage(c, "song's sections have been updated successfully based on settings!")
 }
 
 func (s SongSectionHandler) Move(c *gin.Context) {
@@ -143,7 +109,9 @@ func (s SongSectionHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	errorCode := s.service.Delete(id, songID)
+	withParts := c.Query("withParts") == "true"
+
+	errorCode := s.service.Delete(id, songID, withParts)
 	if errorCode != nil {
 		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
 		return

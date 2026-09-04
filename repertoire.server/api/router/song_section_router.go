@@ -14,9 +14,7 @@ func (s SongSectionRouter) RegisterRoutes() {
 	api := s.requestHandler.PrivateRouter.Group("/songs/sections")
 	{
 		api.POST("", s.handler.Create)
-		api.POST("bulk-rehearsals", s.handler.BulkRehearsals)
 		api.PUT("", s.handler.Update)
-		api.PUT("/all", s.handler.UpdateAll)
 		api.PUT("/move", s.handler.Move)
 		api.PUT("/bulk-delete", s.handler.BulkDelete)
 		api.DELETE("/:id/from/:songID", s.handler.Delete)

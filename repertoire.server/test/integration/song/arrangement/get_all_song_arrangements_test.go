@@ -33,20 +33,19 @@ func TestGetAllSongArrangements_WhenSuccessful_ShouldReturnSongArrangements(t *t
 
 	db := utils.GetDatabase(t)
 
-	var songs []model.SongArrangement
+	var arrangements []model.SongArrangement
 	db.Where(&model.SongArrangement{}).
-		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+		Preload("PartOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
-				Order("song_sections.order")
+				Joins("LEFT JOIN song_parts ON song_parts.id = song_part_occurrences.part_id").
+				Order("song_parts.song_order")
 		}).
-		Preload("SectionOccurrences.Section").
-		Preload("SectionOccurrences.Section.SongSectionType").
+		Preload("PartOccurrences.Part").
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
-		Find(&songs)
+		Find(&arrangements)
 
 	for i := range responseSongArrangements {
-		assertion.ResponseSongArrangement(t, songs[i], responseSongArrangements[i], true)
+		assertion.ResponseSongArrangement(t, arrangements[i], responseSongArrangements[i], true)
 	}
 }

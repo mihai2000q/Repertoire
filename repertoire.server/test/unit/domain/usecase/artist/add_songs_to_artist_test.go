@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -27,7 +28,7 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	}
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetAllByIDsWithSongs", mock.Anything, request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.Anything, request.SongIDs).
 		Return(internalError).
 		Once()
 
@@ -35,9 +36,34 @@ func TestAddSongsToArtist_WhenGetSongWithSongsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToArtist_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := artist.NewAddSongsToArtist(songRepository, nil)
+
+	request := requests.AddSongsToArtistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.Anything, request.SongIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "songs not found", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }
@@ -58,7 +84,7 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *test
 			ArtistID: &[]uuid.UUID{uuid.New()}[0],
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(&songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(&songs), request.SongIDs).
 		Return(nil, &songs).
 		Once()
 
@@ -66,9 +92,9 @@ func TestAddSongsToArtist_WhenOneSongHasArtist_ShouldReturnConflictError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "song "+songs[0].ID.String()+"already has an artist", errCode.Error.Error())
+	assert.Equal(t, "song "+songs[0].ID.String()+" already has an artist", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }
@@ -89,7 +115,7 @@ func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerErro
 			ArtistID: nil,
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(songs), request.SongIDs).
 		Return(nil, songs).
 		Once()
 
@@ -102,14 +128,14 @@ func TestAddSongsToArtist_WhenUpdateAllSongsFails_ShouldReturnInternalServerErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
 }
 
-func TestAddSongsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestAddSongsToArtist_WhenPublishSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
@@ -126,7 +152,7 @@ func TestAddSongsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *te
 			ArtistID: nil,
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(songs), request.SongIDs).
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(songs), request.SongIDs).
 		Return(nil, songs).
 		Once()
 
@@ -143,7 +169,51 @@ func TestAddSongsToArtist_WhenPublishFails_ShouldReturnInternalServerError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	messagePublisherService.AssertExpectations(t)
+}
+
+func TestAddSongsToArtist_WhenPublishAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	messagePublisherService := new(service.MessagePublisherServiceMock)
+	_uut := artist.NewAddSongsToArtist(songRepository, messagePublisherService)
+
+	request := requests.AddSongsToArtistRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	songs := &[]model.Song{
+		{
+			ID:       request.SongIDs[0],
+			Album:    &model.Album{ID: uuid.New()},
+			ArtistID: nil,
+		},
+	}
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(songs), request.SongIDs).
+		Return(nil, songs).
+		Once()
+
+	songRepository.On("UpdateAllWithAssociations", mock.IsType(songs)).
+		Return(nil).
+		Once()
+
+	albumIDs := []uuid.UUID{(*songs)[0].Album.ID}
+	internalError := errors.New("internal error")
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, albumIDs).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -181,7 +251,18 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			},
 		},
 	}
-	songRepository.On("GetAllByIDsWithSongs", mock.IsType(&songs), request.SongIDs).
+
+	var songIDs []uuid.UUID
+	var albumIDs []uuid.UUID
+	for _, s := range songs {
+		if s.Album != nil {
+			albumIDs = append(albumIDs, s.Album.ID)
+		} else {
+			songIDs = append(songIDs, s.ID)
+		}
+	}
+
+	songRepository.On("GetAllByIDsWithAlbumSongs", mock.IsType(&songs), request.SongIDs).
 		Return(nil, &songs).
 		Once()
 
@@ -189,20 +270,23 @@ func TestAddSongsToArtist_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		Run(func(args mock.Arguments) {
 			newSongs := args.Get(0).(*[]model.Song)
 			for _, song := range *newSongs {
+				assert.Equal(t, request.ID, *song.ArtistID)
 				if song.Album != nil {
 					assert.Equal(t, request.ID, *song.Album.ArtistID)
 					for _, s := range song.Album.Songs {
 						assert.Equal(t, request.ID, *s.ArtistID)
 					}
-				} else {
-					assert.Equal(t, request.ID, *song.ArtistID)
 				}
 			}
 		}).
 		Return(nil).
 		Once()
 
-	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, request.SongIDs).
+	messagePublisherService.On("Publish", topics.SongsUpdatedTopic, songIDs).
+		Return(nil).
+		Once()
+
+	messagePublisherService.On("Publish", topics.AlbumsUpdatedTopic, albumIDs).
 		Return(nil).
 		Once()
 

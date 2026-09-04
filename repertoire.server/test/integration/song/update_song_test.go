@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
@@ -37,6 +37,60 @@ func TestUpdateSong_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestUpdateSong_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateSongRequest{
+		ID:       songData.Songs[0].ID,
+		Title:    "New Album with Artist",
+		ArtistID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestUpdateSong_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateSongRequest{
+		ID:      songData.Songs[0].ID,
+		Title:   "New Album with Album",
+		AlbumID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestUpdateSong_WhenGuitarTuningNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.UpdateSongRequest{
+		ID:             songData.Songs[0].ID,
+		Title:          "New Album with Album",
+		GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -45,7 +99,7 @@ func TestUpdateSong_WhenSuccessful_ShouldUpdateSong(t *testing.T) {
 	request := requests.UpdateSongRequest{
 		ID:          song.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		AlbumID:     song.AlbumID,
 		ArtistID:    song.ArtistID,
 	}
@@ -80,7 +134,7 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldUpdateSongAndReorderOldAlbum(t *te
 	request := requests.UpdateSongRequest{
 		ID:          song.ID,
 		Title:       "New Title",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		AlbumID:     &album.ID,
 		ArtistID:    album.ArtistID,
 	}

@@ -6,8 +6,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -15,26 +15,26 @@ import (
 
 type CreateSong struct {
 	jwtService              service.JwtService
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	albumRepository         repository.AlbumRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateSong(
 	jwtService service.JwtService,
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
 	messagePublisherService service.MessagePublisherService,
 ) CreateSong {
 	return CreateSong{
 		jwtService:              jwtService,
-		repository:              repository,
+		songRepository:          songRepository,
 		albumRepository:         albumRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uuid.UUID, *httperror.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return uuid.Nil, errCode
@@ -56,7 +56,7 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		UserID:         userID,
 	}
 
-	c.createSections(&song, request)
+	c.createParts(&song, request)
 	c.createArrangement(&song)
 	c.createArtist(&song, request)
 	c.createAlbum(&song, request)
@@ -66,32 +66,28 @@ func (c CreateSong) Handle(request requests.CreateSongRequest, token string) (uu
 		return uuid.Nil, errCode
 	}
 
-	err := c.repository.Create(&song)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.songRepository.Create(&song); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
-	err = c.messagePublisherService.Publish(topics.SongCreatedTopic, song)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.messagePublisherService.Publish(topics.SongCreatedTopic, song); err != nil {
+		return uuid.Nil, httperror.MessagePublisherError(err)
 	}
 
 	return song.ID, nil
 }
 
-func (c CreateSong) createSections(song *model.Song, request requests.CreateSongRequest) {
-	var sections []model.SongSection
-	for i, sectionRequest := range request.Sections {
-		sections = append(sections, model.SongSection{
-			ID:                uuid.New(),
-			Name:              sectionRequest.Name,
-			Confidence:        model.DefaultSongSectionConfidence,
-			SongSectionTypeID: sectionRequest.TypeID,
-			Order:             uint(i),
-			SongID:            song.ID,
+func (c CreateSong) createParts(song *model.Song, request requests.CreateSongRequest) {
+	var parts []model.SongPart
+	for i, partRequest := range request.Parts {
+		parts = append(parts, model.SongPart{
+			ID:        uuid.New(),
+			Name:      partRequest.Name,
+			SongOrder: uint(i),
+			SongID:    song.ID,
 		})
 	}
-	song.Sections = sections
+	song.Parts = parts
 }
 
 func (c CreateSong) createArrangement(song *model.Song) {
@@ -101,15 +97,6 @@ func (c CreateSong) createArrangement(song *model.Song) {
 		Order:       0,
 		SongID:      song.ID,
 		DefaultSong: song,
-	}
-
-	for _, section := range song.Sections {
-		occurrences := model.SongSectionOccurrences{
-			Occurrences:   0,
-			SectionID:     section.ID,
-			ArrangementID: arrangement.ID,
-		}
-		arrangement.SectionOccurrences = append(arrangement.SectionOccurrences, occurrences)
 	}
 
 	song.Arrangements = []model.SongArrangement{arrangement}
@@ -144,18 +131,17 @@ func (c CreateSong) createAlbum(song *model.Song, request requests.CreateSongReq
 	song.AlbumTrackNo = &[]uint{1}[0]
 }
 
-func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequest) *wrapper.ErrorCode {
+func (c CreateSong) addToAlbum(song *model.Song, request requests.CreateSongRequest) *httperror.ErrorCode {
 	if request.AlbumID == nil {
 		return nil
 	}
 
 	var album model.Album
-	err := c.albumRepository.GetWithSongs(&album, *request.AlbumID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := c.albumRepository.GetWithSongs(&album, *request.AlbumID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	song.AlbumID = request.AlbumID

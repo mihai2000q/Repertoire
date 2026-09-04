@@ -4,193 +4,148 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
-	"time"
 
 	"github.com/google/uuid"
 )
 
 type UpdateSongSection struct {
 	songSectionRepository repository.SongSectionRepository
-	songRepository        repository.SongRepository
+	songPartRepository    repository.SongPartRepository
 	progressProcessor     processor.ProgressProcessor
+	transactionManager    transaction.Manager
 }
 
 func NewUpdateSongSection(
 	songSectionRepository repository.SongSectionRepository,
-	songRepository repository.SongRepository,
+	songPartRepository repository.SongPartRepository,
 	progressProcessor processor.ProgressProcessor,
+	transactionManager transaction.Manager,
 ) UpdateSongSection {
 	return UpdateSongSection{
 		songSectionRepository: songSectionRepository,
-		songRepository:        songRepository,
+		songPartRepository:    songPartRepository,
 		progressProcessor:     progressProcessor,
+		transactionManager:    transactionManager,
 	}
 }
 
-func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *wrapper.ErrorCode {
+func (u UpdateSongSection) Handle(request requests.UpdateSongSectionRequest) *httperror.ErrorCode {
 	var section model.SongSection
-	err := u.songSectionRepository.Get(&section, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songSectionRepository.GetWithSectionParts(&section, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(section).IsZero() {
-		return wrapper.NotFoundError(errors.New("song section not found"))
-	}
-	if section.Rehearsals > request.Rehearsals {
-		return wrapper.ConflictError(errors.New("rehearsals can only be increased"))
+		return httperror.NotFoundError(errors.New("song section not found"))
 	}
 
-	hasRehearsalsChanged := section.Rehearsals != request.Rehearsals
-	hasConfidenceChanged := section.Confidence != request.Confidence
-	hasBandMemberChanged := section.BandMemberID != nil && request.BandMemberID == nil ||
-		section.BandMemberID == nil && request.BandMemberID != nil ||
-		section.BandMemberID != nil && request.BandMemberID != nil && *section.BandMemberID != *request.BandMemberID
-
-	var song model.Song
-	var sectionsCount int64
-	if hasRehearsalsChanged || hasConfidenceChanged {
-		err = u.songRepository.Get(&song, section.SongID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		err = u.songSectionRepository.CountAllBySong(&sectionsCount, section.SongID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-	}
-
-	if hasBandMemberChanged && request.BandMemberID != nil {
-		res, err := u.songRepository.IsBandMemberAssociatedWithSong(section.SongID, *request.BandMemberID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		if !res {
-			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
-		}
-	}
-
-	if hasRehearsalsChanged {
-		errCode := u.rehearsalsHasChanged(&section, request.Rehearsals, sectionsCount, &song)
+	if len(request.PartIDs) > 0 {
+		errCode := u.ensurePartsBelongToSameSong(request, section.SongID)
 		if errCode != nil {
 			return errCode
 		}
 	}
 
-	if hasConfidenceChanged {
-		errCode := u.confidenceHasChanged(&section, request.Confidence, sectionsCount, &song)
-		if errCode != nil {
-			return errCode
-		}
-	}
+	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txSongSectionRepo := factory.NewSongSectionRepository()
 
-	section.Name = request.Name
-	section.Confidence = request.Confidence
-	section.Rehearsals = request.Rehearsals
-	section.SongSectionTypeID = request.TypeID
-	section.BandMemberID = request.BandMemberID
-	section.InstrumentID = request.InstrumentID
-
-	if hasRehearsalsChanged || hasConfidenceChanged {
-		err = u.songRepository.Update(&song)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		section.Name = request.Name
+		section.SongSectionTypeID = request.TypeID
+		if err := txSongSectionRepo.Update(&section); err != nil {
+			return err
 		}
-	}
-	err = u.songSectionRepository.Update(&section)
+
+		if err := u.updateSectionParts(txSongSectionRepo, &section, request.PartIDs); err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (u UpdateSongSection) rehearsalsHasChanged(
-	section *model.SongSection,
-	newRehearsals uint,
-	sectionsCount int64,
-	song *model.Song,
-) *wrapper.ErrorCode {
-	// add history of the rehearsals change
-	newHistory := model.SongSectionHistory{
-		ID:            uuid.New(),
-		Property:      model.RehearsalsProperty,
-		From:          section.Rehearsals,
-		To:            newRehearsals,
-		SongSectionID: section.ID,
+func (u UpdateSongSection) ensurePartsBelongToSameSong(
+	request requests.UpdateSongSectionRequest,
+	songID uuid.UUID,
+) *httperror.ErrorCode {
+	var parts []model.SongPart
+	if err := u.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
-	err := u.songSectionRepository.CreateHistory(&newHistory)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if len(parts) != len(request.PartIDs) {
+		return httperror.NotFoundError(errors.New("parts not found"))
 	}
-
-	// remove section's rehearsals and progress from the song's median
-	song.Rehearsals = song.Rehearsals*float64(sectionsCount) - float64(section.Rehearsals)
-	song.Progress = song.Progress*float64(sectionsCount) - float64(section.Progress)
-
-	// update section's rehearsals score based on the history changes
-	var history []model.SongSectionHistory
-	err = u.songSectionRepository.GetHistory(&history, section.ID, model.RehearsalsProperty)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	for _, p := range parts {
+		if p.SongID != songID {
+			return httperror.ConflictError(errors.New("song part does not belong to the same song as the section"))
+		}
 	}
-
-	section.RehearsalsScore = u.progressProcessor.ComputeRehearsalsScore(history)
-
-	// update section's progress (depends on the rehearsals score)
-	section.Progress = u.progressProcessor.ComputeProgress(*section)
-
-	// update the song's rehearsals and progress median with new section values
-	song.Rehearsals = (song.Rehearsals + float64(newRehearsals)) / float64(sectionsCount)
-	song.Progress = (song.Progress + float64(section.Progress)) / float64(sectionsCount)
-
-	// update song's last time played
-	song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
-
 	return nil
 }
 
-func (u UpdateSongSection) confidenceHasChanged(
+func (u UpdateSongSection) updateSectionParts(
+	txSongSectionRepo repository.SongSectionRepository,
 	section *model.SongSection,
-	newConfidence uint,
-	sectionsCount int64,
-	song *model.Song,
-) *wrapper.ErrorCode {
-	// add history of the confidence change
-	newHistory := model.SongSectionHistory{
-		ID:            uuid.New(),
-		Property:      model.ConfidenceProperty,
-		From:          section.Confidence,
-		To:            newConfidence,
-		SongSectionID: section.ID,
-	}
-	err := u.songSectionRepository.CreateHistory(&newHistory)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	partIDs []uuid.UUID,
+) error {
+	// Build maps for lookup
+	oldParts := make(map[uuid.UUID]model.SongSectionPart)
+	partIDsMap := make(map[uuid.UUID]bool)
+	for _, id := range partIDs {
+		partIDsMap[id] = true
 	}
 
-	// remove section's confidence and progress from the song's median
-	song.Confidence = song.Confidence*float64(sectionsCount) - float64(section.Confidence)
-	song.Progress = song.Progress*float64(sectionsCount) - float64(section.Progress)
-
-	// update section's confidence score based on the history changes
-	var history []model.SongSectionHistory
-	err = u.songSectionRepository.GetHistory(&history, section.ID, model.ConfidenceProperty)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	// Identify parts to delete: those in oldMap but not in newSet
+	var partsToDelete []model.SongSectionPart
+	for _, sp := range section.SectionParts {
+		oldParts[sp.PartID] = sp
+		if !partIDsMap[sp.PartID] {
+			partsToDelete = append(partsToDelete, sp)
+		}
+	}
+	if len(partsToDelete) > 0 {
+		if err := txSongSectionRepo.DeleteSectionParts(&partsToDelete); err != nil {
+			return err
+		}
 	}
 
-	section.ConfidenceScore = u.progressProcessor.ComputeConfidenceScore(history)
+	// Identify parts to update (existing) and parts to create (new)
+	var partsToUpdate []model.SongSectionPart
+	var partsToCreate []model.SongSectionPart
+	order := 0
+	for _, pid := range partIDs {
+		if sp, exists := oldParts[pid]; exists {
+			sp.Order = uint(order)
+			partsToUpdate = append(partsToUpdate, sp)
+		} else {
+			partsToCreate = append(partsToCreate, model.SongSectionPart{
+				PartID:    pid,
+				SectionID: section.ID,
+				Order:     uint(order),
+			})
+		}
+		order++
+	}
 
-	// update section's progress (depends on the confidence score)
-	section.Progress = u.progressProcessor.ComputeProgress(*section)
+	if len(partsToUpdate) > 0 {
+		if err := txSongSectionRepo.UpdateAllSectionParts(&partsToUpdate); err != nil {
+			return err
+		}
+	}
 
-	// update the song's confidence and progress median with new section values
-	song.Confidence = (song.Confidence + float64(newConfidence)) / float64(sectionsCount)
-	song.Progress = (song.Progress + float64(section.Progress)) / float64(sectionsCount)
+	if len(partsToCreate) > 0 {
+		if err := txSongSectionRepo.CreateAllSectionParts(&partsToCreate); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }

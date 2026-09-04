@@ -4,29 +4,33 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 )
 
 type GetAllAlbums struct {
-	repository repository.AlbumRepository
-	jwtService service.JwtService
+	albumRepository repository.AlbumRepository
+	jwtService      service.JwtService
 }
 
-func NewGetAllAlbums(repository repository.AlbumRepository, jwtService service.JwtService) GetAllAlbums {
+func NewGetAllAlbums(
+	albumRepository repository.AlbumRepository,
+	jwtService service.JwtService,
+) GetAllAlbums {
 	return GetAllAlbums{
-		repository: repository,
-		jwtService: jwtService,
+		albumRepository: albumRepository,
+		jwtService:      jwtService,
 	}
 }
 
-func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result wrapper.WithTotalCount[model.EnhancedAlbum], e *wrapper.ErrorCode) {
+func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (result pagination.WithTotalCount[model.EnhancedAlbum], e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
-	err := g.repository.GetAllByUser(
+	err := g.albumRepository.GetAllByUser(
 		&result.Models,
 		userID,
 		request.CurrentPage,
@@ -35,12 +39,12 @@ func (g GetAllAlbums) Handle(request requests.GetAlbumsRequest, token string) (r
 		request.SearchBy,
 	)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
+	err = g.albumRepository.GetAllByUserCount(&result.TotalCount, userID, request.SearchBy)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

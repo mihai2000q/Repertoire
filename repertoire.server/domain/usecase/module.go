@@ -3,18 +3,19 @@ package usecase
 import (
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/domain/usecase/artist"
-	"repertoire/server/domain/usecase/artist/band/member"
+	"repertoire/server/domain/usecase/artist/bandmember"
 	"repertoire/server/domain/usecase/playlist"
 	playlistSong "repertoire/server/domain/usecase/playlist/song"
 	"repertoire/server/domain/usecase/search"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/domain/usecase/song/arrangement"
+	"repertoire/server/domain/usecase/song/part"
 	"repertoire/server/domain/usecase/song/section"
-	"repertoire/server/domain/usecase/udata/band/member/role"
-	"repertoire/server/domain/usecase/udata/guitar/tuning"
-	"repertoire/server/domain/usecase/udata/instrument"
-	"repertoire/server/domain/usecase/udata/section/types"
 	"repertoire/server/domain/usecase/user"
+	"repertoire/server/domain/usecase/userdata/band/member/role"
+	"repertoire/server/domain/usecase/userdata/guitartuning"
+	"repertoire/server/domain/usecase/userdata/instrument"
+	"repertoire/server/domain/usecase/userdata/section/types"
 
 	"go.uber.org/fx"
 )
@@ -51,14 +52,15 @@ var artistUseCases = fx.Options(
 	fx.Provide(artist.NewSaveImageToArtist),
 	fx.Provide(artist.NewUpdateArtist),
 
-	fx.Provide(member.NewCreateBandMember),
-	fx.Provide(member.NewDeleteBandMember),
-	fx.Provide(member.NewDeleteImageFromBandMember),
-	fx.Provide(member.NewMoveBandMember),
-	fx.Provide(member.NewSaveImageToBandMember),
-	fx.Provide(member.NewUpdateBandMember),
+	// Band Member
+	fx.Provide(bandmember.NewCreateBandMember),
+	fx.Provide(bandmember.NewDeleteBandMember),
+	fx.Provide(bandmember.NewDeleteImageFromBandMember),
+	fx.Provide(bandmember.NewMoveBandMember),
+	fx.Provide(bandmember.NewSaveImageToBandMember),
+	fx.Provide(bandmember.NewUpdateBandMember),
 
-	fx.Provide(member.NewGetBandMemberRoles),
+	fx.Provide(bandmember.NewGetBandMemberRoles),
 )
 
 var playlistUseCases = fx.Options(
@@ -117,13 +119,20 @@ var songUseCases = fx.Options(
 	fx.Provide(arrangement.NewMoveSongArrangement),
 	fx.Provide(arrangement.NewUpdateDefaultSongArrangement),
 
+	// Parts
+	fx.Provide(part.NewBulkUpdateSongParts),
+	fx.Provide(part.NewBulkDeleteSongParts),
+	fx.Provide(part.NewCreateSongPart),
+	fx.Provide(part.NewDeleteSongPart),
+	fx.Provide(part.NewMoveSongPartInSong),
+	fx.Provide(part.NewUpdateAllSongParts),
+	fx.Provide(part.NewUpdateSongPart),
+
 	// Sections
-	fx.Provide(section.NewBulkRehearsalsSongSections),
 	fx.Provide(section.NewBulkDeleteSongSections),
 	fx.Provide(section.NewCreateSongSection),
 	fx.Provide(section.NewDeleteSongSection),
 	fx.Provide(section.NewMoveSongSection),
-	fx.Provide(section.NewUpdateAllSongSections),
 	fx.Provide(section.NewUpdateSongSection),
 )
 
@@ -132,9 +141,9 @@ var userDataUseCases = fx.Options(
 	fx.Provide(role.NewDeleteBandMemberRole),
 	fx.Provide(role.NewMoveBandMemberRole),
 
-	fx.Provide(tuning.NewCreateGuitarTuning),
-	fx.Provide(tuning.NewDeleteGuitarTuning),
-	fx.Provide(tuning.NewMoveGuitarTuning),
+	fx.Provide(guitartuning.NewCreateGuitarTuning),
+	fx.Provide(guitartuning.NewDeleteGuitarTuning),
+	fx.Provide(guitartuning.NewMoveGuitarTuning),
 
 	fx.Provide(instrument.NewCreateInstrument),
 	fx.Provide(instrument.NewDeleteInstrument),

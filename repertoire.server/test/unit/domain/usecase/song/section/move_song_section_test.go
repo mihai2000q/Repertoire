@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -37,7 +38,7 @@ func TestMoveSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestMoveSongSection_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -76,7 +77,12 @@ func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *test
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := section.NewMoveSongSection(songRepository)
 
-	song := &model.Song{ID: uuid.New()}
+	song := &model.Song{
+		ID: uuid.New(),
+		Sections: []model.SongSection{
+			{ID: uuid.New()},
+		},
+	}
 
 	request := requests.MoveSongSectionRequest{
 		ID:     uuid.New(),
@@ -93,7 +99,7 @@ func TestMoveSongSection_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "section not found", errCode.Error.Error())
 
@@ -127,7 +133,7 @@ func TestMoveSongSection_WhenOverSectionIsNotFound_ShouldReturnNotFoundError(t *
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over section not found", errCode.Error.Error())
 
@@ -167,7 +173,7 @@ func TestMoveSongSection_WhenUpdateFails_ShouldReturnInternalServerError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

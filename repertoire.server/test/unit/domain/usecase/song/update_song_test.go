@@ -5,10 +5,11 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"slices"
@@ -18,12 +19,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -37,7 +39,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -47,7 +49,7 @@ func TestUpdateSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.
 func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil, nil)
+	_uut := song.NewUpdateSong(songRepository, nil, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -60,7 +62,7 @@ func TestUpdateSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -71,7 +73,7 @@ func TestUpdateSong_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:      uuid.New(),
@@ -94,7 +96,7 @@ func TestUpdateSong_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -106,7 +108,7 @@ func TestUpdateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, nil, nil)
 
 	request := requests.UpdateSongRequest{
 		ID:      uuid.New(),
@@ -128,7 +130,7 @@ func TestUpdateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -175,7 +177,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnConfli
 			// given
 			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
-			_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
+			_uut := song.NewUpdateSong(songRepository, albumRepository, nil, nil)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, &tt.song).
@@ -189,7 +191,7 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnConfli
 			errCode := _uut.Handle(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusConflict, errCode.Code)
 			assert.Equal(t, "album's artist does not match the request's artist", errCode.Error.Error())
 
@@ -199,10 +201,11 @@ func TestUpdateSong_WhenAlbumArtistAndRequestArtistDoNotMatch_ShouldReturnConfli
 	}
 }
 
-func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateSong_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil, nil)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := song.NewUpdateSong(songRepository, nil, transactionManager, nil)
 
 	request := requests.UpdateSongRequest{
 		ID: uuid.New(),
@@ -218,7 +221,47 @@ func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := song.NewUpdateSong(songRepository, nil, transactionManager, nil)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+
+	request := requests.UpdateSongRequest{
+		ID: uuid.New(),
+	}
+
+	mockSong := &model.Song{
+		ID:           request.ID,
+		AlbumID:      &[]uuid.UUID{uuid.New()}[0],
+		AlbumTrackNo: &[]uint{1}[0],
+	}
+	songRepository.On("Get", new(model.Song), request.ID).
+		Return(nil, mockSong).
+		Once()
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	txSongRepo.
 		On(
 			"GetAllByAlbumAndTrackNo",
 			new([]model.Song),
@@ -232,17 +275,24 @@ func TestUpdateSong_WhenGetAllSongsByAlbumFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil, nil)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := song.NewUpdateSong(songRepository, nil, transactionManager, nil)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
 
 	request := requests.UpdateSongRequest{
 		ID: uuid.New(),
@@ -257,7 +307,7 @@ func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *t
 		Return(nil, mockSong).
 		Once()
 
-	songRepository.
+	txSongRepo.
 		On(
 			"GetAllByAlbumAndTrackNo",
 			new([]model.Song),
@@ -267,8 +317,11 @@ func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *t
 		Return(nil).
 		Once()
 
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateAll", new([]model.Song)).
+	txSongRepo.On("UpdateAll", new([]model.Song)).
 		Return(internalError, mockSong).
 		Once()
 
@@ -276,18 +329,25 @@ func TestUpdateSong_WhenUpdateAllSongsFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	albumRepository := new(repository.AlbumRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, albumRepository, nil)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := song.NewUpdateSong(songRepository, albumRepository, transactionManager, nil)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
 
 	request := requests.UpdateSongRequest{
 		ID:       uuid.New(),
@@ -306,8 +366,11 @@ func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testi
 		Return(nil, &mockAlbum).
 		Once()
 
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
 	internalError := errors.New("internal error")
-	songRepository.On("CountByAlbum", new(int64), *request.AlbumID).
+	txSongRepo.On("CountByAlbum", new(int64), *request.AlbumID).
 		Return(internalError).
 		Once()
 
@@ -315,18 +378,25 @@ func TestUpdateSong_WhenCountSongsFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
 	albumRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := song.NewUpdateSong(songRepository, nil, nil)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := song.NewUpdateSong(songRepository, nil, transactionManager, nil)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -341,8 +411,11 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 		Return(nil, mockSong).
 		Once()
 
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
 	internalError := errors.New("internal error")
-	songRepository.On("Update", mock.IsType(mockSong)).
+	txSongRepo.On("Update", mock.IsType(mockSong)).
 		Return(internalError).
 		Once()
 
@@ -350,17 +423,25 @@ func TestUpdateSong_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
 	messagePublisherService := new(service.MessagePublisherServiceMock)
-	_uut := song.NewUpdateSong(songRepository, nil, messagePublisherService)
+	_uut := song.NewUpdateSong(songRepository, nil, transactionManager, messagePublisherService)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
 
 	request := requests.UpdateSongRequest{
 		ID:    uuid.New(),
@@ -375,7 +456,10 @@ func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 		Return(nil, mockSong).
 		Once()
 
-	songRepository.On("Update", mock.IsType(mockSong)).
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txSongRepo.On("Update", mock.IsType(mockSong)).
 		Return(nil).
 		Once()
 
@@ -388,11 +472,15 @@ func TestUpdateSong_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(request)
 
 	// then
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
 	messagePublisherService.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
 }
 
 func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
@@ -475,7 +563,7 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				IsRecorded:     true,
 				Bpm:            &[]uint{123}[0],
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
-				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate:    &[]date.Date{date.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Hard}[0],
 				SongsterrLink:  &[]string{"http://songsterr.com/some-song"}[0],
 				YoutubeLink:    &[]string{"https://www.youtube.com/watch?v=IHgFJEJgUrg"}[0],
@@ -496,17 +584,24 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
+			transactionManager := new(transaction.ManagerMock)
 			messagePublisherService := new(service.MessagePublisherServiceMock)
-			_uut := song.NewUpdateSong(songRepository, nil, messagePublisherService)
+			_uut := song.NewUpdateSong(songRepository, nil, transactionManager, messagePublisherService)
+
+			repositoryFactory := new(transaction.RepositoryFactoryMock)
+			txSongRepo := new(repository.SongRepositoryMock)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, tt.song).
 				Once()
 
-			assertOldAlbumReordered(t, songRepository, *tt.song, tt.request.AlbumID)
+			assertOldAlbumReordered(t, txSongRepo, *tt.song, tt.request.AlbumID)
+
+			repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 			var newSong *model.Song
-			songRepository.On("Update", mock.IsType(tt.song)).
+			txSongRepo.On("Update", mock.IsType(tt.song)).
 				Run(func(args mock.Arguments) {
 					newSong = args.Get(0).(*model.Song)
 					assertUpdatedSong(t, tt.request, newSong)
@@ -531,6 +626,9 @@ func TestUpdateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 
 			songRepository.AssertExpectations(t)
 			messagePublisherService.AssertExpectations(t)
+			transactionManager.AssertExpectations(t)
+			repositoryFactory.AssertExpectations(t)
+			txSongRepo.AssertExpectations(t)
 		})
 	}
 }
@@ -663,8 +761,12 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
 			albumRepository := new(repository.AlbumRepositoryMock)
+			transactionManager := new(transaction.ManagerMock)
 			messagePublisherService := new(service.MessagePublisherServiceMock)
-			_uut := song.NewUpdateSong(songRepository, albumRepository, messagePublisherService)
+			_uut := song.NewUpdateSong(songRepository, albumRepository, transactionManager, messagePublisherService)
+
+			repositoryFactory := new(transaction.RepositoryFactoryMock)
+			txSongRepo := new(repository.SongRepositoryMock)
 
 			songRepository.On("Get", new(model.Song), tt.request.ID).
 				Return(nil, &tt.song).
@@ -674,15 +776,18 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 				Return(nil, &tt.album).
 				Once()
 
-			assertOldAlbumReordered(t, songRepository, tt.song, tt.request.AlbumID)
+			assertOldAlbumReordered(t, txSongRepo, tt.song, tt.request.AlbumID)
+
+			repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 			var songsCount int64 = 12
-			songRepository.On("CountByAlbum", new(int64), *tt.request.AlbumID).
+			txSongRepo.On("CountByAlbum", new(int64), *tt.request.AlbumID).
 				Return(nil, &songsCount).
 				Once()
 
 			var newSong *model.Song
-			songRepository.On("Update", mock.IsType(&tt.song)).
+			txSongRepo.On("Update", mock.IsType(&tt.song)).
 				Run(func(args mock.Arguments) {
 					newSong = args.Get(0).(*model.Song)
 					assertUpdatedSong(t, tt.request, newSong)
@@ -709,6 +814,9 @@ func TestUpdateSong_WhenRequestHasAlbum_ShouldNotReturnAnyError(t *testing.T) {
 			songRepository.AssertExpectations(t)
 			albumRepository.AssertExpectations(t)
 			messagePublisherService.AssertExpectations(t)
+			transactionManager.AssertExpectations(t)
+			repositoryFactory.AssertExpectations(t)
+			txSongRepo.AssertExpectations(t)
 		})
 	}
 }
@@ -729,7 +837,7 @@ func assertUpdatedSong(t *testing.T, request requests.UpdateSongRequest, song *m
 
 func assertOldAlbumReordered(
 	t *testing.T,
-	songRepository *repository.SongRepositoryMock,
+	txSongRepo *repository.SongRepositoryMock,
 	song model.Song,
 	newAlbumID *uuid.UUID,
 ) {
@@ -744,7 +852,7 @@ func assertOldAlbumReordered(
 	}
 	oldSongs := slices.Clone(songs)
 
-	songRepository.
+	txSongRepo.
 		On(
 			"GetAllByAlbumAndTrackNo",
 			new([]model.Song),
@@ -754,7 +862,7 @@ func assertOldAlbumReordered(
 		Return(nil, &songs).
 		Once()
 
-	songRepository.On("UpdateAll", &songs).
+	txSongRepo.On("UpdateAll", &songs).
 		Run(func(args mock.Arguments) {
 			newSongs := args.Get(0).(*[]model.Song)
 			for i := range *newSongs {

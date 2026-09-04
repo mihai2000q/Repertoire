@@ -32,8 +32,7 @@ func NewDeleteDirectoriesStorageHandler(
 
 func (d DeleteDirectoriesStorageHandler) Handle(msg *watermillMessage.Message) error {
 	var directoryPaths []string
-	err := json.Unmarshal(msg.Payload, &directoryPaths)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &directoryPaths); err != nil {
 		return err
 	}
 

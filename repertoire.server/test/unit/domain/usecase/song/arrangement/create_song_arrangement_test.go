@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateSongArrangement_WhenCountSectionsBySongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -34,7 +35,7 @@ func TestCreateSongArrangement_WhenCountSectionsBySongFails_ShouldReturnInternal
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -57,7 +58,7 @@ func TestCreateSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(internalError).
 		Once()
 
@@ -66,7 +67,7 @@ func TestCreateSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -89,7 +90,7 @@ func TestCreateSongArrangement_WhenSongIsEmpty_ShouldReturnNotFoundError(t *test
 		Return(nil).
 		Once()
 
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil).
 		Once()
 
@@ -98,7 +99,7 @@ func TestCreateSongArrangement_WhenSongIsEmpty_ShouldReturnNotFoundError(t *test
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -124,7 +125,7 @@ func TestCreateSongArrangement_WhenCreateFails_ShouldReturnInternalServerError(t
 	mockSong := model.Song{
 		ID: request.SongID,
 	}
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, &mockSong).
 		Once()
 
@@ -138,7 +139,7 @@ func TestCreateSongArrangement_WhenCreateFails_ShouldReturnInternalServerError(t
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -164,12 +165,12 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 
 	mockSong := model.Song{
 		ID: request.SongID,
-		Sections: []model.SongSection{
+		Parts: []model.SongPart{
 			{ID: uuid.New()},
 			{ID: uuid.New()},
 		},
 	}
-	songRepository.On("GetWithSections", new(model.Song), request.SongID).
+	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, &mockSong).
 		Once()
 
@@ -178,7 +179,7 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Run(func(args mock.Arguments) {
 			newArrangement := *args.Get(0).(*model.SongArrangement)
 			newId = newArrangement.ID
-			assertCreatedSongArrangement(t, request, newArrangement, arrangementsCount, mockSong.Sections)
+			assertCreatedSongArrangement(t, request, newArrangement, arrangementsCount, mockSong.Parts)
 		}).
 		Return(nil).
 		Once()
@@ -199,15 +200,15 @@ func assertCreatedSongArrangement(
 	request requests.CreateSongArrangementRequest,
 	arrangement model.SongArrangement,
 	arrangementsCount int64,
-	songSections []model.SongSection,
+	songParts []model.SongPart,
 ) {
 	assert.NotEmpty(t, arrangement.ID)
 	assert.Equal(t, request.Name, arrangement.Name)
 	assert.Equal(t, request.SongID, arrangement.SongID)
 	assert.Equal(t, uint(arrangementsCount), arrangement.Order)
-	for i, section := range songSections {
-		assert.Equal(t, section.ID, arrangement.SectionOccurrences[i].SectionID)
-		assert.Equal(t, arrangement.ID, arrangement.SectionOccurrences[i].ArrangementID)
-		assert.Zero(t, arrangement.SectionOccurrences[i].Occurrences)
+	for i, part := range songParts {
+		assert.Equal(t, part.ID, arrangement.PartOccurrences[i].PartID)
+		assert.Equal(t, arrangement.ID, arrangement.PartOccurrences[i].ArrangementID)
+		assert.Zero(t, arrangement.PartOccurrences[i].Occurrences)
 	}
 }

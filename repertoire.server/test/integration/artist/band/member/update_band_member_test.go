@@ -32,6 +32,24 @@ func TestUpdateBandMember_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *test
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestUpdateBandMember_WhenRolesAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.UpdateBandMemberRequest{
+		ID:      artistData.Artists[0].BandMembers[0].ID,
+		Name:    "Guitarist 1-New",
+		RoleIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/artists/band-members", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestUpdateBandMember_WhenSuccessful_ShouldUpdateBandMember(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)

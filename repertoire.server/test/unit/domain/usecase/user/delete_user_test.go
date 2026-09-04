@@ -4,14 +4,15 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/usecase/user"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -21,14 +22,14 @@ func TestDeleteUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T)
 
 	token := "This is a token"
 
-	forbiddenError := wrapper.ForbiddenError(errors.New("internal error"))
+	forbiddenError := httperror.ForbiddenError(errors.New("internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -52,7 +53,7 @@ func TestDeleteUser_WhenDeleteUserFails_ShouldReturnInternalServerError(t *testi
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -83,7 +84,7 @@ func TestDeleteUser_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 	errCode := _uut.Handle(token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -95,11 +96,11 @@ func TestDeleteUser_WhenPublishFails_ShouldReturnInternalServerError(t *testing.
 func TestDeleteUser_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	tests := []struct {
 		name                 string
-		deleteDirectoryError *wrapper.ErrorCode
+		deleteDirectoryError *httperror.ErrorCode
 	}{
 		{
 			"Without Files",
-			wrapper.NotFoundError(errors.New("cannot delete the directory as it's not found")),
+			httperror.NotFoundError(errors.New("cannot delete the directory as it's not found")),
 		},
 		{
 			"With Files",

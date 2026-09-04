@@ -5,34 +5,32 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type UpdateSongSettings struct {
-	repository repository.SongRepository
+	songRepository repository.SongRepository
 }
 
-func NewUpdateSongSettings(repository repository.SongRepository) UpdateSongSettings {
-	return UpdateSongSettings{repository: repository}
+func NewUpdateSongSettings(songRepository repository.SongRepository) UpdateSongSettings {
+	return UpdateSongSettings{songRepository: songRepository}
 }
 
-func (u UpdateSongSettings) Handle(request requests.UpdateSongSettingsRequest) *wrapper.ErrorCode {
+func (u UpdateSongSettings) Handle(request requests.UpdateSongSettingsRequest) *httperror.ErrorCode {
 	var settings model.SongSettings
-	err := u.repository.GetSettings(&settings, request.SettingsID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songRepository.GetSettings(&settings, request.SettingsID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(settings).IsZero() {
-		return wrapper.NotFoundError(errors.New("settings not found"))
+		return httperror.NotFoundError(errors.New("settings not found"))
 	}
 
 	settings.DefaultInstrumentID = request.DefaultInstrumentID
 	settings.DefaultBandMemberID = request.DefaultBandMemberID
 
-	err = u.repository.UpdateSettings(&settings)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songRepository.UpdateSettings(&settings); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

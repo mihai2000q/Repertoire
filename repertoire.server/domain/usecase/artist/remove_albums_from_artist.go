@@ -5,8 +5,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
@@ -25,16 +25,18 @@ func NewRemoveAlbumsFromArtist(
 	}
 }
 
-func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRequest) *wrapper.ErrorCode {
+func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRequest) *httperror.ErrorCode {
 	var albums []model.Album
-	err := r.albumRepository.GetAllByIDsWithSongs(&albums, request.AlbumIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := r.albumRepository.GetAllByIDsWithSongs(&albums, request.AlbumIDs); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if len(albums) != len(request.AlbumIDs) {
+		return httperror.NotFoundError(errors.New("albums not found"))
 	}
 
 	for i, album := range albums {
 		if album.ArtistID == nil || *album.ArtistID != request.ID {
-			return wrapper.ConflictError(errors.New("album " + album.ID.String() + " is not owned by this artist"))
+			return httperror.ConflictError(errors.New("album " + album.ID.String() + " is not owned by this artist"))
 		}
 
 		albums[i].ArtistID = nil
@@ -43,14 +45,12 @@ func (r RemoveAlbumsFromArtist) Handle(request requests.RemoveAlbumsFromArtistRe
 		}
 	}
 
-	err = r.albumRepository.UpdateAllWithSongs(&albums)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := r.albumRepository.UpdateAllWithSongs(&albums); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = r.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, request.AlbumIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := r.messagePublisherService.Publish(topics.AlbumsUpdatedTopic, request.AlbumIDs); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/song/arrangement"
 	"repertoire/server/model"
+	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
 	"slices"
 	"testing"
@@ -12,12 +13,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(nil, songRepository)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, nil)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -31,7 +33,7 @@ func TestDeleteSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -41,7 +43,7 @@ func TestDeleteSongArrangement_WhenGetSongFails_ShouldReturnInternalServerError(
 func TestDeleteSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(nil, songRepository)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, nil)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -54,7 +56,7 @@ func TestDeleteSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundError(t *t
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -64,7 +66,7 @@ func TestDeleteSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundError(t *t
 func TestDeleteSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(nil, songRepository)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, nil)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -84,17 +86,18 @@ func TestDeleteSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundErr
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song arrangement not found", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteSongArrangement_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestDeleteSongArrangement_WhenTransactionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(nil, songRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, transactionManager)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -111,7 +114,50 @@ func TestDeleteSongArrangement_WhenUpdateSongFails_ShouldReturnInternalServerErr
 		Once()
 
 	internalError := errors.New("internal error")
-	songRepository.On("UpdateWithAssociations", mock.IsType(song)).
+	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
+
+	// when
+	errCode := _uut.Handle(id, songID)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+}
+
+func TestDeleteSongArrangement_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongArrangementRepo := new(repository.SongArrangementRepositoryMock)
+
+	id := uuid.New()
+	songID := uuid.New()
+
+	// given - mocking
+	song := &model.Song{
+		ID: songID,
+		Arrangements: []model.SongArrangement{
+			{ID: id, Order: 0},
+		},
+	}
+	songRepository.On("GetWithArrangements", new(model.Song), songID).
+		Return(nil, song).
+		Once()
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("internal error")
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(song)).
 		Return(internalError).
 		Once()
 
@@ -119,18 +165,26 @@ func TestDeleteSongArrangement_WhenUpdateSongFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongArrangementRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongArrangement_WhenDeleteArrangementFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songArrangementRepository := new(repository.SongArrangementRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(songArrangementRepository, songRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongArrangementRepo := new(repository.SongArrangementRepositoryMock)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -146,30 +200,41 @@ func TestDeleteSongArrangement_WhenDeleteArrangementFails_ShouldReturnInternalSe
 		Return(nil, song).
 		Once()
 
-	songRepository.On("UpdateWithAssociations", mock.IsType(song)).
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(song)).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("internal error")
-	songArrangementRepository.On("Delete", id).Return(internalError).Once()
+	txSongArrangementRepo.On("Delete", id).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songArrangementRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongArrangementRepo.AssertExpectations(t)
 }
 
 func TestDeleteSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	songArrangementRepository := new(repository.SongArrangementRepositoryMock)
 	songRepository := new(repository.SongRepositoryMock)
-	_uut := arrangement.NewDeleteSongArrangement(songArrangementRepository, songRepository)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := arrangement.NewDeleteSongArrangement(songRepository, transactionManager)
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongArrangementRepo := new(repository.SongArrangementRepositoryMock)
 
 	id := uuid.New()
 	songID := uuid.New()
@@ -187,7 +252,11 @@ func TestDeleteSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Return(nil, &mockSong).
 		Once()
 
-	songRepository.On("UpdateWithAssociations", mock.IsType(&mockSong)).
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongArrangementRepository").Return(txSongArrangementRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txSongRepo.On("UpdateWithAssociations", mock.IsType(&mockSong)).
 		Run(func(args mock.Arguments) {
 			newSong := args.Get(0).(*model.Song)
 
@@ -203,7 +272,7 @@ func TestDeleteSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 		Return(nil).
 		Once()
 
-	songArrangementRepository.On("Delete", id).Return(nil).Once()
+	txSongArrangementRepo.On("Delete", id).Return(nil).Once()
 
 	// when
 	errCode := _uut.Handle(id, songID)
@@ -211,6 +280,9 @@ func TestDeleteSongArrangement_WhenSuccessful_ShouldNotReturnAnyError(t *testing
 	// then
 	assert.Nil(t, errCode)
 
-	songArrangementRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongArrangementRepo.AssertExpectations(t)
 }

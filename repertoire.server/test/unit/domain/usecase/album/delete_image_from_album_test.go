@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -32,7 +33,7 @@ func TestDeleteImageFromAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -53,14 +54,14 @@ func TestDeleteImageFromAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnNoError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewDeleteImageFromAlbum(albumRepository, nil, nil)
@@ -69,15 +70,15 @@ func TestDeleteImageFromAlbum_WhenAlbumHasNoImage_ShouldReturnConflictError(t *t
 
 	// given - mocking
 	mockAlbum := &model.Album{ID: id}
-	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
+	albumRepository.On("Get", new(model.Album), id).
+		Return(nil, mockAlbum).
+		Once()
 
 	// when
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "album does not have an image", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	albumRepository.AssertExpectations(t)
 }
@@ -94,14 +95,14 @@ func TestDeleteImageFromAlbum_WhenDeleteImageFails_ShouldReturnInternalServerErr
 	mockAlbum := &model.Album{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockAlbum.ImageURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	albumRepository.AssertExpectations(t)
@@ -131,7 +132,7 @@ func TestDeleteImageFromAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerErr
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -167,7 +168,7 @@ func TestDeleteImageFromAlbum_WhenPublishFails_ShouldReturnInternalServerError(t
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

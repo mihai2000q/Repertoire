@@ -1,26 +1,29 @@
 package song
 
 import (
+	"errors"
 	"math/rand"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type ShufflePlaylistSongs struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewShufflePlaylistSongs(repository repository.PlaylistRepository) ShufflePlaylistSongs {
-	return ShufflePlaylistSongs{repository: repository}
+func NewShufflePlaylistSongs(playlistRepository repository.PlaylistRepository) ShufflePlaylistSongs {
+	return ShufflePlaylistSongs{playlistRepository: playlistRepository}
 }
 
-func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsRequest) *wrapper.ErrorCode {
+func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsRequest) *httperror.ErrorCode {
 	var songs []model.PlaylistSong
-	err := s.repository.GetPlaylistSongs(&songs, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.playlistRepository.GetPlaylistSongs(&songs, request.ID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if len(songs) == 0 {
+		return httperror.ConflictError(errors.New("playlist has no songs"))
 	}
 
 	for i := range songs {
@@ -30,9 +33,8 @@ func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsReques
 		songs[j].SongTrackNo = uint(j + 1)
 	}
 
-	err = s.repository.UpdateAllPlaylistSongs(&songs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := s.playlistRepository.UpdateAllPlaylistSongs(&songs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

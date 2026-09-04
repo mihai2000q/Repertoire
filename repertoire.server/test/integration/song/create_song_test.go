@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
+	albumData "repertoire/server/test/integration/test/data/album"
 	songData "repertoire/server/test/integration/test/data/song"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
@@ -19,6 +20,87 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestCreateSong_WhenUserIsNotFound_ShouldReturnForbiddenError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	request := requests.CreateSongRequest{
+		Title: "New Song",
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithInvalidToken().
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusForbidden, w.Code)
+}
+
+func TestCreateSong_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:    "New Song with Artist",
+		ArtistID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSong_WhenAlbumIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:   "New Song with Album",
+		AlbumID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestCreateSong_WhenGuitarTuningIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
+
+	user := albumData.Users[0]
+
+	request := requests.CreateSongRequest{
+		Title:          "New Song",
+		GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().
+		WithUser(user).
+		POST(w, "/api/songs", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
 
 func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 	tests := []struct {
@@ -39,7 +121,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Bpm:            &[]uint{123}[0],
 				SongsterrLink:  &[]string{"https://songsterr.com/some-song"}[0],
 				YoutubeLink:    &[]string{"https://youtu.be/9DyxtUCW84o?si=2pNX8eaV4KwKfOaF"}[0],
-				ReleaseDate:    &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate:    &[]date.Date{date.Date(time.Now())}[0],
 				Difficulty:     &[]enums.Difficulty{enums.Hard}[0],
 				GuitarTuningID: &[]uuid.UUID{songData.Users[0].GuitarTunings[0].ID}[0],
 			},
@@ -69,7 +151,7 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			"With New Album",
 			requests.CreateSongRequest{
 				Title:       "New Song with new Artist",
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				AlbumTitle:  &[]string{"New Album Title"}[0],
 			},
 		},
@@ -82,17 +164,15 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 			},
 		},
 		{
-			"With Sections",
+			"With Parts",
 			requests.CreateSongRequest{
-				Title: "New Song with new Artist and album",
-				Sections: []requests.CreateSectionRequest{
+				Title: "New Song with new parts",
+				Parts: []requests.CreatePartRequest{
 					{
-						Name:   "Song Section 1",
-						TypeID: songData.Users[0].SongSectionTypes[0].ID,
+						Name: "Song Part 1",
 					},
 					{
-						Name:   "Song Section 2",
-						TypeID: songData.Users[0].SongSectionTypes[1].ID,
+						Name: "Song Part 2",
 					},
 				},
 			},
@@ -129,10 +209,8 @@ func TestCreateSong_WhenSuccessful_ShouldCreateSong(t *testing.T) {
 				Joins("Album").
 				Joins("GuitarTuning").
 				Preload("Album.Songs").
-				Preload("Sections").
-				Preload("Sections.SongSectionType").
+				Preload("Parts").
 				Preload("Arrangements").
-				Preload("Arrangements.SectionOccurrences").
 				Find(&song, response.ID)
 			assertCreatedSong(t, test.request, song, user.ID)
 
@@ -177,24 +255,15 @@ func assertCreatedSong(
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
 	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
-	assert.Len(t, request.Sections, len(song.Sections))
-	for i, sectionRequest := range request.Sections {
-		assert.NotEmpty(t, song.Sections[i].ID)
-		assert.Equal(t, sectionRequest.Name, song.Sections[i].Name)
-		assert.Zero(t, song.Sections[i].Rehearsals)
-		assert.Equal(t, model.DefaultSongSectionConfidence, song.Sections[i].Confidence)
-		assert.Zero(t, song.Sections[i].RehearsalsScore)
-		assert.Zero(t, song.Sections[i].ConfidenceScore)
-		assert.Zero(t, song.Sections[i].Progress)
-		assert.Equal(t, uint(i), song.Sections[i].Order)
-		assert.Equal(t, sectionRequest.TypeID, song.Sections[i].SongSectionTypeID)
-		assert.Equal(t, song.ID, song.Sections[i].SongID)
-
-		// assert section occurrences on arrangement
-		assert.Zero(t, song.Arrangements[0].SectionOccurrences[i].Occurrences)
-		assert.Equal(t, song.Sections[i].ID, song.Arrangements[0].SectionOccurrences[i].SectionID)
-		assert.Equal(t, song.Arrangements[0].ID, song.Arrangements[0].SectionOccurrences[i].ArrangementID)
+	assert.Len(t, request.Parts, len(song.Parts))
+	for i, partRequest := range request.Parts {
+		assert.NotEmpty(t, song.Parts[i].ID)
+		assert.Equal(t, partRequest.Name, song.Parts[i].Name)
+		assert.Equal(t, uint(i), song.Parts[i].SongOrder)
+		assert.Equal(t, song.ID, song.Parts[i].SongID)
 	}
+
+	assert.Empty(t, song.Sections)
 
 	if request.ArtistID != nil {
 		assert.Equal(t, request.ArtistID, song.ArtistID)

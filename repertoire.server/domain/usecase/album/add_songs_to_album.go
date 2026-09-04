@@ -6,43 +6,44 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type AddSongsToAlbum struct {
-	repository              repository.AlbumRepository
+	albumRepository         repository.AlbumRepository
 	songRepository          repository.SongRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewAddSongsToAlbum(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	songRepository repository.SongRepository,
 	messagePublisherService service.MessagePublisherService,
 ) AddSongsToAlbum {
 	return AddSongsToAlbum{
-		repository:              repository,
+		albumRepository:         albumRepository,
 		songRepository:          songRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrapper.ErrorCode {
+func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *httperror.ErrorCode {
 	var album model.Album
-	err := a.repository.GetWithSongs(&album, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.albumRepository.GetWithSongs(&album, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(album).IsZero() {
-		return wrapper.NotFoundError(errors.New("album not found"))
+		return httperror.NotFoundError(errors.New("album not found"))
 	}
 
 	var songs []model.Song
-	err = a.songRepository.GetAllByIDs(&songs, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.songRepository.GetAllByIDs(&songs, request.SongIDs); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if len(songs) != len(request.SongIDs) {
+		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 
 	songsLength := len(album.Songs) + 1
@@ -50,10 +51,10 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		// if their artists don't match, or the song has an artist but the album doesn't, it results in failure
 		// on the other hand, if the album has an artist and the song doesn't, it will inherit it (pass)
 		if song.ArtistID != nil && (album.ArtistID == nil || *album.ArtistID != *song.ArtistID) {
-			return wrapper.ConflictError(errors.New("song " + song.ID.String() + song.Title + " and album do not share the same artist"))
+			return httperror.ConflictError(errors.New("song " + song.ID.String() + song.Title + " and album do not share the same artist"))
 		}
 		if song.AlbumID != nil {
-			return wrapper.ConflictError(errors.New("song " + song.ID.String() + " already has an album"))
+			return httperror.ConflictError(errors.New("song " + song.ID.String() + " already has an album"))
 		}
 
 		songs[i].AlbumID = &request.ID
@@ -65,14 +66,12 @@ func (a AddSongsToAlbum) Handle(request requests.AddSongsToAlbumRequest) *wrappe
 		}
 	}
 
-	err = a.songRepository.UpdateAll(&songs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.songRepository.UpdateAll(&songs); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := a.messagePublisherService.Publish(topics.SongsUpdatedTopic, request.SongIDs); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

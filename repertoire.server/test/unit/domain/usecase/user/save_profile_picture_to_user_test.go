@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/user"
 	"repertoire/server/internal"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError(t *testing.T) {
@@ -33,14 +34,14 @@ func TestSaveProfilePictureToUser_WhenGetUserIdFromJwtFails_ShouldReturnTheError
 	token := "This is a token"
 
 	// given - mocking
-	err := wrapper.ForbiddenError(errors.New("internal error"))
+	err := httperror.ForbiddenError(errors.New("internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, err).Once()
 
 	// when
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, err, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -71,7 +72,7 @@ func TestSaveProfilePictureToUser_WhenGetUserFails_ShouldReturnNotFoundError(t *
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -102,7 +103,7 @@ func TestSaveProfilePictureToUser_WhenUserIsEmpty_ShouldReturnNotFoundError(t *t
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 
@@ -132,14 +133,14 @@ func TestSaveProfilePictureToUser_WhenStorageDeleteFileFails_ShouldReturnError(t
 	mockUser := &model.User{ID: id, ProfilePictureURL: &[]internal.FilePath{"file-path"}[0]}
 	userRepository.On("Get", new(model.User), id).Return(nil, mockUser).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockUser.ProfilePictureURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -175,16 +176,15 @@ func TestSaveProfilePictureToUser_WhenStorageUploadFails_ShouldReturnInternalSer
 		Return(imagePath).
 		Once()
 
-	internalError := errors.New("internal error")
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	require.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
 
 	jwtService.AssertExpectations(t)
 	userRepository.AssertExpectations(t)
@@ -231,7 +231,7 @@ func TestSaveProfilePictureToUser_WhenUpdateUserFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(file, token)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

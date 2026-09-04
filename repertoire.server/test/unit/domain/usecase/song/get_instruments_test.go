@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetInstruments_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T) {
@@ -22,7 +23,7 @@ func TestGetInstruments_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T
 
 	token := "this is a token"
 
-	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden error"))
+	forbiddenError := httperror.ForbiddenError(errors.New("forbidden error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
@@ -30,7 +31,7 @@ func TestGetInstruments_WhenGetUserIdFromJwtFails_ShouldReturnError(t *testing.T
 
 	// then
 	assert.Empty(t, instruments)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -55,7 +56,7 @@ func TestGetInstruments_WhenGetInstrumentsFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.Empty(t, instruments)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

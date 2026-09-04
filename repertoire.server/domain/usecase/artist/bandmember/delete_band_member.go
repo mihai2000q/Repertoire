@@ -1,0 +1,66 @@
+package bandmember
+
+import (
+	"errors"
+	"reflect"
+	"repertoire/server/data/database/transaction"
+	"repertoire/server/data/repository"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/model"
+	"slices"
+
+	"github.com/google/uuid"
+)
+
+type DeleteBandMember struct {
+	artistRepository   repository.ArtistRepository
+	transactionManager transaction.Manager
+}
+
+func NewDeleteBandMember(
+	artistRepository repository.ArtistRepository,
+	transactionManager transaction.Manager,
+) DeleteBandMember {
+	return DeleteBandMember{
+		artistRepository:   artistRepository,
+		transactionManager: transactionManager,
+	}
+}
+
+func (d DeleteBandMember) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
+	var artist model.Artist
+	if err := d.artistRepository.GetWithBandMembers(&artist, songID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(artist).IsZero() {
+		return httperror.NotFoundError(errors.New("artist not found"))
+	}
+
+	index := slices.IndexFunc(artist.BandMembers, func(a model.BandMember) bool {
+		return a.ID == id
+	})
+	if index == -1 {
+		return httperror.NotFoundError(errors.New("band member not found"))
+	}
+
+	sectionsLength := len(artist.BandMembers)
+	for i := index + 1; i < sectionsLength; i++ {
+		artist.BandMembers[i].Order = artist.BandMembers[i].Order - 1
+	}
+
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txArtistRepo := factory.NewArtistRepository()
+		if err := txArtistRepo.UpdateWithAssociations(&artist); err != nil {
+			return err
+		}
+		if err := txArtistRepo.DeleteBandMember(id); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return httperror.DatabaseError(err)
+	}
+
+	return nil
+}

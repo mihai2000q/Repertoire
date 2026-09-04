@@ -2,7 +2,7 @@ package processor
 
 import (
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -15,14 +15,14 @@ type SongProcessorMock struct {
 
 func (s *SongProcessorMock) AddCustomRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
+	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
-) (*wrapper.ErrorCode, bool) {
-	args := s.Called(song, songSectionRepository, arrangementID)
+) (*httperror.ErrorCode, bool) {
+	args := s.Called(song, songPartRepository, arrangementID)
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	if e := args.Get(0); e != nil {
-		errCode = e.(*wrapper.ErrorCode)
+		errCode = e.(*httperror.ErrorCode)
 	}
 
 	return errCode, args.Bool(1)
@@ -30,14 +30,29 @@ func (s *SongProcessorMock) AddCustomRehearsal(
 
 func (s *SongProcessorMock) AddPerfectRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
-) (*wrapper.ErrorCode, bool) {
-	args := s.Called(song, songSectionRepository)
+	songPartRepository repository.SongPartRepository,
+) (*httperror.ErrorCode, bool) {
+	args := s.Called(song, songPartRepository)
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	if e := args.Get(0); e != nil {
-		errCode = e.(*wrapper.ErrorCode)
+		errCode = e.(*httperror.ErrorCode)
 	}
 
 	return errCode, args.Bool(1)
+}
+
+func (s *SongProcessorMock) UpdateSongAfterPartsDeletion(
+	songRepository repository.SongRepository,
+	songID uuid.UUID,
+	partIDs []uuid.UUID,
+) *httperror.ErrorCode {
+	args := s.Called(songRepository, songID, partIDs)
+
+	var errCode *httperror.ErrorCode
+	if e := args.Get(0); e != nil {
+		errCode = e.(*httperror.ErrorCode)
+	}
+
+	return errCode
 }

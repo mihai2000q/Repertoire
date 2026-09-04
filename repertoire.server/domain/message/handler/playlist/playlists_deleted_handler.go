@@ -31,8 +31,7 @@ func NewPlaylistsDeletedHandler(
 
 func (p PlaylistsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var playlists []model.Playlist
-	err := json.Unmarshal(msg.Payload, &playlists)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &playlists); err != nil {
 		return err
 	}
 
@@ -40,7 +39,7 @@ func (p PlaylistsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	for _, playlist := range playlists {
 		playlistIDs = append(playlistIDs, playlist.ToSearch().ID)
 	}
-	err = p.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, playlistIDs)
+	err := p.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, playlistIDs)
 	if err != nil {
 		return err
 	}

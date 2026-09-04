@@ -3,7 +3,8 @@ package service
 import (
 	"repertoire/server/data/search"
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"strings"
 
 	"github.com/google/uuid"
@@ -19,7 +20,7 @@ type SearchEngineService interface {
 		userID uuid.UUID,
 		filter []string,
 		sort []string,
-	) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode)
+	) (pagination.WithTotalCount[map[string]any], *httperror.ErrorCode)
 	GetDocument(id string) (map[string]any, error)
 	GetDocuments(filter string) ([]map[string]any, error)
 	Add(items []map[string]any) (int64, error)
@@ -44,7 +45,7 @@ func (s searchEngineService) Search(
 	userID uuid.UUID,
 	filter []string,
 	sort []string,
-) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode) {
+) (pagination.WithTotalCount[map[string]any], *httperror.ErrorCode) {
 	request := &meilisearch.SearchRequest{Sort: sort}
 
 	// pagination
@@ -67,12 +68,12 @@ func (s searchEngineService) Search(
 	// send search request
 	searchResult, err := s.client.Index("search").Search(query, request)
 	if err != nil {
-		return wrapper.WithTotalCount[map[string]any]{}, wrapper.InternalServerError(err)
+		return pagination.WithTotalCount[map[string]any]{}, httperror.InternalServerError(err)
 	}
 
 	var results []map[string]any
 	_ = searchResult.Hits.DecodeInto(&results)
-	result := wrapper.WithTotalCount[map[string]any]{
+	result := pagination.WithTotalCount[map[string]any]{
 		Models:     results,
 		TotalCount: searchResult.EstimatedTotalHits,
 	}

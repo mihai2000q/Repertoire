@@ -21,10 +21,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenAlbumsAreNotFound_ShouldReturnNotFound
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 	request := requests.AddPerfectRehearsalsToAlbumsRequest{
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
@@ -35,7 +32,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenAlbumsAreNotFound_ShouldReturnNotFound
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSectionsIfTheyHaveOccurrences(t *testing.T) {
+func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndPartsIfTheyHaveOccurrences(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
@@ -48,13 +45,13 @@ func TestAddPerfectRehearsalsToAlbums_WhenSuccessful_ShouldUpdateSongsAndSection
 
 	getAlbumsQuery := func(db *gorm.DB, albums *[]model.Album) {
 		db.Preload("Songs", func(db *gorm.DB) *gorm.DB { return db.Order("songs.album_track_no") }).
-			Preload("Songs.Sections", func(db *gorm.DB) *gorm.DB { return db.Order("song_sections.order") }).
-			Preload("Songs.Sections.History", func(db *gorm.DB) *gorm.DB {
+			Preload("Songs.Parts", func(db *gorm.DB) *gorm.DB { return db.Order("song_parts.song_order") }).
+			Preload("Songs.Parts.History", func(db *gorm.DB) *gorm.DB {
 				return db.
-					Where(&model.SongSectionHistory{Property: model.RehearsalsProperty}).
+					Where(&model.SongPartHistory{Property: model.RehearsalsProperty}).
 					Order("created_at desc")
 			}).
-			Preload("Songs.Sections.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
+			Preload("Songs.Parts.ArrangementOccurrences", func(db *gorm.DB) *gorm.DB {
 				return db.Joins("LEFT JOIN song_arrangements ON id = arrangement_id").Order("\"order\"")
 			}).
 			Find(&albums, request.IDs)

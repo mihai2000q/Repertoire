@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/user"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalServerError(t *testing.T) {
@@ -38,7 +39,7 @@ func TestAuthService_SignUp_WhenUserRepositoryReturnsError_ShouldReturnInternalS
 
 	// then
 	assert.Empty(t, token)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -65,7 +66,7 @@ func TestAuthService_SignUp_WhenUserIsNotEmpty_ShouldReturnUnauthorizedError(t *
 
 	// then
 	assert.Empty(t, token)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusBadRequest, errCode.Code)
 	assert.Equal(t, "user already exists", errCode.Error.Error())
 
@@ -96,7 +97,7 @@ func TestAuthService_SignUp_WhenHashPasswordFails_ShouldReturnInternalServerErro
 
 	// then
 	assert.Empty(t, token)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -133,7 +134,7 @@ func TestAuthService_SignUp_WhenCreateUserFails_ShouldReturnInternalServerError(
 
 	// then
 	assert.Empty(t, token)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -165,7 +166,7 @@ func TestAuthService_SignUp_WhenSignInFails_ShouldReturnInternalServerError(t *t
 		Return(nil).
 		Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	authService.On("SignIn", strings.ToLower(request.Email), request.Password).
 		Return("", internalError).
 		Once()
@@ -175,7 +176,7 @@ func TestAuthService_SignUp_WhenSignInFails_ShouldReturnInternalServerError(t *t
 
 	// then
 	assert.Empty(t, token)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	authService.AssertExpectations(t)

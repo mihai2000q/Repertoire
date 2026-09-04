@@ -5,44 +5,41 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type BulkDeletePlaylists struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewBulkDeletePlaylists(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) BulkDeletePlaylists {
 	return BulkDeletePlaylists{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *wrapper.ErrorCode {
+func (b BulkDeletePlaylists) Handle(request requests.BulkDeletePlaylistsRequest) *httperror.ErrorCode {
 	var playlists []model.Playlist
-	err := b.repository.GetAllByIDs(&playlists, request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.playlistRepository.GetAllByIDs(&playlists, request.IDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
-	if len(playlists) == 0 {
-		return wrapper.NotFoundError(errors.New("playlists not found"))
-	}
-
-	err = b.repository.Delete(request.IDs)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if len(playlists) != len(request.IDs) {
+		return httperror.NotFoundError(errors.New("playlists not found"))
 	}
 
-	err = b.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, playlists)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := b.playlistRepository.Delete(request.IDs); err != nil {
+		return httperror.DatabaseError(err)
+	}
+
+	if err := b.messagePublisherService.Publish(topics.PlaylistsDeletedTopic, playlists); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 	return nil
 }

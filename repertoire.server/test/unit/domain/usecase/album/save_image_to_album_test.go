@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/album"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -18,6 +18,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSaveImageToAlbum_WhenGetAlbumFails_ShouldReturnNotFoundError(t *testing.T) {
@@ -36,7 +37,7 @@ func TestSaveImageToAlbum_WhenGetAlbumFails_ShouldReturnNotFoundError(t *testing
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -58,7 +59,7 @@ func TestSaveImageToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -78,14 +79,14 @@ func TestSaveImageToAlbum_WhenStorageDeleteFileFails_ShouldReturnError(t *testin
 	mockAlbum := &model.Album{ID: id, ImageURL: &[]internal.FilePath{"file_path"}[0]}
 	albumRepository.On("Get", new(model.Album), id).Return(nil, mockAlbum).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockAlbum.ImageURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	albumRepository.AssertExpectations(t)
@@ -111,16 +112,15 @@ func TestSaveImageToAlbum_WhenStorageUploadFails_ShouldReturnInternalServerError
 		Return(imagePath).
 		Once()
 
-	internalError := errors.New("internal error")
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("Upload", file, imagePath).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	require.NotNil(t, errCode)
+	assert.Equal(t, internalError, errCode)
 
 	albumRepository.AssertExpectations(t)
 	storageFilePathProvider.AssertExpectations(t)
@@ -157,7 +157,7 @@ func TestSaveImageToAlbum_WhenUpdateAlbumFails_ShouldReturnInternalServerError(t
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -206,7 +206,7 @@ func TestSaveImageToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *te
 	errCode := _uut.Handle(file, id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

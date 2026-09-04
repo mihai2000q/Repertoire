@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetPlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -44,7 +45,7 @@ func TestGetPlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerEr
 
 	// then
 	assert.Empty(t, resultPlaylistSongs)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -83,7 +84,7 @@ func TestGetPlaylistSongs_WhenGetPlaylistSongsCountFails_ShouldReturnInternalSer
 
 	// then
 	assert.Empty(t, resultPlaylistSongs)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

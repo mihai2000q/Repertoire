@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 
 	"github.com/google/uuid"
 )
@@ -24,7 +24,7 @@ type GetAlbumFiltersMetadataRequest struct {
 
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
-	ReleaseDate *internal.Date
+	ReleaseDate *date.Date
 	ArtistID    *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
@@ -41,7 +41,7 @@ type AddPerfectRehearsalsToAlbumsRequest struct {
 type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
-	ReleaseDate *internal.Date
+	ReleaseDate *date.Date
 	ArtistID    *uuid.UUID
 }
 

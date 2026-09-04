@@ -5,58 +5,54 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )
 
 type DeleteImageFromSong struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	storageService          service.StorageService
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewDeleteImageFromSong(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	storageService service.StorageService,
 	messagePublisherService service.MessagePublisherService,
 ) DeleteImageFromSong {
 	return DeleteImageFromSong{
-		repository:              repository,
+		songRepository:          songRepository,
 		storageService:          storageService,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (d DeleteImageFromSong) Handle(id uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteImageFromSong) Handle(id uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	err := d.repository.Get(&song, id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songRepository.Get(&song, id); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 	if song.ImageURL == nil {
-		return wrapper.ConflictError(errors.New("song does not have an image"))
+		return nil
 	}
 
-	errCode := d.storageService.DeleteFile(*song.ImageURL)
-	if errCode != nil {
+	if errCode := d.storageService.DeleteFile(*song.ImageURL); errCode != nil {
 		return errCode
 	}
 
 	song.ImageURL = nil
-	err = d.repository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songRepository.Update(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = d.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

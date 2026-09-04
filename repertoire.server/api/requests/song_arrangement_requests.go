@@ -17,13 +17,13 @@ type BulkUpdateSongArrangementsRequest struct {
 }
 
 type UpdateSongArrangementRequest struct {
-	ID          uuid.UUID                             `validate:"required"`
-	Name        string                                `validate:"required,max=30"`
-	Occurrences []UpdateSongSectionOccurrencesRequest `validate:"omitempty,dive"`
+	ID          uuid.UUID                          `validate:"required"`
+	Name        string                             `validate:"required,max=30"`
+	Occurrences []UpdateSongPartOccurrencesRequest `validate:"omitempty,dive"`
 }
 
-type UpdateSongSectionOccurrencesRequest struct {
-	SectionID   uuid.UUID `validate:"required"`
+type UpdateSongPartOccurrencesRequest struct {
+	PartID      uuid.UUID `validate:"required"`
 	Occurrences uint
 }
 

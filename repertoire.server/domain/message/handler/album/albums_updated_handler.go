@@ -32,14 +32,12 @@ func NewAlbumsUpdatedHandler(
 
 func (a AlbumsUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	var ids []uuid.UUID
-	err := json.Unmarshal(msg.Payload, &ids)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &ids); err != nil {
 		return err
 	}
 
 	var albums []model.Album
-	err = a.albumRepository.GetAllByIDsWithSongsAndArtist(&albums, ids)
-	if err != nil {
+	if err := a.albumRepository.GetAllByIDsWithSongsAndArtist(&albums, ids); err != nil {
 		return err
 	}
 
@@ -53,7 +51,7 @@ func (a AlbumsUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 		}
 	}
 
-	err = a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, documentsToUpdate)
+	err := a.messagePublisherService.Publish(topics.UpdateFromSearchEngineTopic, documentsToUpdate)
 	if err != nil {
 		return err
 	}

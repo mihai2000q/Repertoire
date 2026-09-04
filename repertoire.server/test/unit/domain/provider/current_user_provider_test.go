@@ -4,7 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"repertoire/server/domain/provider"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 // Get
@@ -22,7 +23,7 @@ func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnEr
 
 	token := "this is a token"
 
-	internalErrorCode := wrapper.InternalServerError(errors.New("internal error"))
+	internalErrorCode := httperror.InternalServerError(errors.New("internal error"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, internalErrorCode).Once()
 
 	// when
@@ -30,7 +31,7 @@ func TestCurrentUserProvider_Get_WhenJwtServiceReturnsAnErrorCode_ShouldReturnEr
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalErrorCode, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -55,7 +56,7 @@ func TestCurrentUserProvider_Get_WhenGetUserFails_ShouldReturnInternalServerErro
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -81,7 +82,7 @@ func TestCurrentUserProvider_Get_WhenUserIsEmpty_ShouldReturnNotFoundError(t *te
 
 	// then
 	assert.Empty(t, user)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "user not found", errCode.Error.Error())
 
