@@ -79,7 +79,7 @@ func TestBulkDeleteSongParts_WhenSuccessful_ShouldDeleteParts(t *testing.T) {
 		Preload("Sections.SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.Order("\"order\"")
 		}).
-		Find(&song, song.ID)
+		Find(&newSong, newSong.ID)
 
 	for i, s := range newSong.Parts {
 		assert.Equal(t, uint(i), s.SongOrder)
