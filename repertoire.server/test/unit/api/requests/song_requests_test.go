@@ -209,8 +209,8 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				GuitarTuningID: &[]uuid.UUID{uuid.New()}[0],
 				AlbumID:        &[]uuid.UUID{uuid.New()}[0],
 				Parts: []requests.CreatePartRequest{
-					{Name: "A section", TypeID: uuid.New()},
-					{Name: "A Second Section", TypeID: uuid.New()},
+					{Name: "A part"},
+					{Name: "A Second part"},
 				},
 			},
 		},
@@ -228,8 +228,8 @@ func TestValidateCreateSongRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 				AlbumTitle:     &[]string{"New Album Title"}[0],
 				ArtistName:     &[]string{"New Artist Name"}[0],
 				Parts: []requests.CreatePartRequest{
-					{Name: "A section", TypeID: uuid.New()},
-					{Name: "A Second Section", TypeID: uuid.New()},
+					{Name: "A part"},
+					{Name: "A Second part"},
 				},
 			},
 		},
@@ -389,41 +389,28 @@ func TestValidateCreateSongRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			[]string{"ArtistID", "ArtistName"},
 			[]string{"excluded_with", "excluded_with"},
 		},
-		// Sections - Name Test Cases
+		// Parts - Name Test Cases
 		{
-			"Sections are invalid because the first element has an empty Name",
+			"Parts are invalid because the first element has an empty Name",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
 				Parts: []requests.CreatePartRequest{
-					{Name: "", TypeID: uuid.New()},
+					{Name: ""},
 				},
 			},
-			[]string{"Sections[0].Name"},
+			[]string{"Parts[0].Name"},
 			[]string{"required"},
 		},
-		// Sections - Name Test Cases
 		{
-			"Sections are invalid because the first element has a Name with too many characters",
+			"Parts are invalid because the first element has a Name with too many characters",
 			requests.CreateSongRequest{
 				Title: validSongTitle,
 				Parts: []requests.CreatePartRequest{
-					{Name: strings.Repeat("a", 31), TypeID: uuid.New()},
+					{Name: strings.Repeat("a", 31)},
 				},
 			},
-			[]string{"Sections[0].Name"},
+			[]string{"Parts[0].Name"},
 			[]string{"max"},
-		},
-		// Sections - Type ID Test Cases
-		{
-			"Sections are invalid because the first element has an empty Type ID",
-			requests.CreateSongRequest{
-				Title: validSongTitle,
-				Parts: []requests.CreatePartRequest{
-					{Name: "some Name", TypeID: uuid.Nil},
-				},
-			},
-			[]string{"Sections[0].TypeID"},
-			[]string{"required"},
 		},
 	}
 	for _, tt := range tests {

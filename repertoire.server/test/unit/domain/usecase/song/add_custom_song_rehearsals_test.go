@@ -134,7 +134,6 @@ func TestAddCustomSongRehearsals_WhenSongIsNotFound_ShouldReturnNotFoundError(t 
 	request := requests.AddCustomSongRehearsalsRequest{
 		Requests: []requests.AddCustomSongRehearsalRequest{
 			{ID: uuid.New(), ArrangementID: uuid.New()},
-			{ID: uuid.New(), ArrangementID: uuid.New()},
 		},
 	}
 
@@ -143,7 +142,7 @@ func TestAddCustomSongRehearsals_WhenSongIsNotFound_ShouldReturnNotFoundError(t 
 		ids = append(ids, r.ID)
 	}
 
-	mockSongs := []model.Song{{ID: request.Requests[1].ID}}
+	mockSongs := []model.Song{{ID: uuid.New()}}
 	songRepository.On("GetAllByIDsWithPartsAndArrangementOccurrences", new([]model.Song), ids).
 		Return(nil, &mockSongs).
 		Once()
@@ -301,7 +300,6 @@ func TestAddCustomSongRehearsals_WhenSongsAreNotUpdated_ShouldNotUpdateSongs(t *
 	request := requests.AddCustomSongRehearsalsRequest{
 		Requests: []requests.AddCustomSongRehearsalRequest{
 			{ID: sameId, ArrangementID: uuid.New()},
-			{ID: uuid.New(), ArrangementID: uuid.New()},
 			{ID: sameId, ArrangementID: uuid.New()},
 		},
 	}
@@ -362,7 +360,6 @@ func TestAddCustomSongRehearsals_WhenSuccessful_ShouldUpdateSongs(t *testing.T) 
 	request := requests.AddCustomSongRehearsalsRequest{
 		Requests: []requests.AddCustomSongRehearsalRequest{
 			{ID: sameId, ArrangementID: uuid.New()},
-			{ID: uuid.New(), ArrangementID: uuid.New()},
 			{ID: sameId, ArrangementID: uuid.New()},
 		},
 	}

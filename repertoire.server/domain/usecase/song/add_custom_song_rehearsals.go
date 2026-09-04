@@ -32,8 +32,10 @@ func NewAddCustomSongRehearsals(
 
 func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsalsRequest) *httperror.ErrorCode {
 	var ids []uuid.UUID
+	idsCount := 0
 	for _, r := range request.Requests {
 		ids = append(ids, r.ID)
+		idsCount++
 	}
 
 	var songs []model.Song
@@ -41,7 +43,7 @@ func (a AddCustomSongRehearsals) Handle(request requests.AddCustomSongRehearsals
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(songs) != len(request.Requests) {
+	if len(songs) != idsCount {
 		return httperror.NotFoundError(errors.New("songs not found"))
 	}
 

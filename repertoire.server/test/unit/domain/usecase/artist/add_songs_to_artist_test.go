@@ -63,7 +63,7 @@ func TestAddSongsToArtist_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFound
 	// then
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "songs not found", errCode.Error)
+	assert.Equal(t, "songs not found", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }

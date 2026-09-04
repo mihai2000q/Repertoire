@@ -346,7 +346,7 @@ func assertCreatedSong(
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, userID, song.UserID)
-	assert.Len(t, request.Parts, len(song.Sections))
+	assert.Len(t, request.Parts, len(song.Parts))
 
 	// assert settings
 	assert.NotEmpty(t, song.Settings.ID)
