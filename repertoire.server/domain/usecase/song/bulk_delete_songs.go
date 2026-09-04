@@ -77,15 +77,13 @@ func (b BulkDeleteSongs) Handle(request requests.BulkDeleteSongsRequest) *httper
 }
 
 func (b BulkDeleteSongs) reorderAlbums(songs []model.Song, idsMap map[uuid.UUID]bool) error {
-	albumsToReorder := make(map[uuid.UUID]model.Album)
-	for _, song := range songs {
-		if song.Album != nil {
-			albumsToReorder[song.Album.ID] = *song.Album
-		}
-	}
-
+	albumsReordered := make(map[uuid.UUID]bool)
 	var albumSongsToUpdate []model.Song
-	for _, album := range albumsToReorder {
+	for _, song := range songs {
+		if song.Album == nil || albumsReordered[song.Album.ID] {
+			continue
+		}
+		album := song.Album
 		songsFound := uint(0)
 		for _, albumSong := range album.Songs {
 			if idsMap[albumSong.ID] {
@@ -98,6 +96,7 @@ func (b BulkDeleteSongs) reorderAlbums(songs []model.Song, idsMap map[uuid.UUID]
 				albumSongsToUpdate = append(albumSongsToUpdate, albumSong)
 			}
 		}
+		albumsReordered[song.Album.ID] = true
 	}
 
 	if len(albumSongsToUpdate) != 0 {
@@ -110,25 +109,25 @@ func (b BulkDeleteSongs) reorderAlbums(songs []model.Song, idsMap map[uuid.UUID]
 }
 
 func (b BulkDeleteSongs) reorderSongsInPlaylists(songs []model.Song, idsMap map[uuid.UUID]bool) error {
-	playlistsToReorder := make(map[uuid.UUID]model.Playlist)
+	playlistsReordered := make(map[uuid.UUID]bool)
+	var playlistSongsToUpdate []model.PlaylistSong
 	for _, song := range songs {
 		for _, playlist := range song.Playlists {
-			playlistsToReorder[playlist.ID] = playlist
-		}
-	}
-
-	var playlistSongsToUpdate []model.PlaylistSong
-	for _, playlist := range playlistsToReorder {
-		songsFound := uint(0)
-		for _, playlistSong := range playlist.PlaylistSongs {
-			if idsMap[playlistSong.SongID] {
-				songsFound++
+			if playlistsReordered[playlist.ID] {
 				continue
 			}
-			if songsFound != 0 {
-				playlistSong.SongTrackNo = playlistSong.SongTrackNo - songsFound
-				playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
+			songsFound := uint(0)
+			for _, playlistSong := range playlist.PlaylistSongs {
+				if idsMap[playlistSong.SongID] {
+					songsFound++
+					continue
+				}
+				if songsFound != 0 {
+					playlistSong.SongTrackNo = playlistSong.SongTrackNo - songsFound
+					playlistSongsToUpdate = append(playlistSongsToUpdate, playlistSong)
+				}
 			}
+			playlistsReordered[playlist.ID] = true
 		}
 	}
 

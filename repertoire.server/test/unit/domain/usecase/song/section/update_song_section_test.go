@@ -583,17 +583,15 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSectionAndParts(t *testing
 			}
 
 			oldMap := make(map[uuid.UUID]model.SongSectionPart)
-			for _, sp := range tt.section.SectionParts {
-				oldMap[sp.PartID] = sp
-			}
 			partIDs := make(map[uuid.UUID]bool)
 			for _, id := range tt.request.PartIDs {
 				partIDs[id] = true
 			}
 
 			var expectedPartsToDelete []model.SongSectionPart
-			for pid, sp := range oldMap {
-				if !partIDs[pid] {
+			for _, sp := range tt.section.SectionParts {
+				oldMap[sp.PartID] = sp
+				if !partIDs[sp.PartID] {
 					expectedPartsToDelete = append(expectedPartsToDelete, sp)
 				}
 			}
@@ -601,7 +599,7 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSectionAndParts(t *testing
 			var expectedPartsToUpdate []model.SongSectionPart
 			var expectedPartsToCreate []model.SongSectionPart
 			order := 0
-			for pid := range partIDs {
+			for _, pid := range tt.request.PartIDs {
 				if sp, exists := oldMap[pid]; exists {
 					sp.Order = uint(order)
 					expectedPartsToUpdate = append(expectedPartsToUpdate, sp)
@@ -646,17 +644,29 @@ func TestUpdateSongSection_WhenSuccessful_ShouldUpdateSectionAndParts(t *testing
 				Once()
 
 			if len(expectedPartsToDelete) > 0 {
-				txSongSectionRepo.On("DeleteSectionParts", &expectedPartsToDelete).
+				txSongSectionRepo.On("DeleteSectionParts", mock.IsType(&expectedPartsToDelete)).
+					Run(func(args mock.Arguments) {
+						newParts := *args.Get(0).(*[]model.SongSectionPart)
+						assert.ElementsMatch(t, expectedPartsToDelete, newParts)
+					}).
 					Return(nil).
 					Once()
 			}
 			if len(expectedPartsToUpdate) > 0 {
 				txSongSectionRepo.On("UpdateAllSectionParts", mock.IsType(&expectedPartsToUpdate)).
+					Run(func(args mock.Arguments) {
+						newParts := *args.Get(0).(*[]model.SongSectionPart)
+						assert.ElementsMatch(t, expectedPartsToUpdate, newParts)
+					}).
 					Return(nil).
 					Once()
 			}
 			if len(expectedPartsToCreate) > 0 {
 				txSongSectionRepo.On("CreateAllSectionParts", mock.IsType(&expectedPartsToCreate)).
+					Run(func(args mock.Arguments) {
+						newParts := *args.Get(0).(*[]model.SongSectionPart)
+						assert.ElementsMatch(t, expectedPartsToCreate, newParts)
+					}).
 					Return(nil).
 					Once()
 			}

@@ -98,11 +98,6 @@ func (u UpdateSongSection) updateSectionParts(
 ) error {
 	// Build maps for lookup
 	oldParts := make(map[uuid.UUID]model.SongSectionPart)
-	for _, sp := range section.SectionParts {
-		oldParts[sp.PartID] = sp
-	}
-
-	// map for easy lookup
 	partIDsMap := make(map[uuid.UUID]bool)
 	for _, id := range partIDs {
 		partIDsMap[id] = true
@@ -110,8 +105,9 @@ func (u UpdateSongSection) updateSectionParts(
 
 	// Identify parts to delete: those in oldMap but not in newSet
 	var partsToDelete []model.SongSectionPart
-	for pid, sp := range oldParts {
-		if !partIDsMap[pid] {
+	for _, sp := range section.SectionParts {
+		oldParts[sp.PartID] = sp
+		if !partIDsMap[sp.PartID] {
 			partsToDelete = append(partsToDelete, sp)
 		}
 	}
@@ -125,7 +121,7 @@ func (u UpdateSongSection) updateSectionParts(
 	var partsToUpdate []model.SongSectionPart
 	var partsToCreate []model.SongSectionPart
 	order := 0
-	for pid := range partIDsMap {
+	for _, pid := range partIDs {
 		if sp, exists := oldParts[pid]; exists {
 			sp.Order = uint(order)
 			partsToUpdate = append(partsToUpdate, sp)
