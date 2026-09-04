@@ -397,13 +397,13 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 		{ID: request.IDs[2], Album: &mockAlbums[0], AlbumID: &mockAlbums[0].ID, AlbumTrackNo: &[]uint{3}[0]},
 	}
 
-	expectedOrderedAlbumSongs := &[]model.Song{
+	expectedAlbumSongs := map[uuid.UUID]uint{
 		// Album 1
-		{ID: mockAlbums[0].Songs[1].ID, AlbumTrackNo: &[]uint{1}[0]},
-		{ID: mockAlbums[0].Songs[2].ID, AlbumTrackNo: &[]uint{2}[0]},
-		{ID: mockAlbums[0].Songs[4].ID, AlbumTrackNo: &[]uint{3}[0]},
+		mockAlbums[0].Songs[1].ID: 1,
+		mockAlbums[0].Songs[2].ID: 2,
+		mockAlbums[0].Songs[4].ID: 3,
 		// Album 2
-		{ID: mockAlbums[1].Songs[2].ID, AlbumTrackNo: &[]uint{2}[0]},
+		mockAlbums[1].Songs[2].ID: 2,
 	}
 
 	// given - mocking
@@ -415,7 +415,16 @@ func TestBulkDeleteSongs_WhenWithAlbums_ShouldDeleteSongsAndReorderAlbums(t *tes
 	repositoryFactory.On("NewPlaylistRepository").Return(txPlaylistRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	txSongRepo.On("UpdateAll", expectedOrderedAlbumSongs).
+	txSongRepo.On("UpdateAll", mock.IsType(new([]model.Song))).
+		Run(func(args mock.Arguments) {
+			newAlbumSongs := *args.Get(0).(*[]model.Song)
+			assert.Len(t, newAlbumSongs, len(expectedAlbumSongs))
+			for i, s := range newAlbumSongs {
+				trackNo, ok := expectedAlbumSongs[s.ID]
+				assert.True(t, ok)
+				assert.Equal(t, trackNo, *newAlbumSongs[i].AlbumTrackNo)
+			}
+		}).
 		Return(nil).
 		Once()
 
