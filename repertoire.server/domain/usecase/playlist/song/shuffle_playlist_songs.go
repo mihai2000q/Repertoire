@@ -1,6 +1,7 @@
 package song
 
 import (
+	"errors"
 	"math/rand"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
@@ -20,6 +21,9 @@ func (s ShufflePlaylistSongs) Handle(request requests.ShufflePlaylistSongsReques
 	var songs []model.PlaylistSong
 	if err := s.playlistRepository.GetPlaylistSongs(&songs, request.ID); err != nil {
 		return httperror.DatabaseError(err)
+	}
+	if len(songs) == 0 {
+		return httperror.ConflictError(errors.New("playlist has no songs"))
 	}
 
 	for i := range songs {

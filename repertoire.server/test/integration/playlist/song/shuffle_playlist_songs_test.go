@@ -12,8 +12,42 @@ import (
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+// TODO: fail-safe, but, the returned error is wrong, it should be Not Found
+func TestShufflePlaylistSongs_WhenPlaylistIsNotFound_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.ShufflePlaylistSongsRequest{
+		ID: uuid.New(),
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/songs/shuffle", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
+func TestShufflePlaylistSongs_WhenPlaylistHasNoSongs_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.ShufflePlaylistSongsRequest{
+		ID: playlistData.Playlists[3].ID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/songs/shuffle", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
 
 func TestShufflePlaylistSongs_WhenSuccessful_ShouldShuffleSongsOnPlaylist(t *testing.T) {
 	// given

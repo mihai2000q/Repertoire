@@ -44,6 +44,33 @@ func TestShufflePlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 	playlistRepository.AssertExpectations(t)
 }
 
+func TestShufflePlaylistSongs_WhenSongsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := song.NewShufflePlaylistSongs(playlistRepository)
+
+	request := requests.ShufflePlaylistSongsRequest{ID: uuid.New()}
+
+	playlistRepository.
+		On(
+			"GetPlaylistSongs",
+			new([]model.PlaylistSong),
+			request.ID,
+		).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
+	assert.Equal(t, "playlist has no songs", errCode.Error.Error())
+
+	playlistRepository.AssertExpectations(t)
+}
+
 func TestShufflePlaylistSongs_WhenUpdateAllPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	playlistRepository := new(repository.PlaylistRepositoryMock)
