@@ -62,6 +62,7 @@ func (s SongCreatedHandler) Handle(msg *watermillMessage.Message) error {
 		searches = append(searches, song.Artist.ToSearch())
 	}
 	if song.Album != nil {
+		song.Album.Artist = song.Artist
 		searches = append(searches, song.Album.ToSearch())
 	}
 
