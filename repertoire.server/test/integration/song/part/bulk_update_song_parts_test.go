@@ -34,7 +34,7 @@ func TestBulkUpdateSongParts_WhenSongIsNotFound_ShouldReturnNotFoundError(t *tes
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestBulkUpdateSongParts_WhenPartIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkUpdateSongParts_WhenPartsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 

@@ -33,7 +33,7 @@ func TestBulkDeleteSongSections_WhenSongIsNotFound_ShouldReturnNotFoundError(t *
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestBulkDeleteSongSections_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenSectionsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 

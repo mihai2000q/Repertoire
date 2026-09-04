@@ -21,10 +21,7 @@ func TestAddPerfectSongRehearsals_WhenSongsAreNotFound_ShouldReturnNotFoundError
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.AddPerfectSongRehearsalsRequest{
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when

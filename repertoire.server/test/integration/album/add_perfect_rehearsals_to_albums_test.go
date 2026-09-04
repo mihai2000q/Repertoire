@@ -21,10 +21,7 @@ func TestAddPerfectRehearsalsToAlbums_WhenAlbumsAreNotFound_ShouldReturnNotFound
 	utils.SeedAndCleanupData(t, albumData.Users, albumData.SeedData)
 
 	request := requests.AddPerfectRehearsalsToAlbumsRequest{
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when

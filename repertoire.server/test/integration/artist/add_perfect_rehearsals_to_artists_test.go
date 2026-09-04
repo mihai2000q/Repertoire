@@ -21,10 +21,7 @@ func TestAddPerfectRehearsalsToArtists_WhenArtistsAreNotFound_ShouldReturnNotFou
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
 
 	request := requests.AddPerfectRehearsalsToArtistsRequest{
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when

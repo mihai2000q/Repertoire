@@ -21,10 +21,7 @@ func TestAddPerfectRehearsalsToPlaylists_WhenPlaylistsAreNotFound_ShouldReturnNo
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	request := requests.AddPerfectRehearsalsToPlaylistsRequest{
-		IDs: []uuid.UUID{
-			uuid.New(),
-			uuid.New(),
-		},
+		IDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
