@@ -129,7 +129,7 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
-			if err := tx.Create(sectionPart).Error; err != nil {
+			if err := tx.Create(&sectionPart).Error; err != nil {
 				return err
 			}
 		}

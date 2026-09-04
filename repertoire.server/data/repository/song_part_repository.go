@@ -61,7 +61,7 @@ func (s songPartRepository) CountBySectionIDs(sectionIDs []uuid.UUID) (map[uuid.
 		Select("section_id, COUNT(*) AS count").
 		Where("section_id IN ?", sectionIDs).
 		Group("section_id").
-		Scan(results).Error
+		Scan(&results).Error
 	if err != nil {
 		return nil, err
 	}
