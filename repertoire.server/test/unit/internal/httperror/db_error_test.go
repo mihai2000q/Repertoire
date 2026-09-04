@@ -50,6 +50,19 @@ func TestDatabaseError_WhenErrorIsForeignKeyViolation_ShouldReturnNotFoundError(
 	assert.EqualError(t, errCode.Error, pgErr.Message)
 }
 
+func TestDatabaseError_WhenErrorIsForeignKeyViolationAndOfTypeUser_ShouldReturnNotFoundError(t *testing.T) {
+	pgErr := &pgconn.PgError{
+		Code:    fkViolationCode,
+		Message: `insert or update on table "song_sections" violates foreign key constraint "fk_song_sections_song"`,
+		Detail:  `Key (user_id)=(3fa85f64-5717-4562-b3fc-2c963f66afa6) is not present in table "users".`,
+	}
+
+	errCode := httperror.DatabaseError(pgErr)
+
+	assert.Equal(t, http.StatusForbidden, errCode.Code)
+	assert.EqualError(t, errCode.Error, "users (user_id) does not reference an existing row")
+}
+
 func TestDatabaseError_WhenErrorIsUniqueViolation_ShouldReturnConflictError(t *testing.T) {
 	pgErr := &pgconn.PgError{
 		Code:    uniqueViolationCode,
@@ -128,7 +141,7 @@ func TestDatabaseError_WhenPgErrorHasDetail_ShouldJoinMessageAndDetail(t *testin
 
 	errCode := httperror.DatabaseError(pgErr)
 
-	assert.EqualError(t, errCode.Error, pgErr.Message+": "+pgErr.Detail)
+	assert.EqualError(t, errCode.Error, "songs (song_id) does not reference an existing row")
 }
 
 func TestDatabaseError_WhenPgErrorHasNoDetail_ShouldUseMessageOnly(t *testing.T) {
