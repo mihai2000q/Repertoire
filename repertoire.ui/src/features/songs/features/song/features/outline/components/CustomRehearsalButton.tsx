@@ -3,7 +3,6 @@ import {
   alpha,
   Center,
   Group,
-  LoadingOverlay,
   Menu,
   ScrollArea,
   Stack,
@@ -16,6 +15,7 @@ import MenuItemConfirmation from '../../../../../../../components/menu/item/Menu
 import { useAddCustomSongRehearsalMutation } from '../../../../../../../state/api/songsApi.ts'
 import { useGetSongArrangementsQuery } from '../../arrangements/state/api/songArrangementsApi.ts'
 import { toast } from 'react-toastify'
+import LoadingOverlayDebounced from '../../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 
 interface CustomRehearsalButtonProps {
   songId: string
@@ -81,7 +81,7 @@ function CustomRehearsalButton({
 
       <Menu.Dropdown>
         <ScrollArea.Autosize mah={'max(250px, 50vh)'} scrollbars={'y'} scrollbarSize={5}>
-          <LoadingOverlay visible={isFetching} />
+          <LoadingOverlayDebounced visible={isFetching} loaderProps={{ size: 'sm' }} />
 
           <Stack gap={2}>
             {arrangements?.map((arrangement) => (
