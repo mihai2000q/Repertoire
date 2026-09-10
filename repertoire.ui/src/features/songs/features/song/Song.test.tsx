@@ -66,7 +66,7 @@ describe('Song', () => {
     expect(screen.getByLabelText('overall-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('links-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('description-widget')).toBeInTheDocument()
-    expect(screen.getByLabelText('parts-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('outline-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
   })
 })

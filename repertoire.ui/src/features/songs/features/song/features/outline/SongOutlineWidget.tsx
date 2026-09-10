@@ -1,6 +1,24 @@
 import { useAddPerfectSongRehearsalMutation } from '../../../../../../state/api/songsApi.ts'
-import { ActionIcon, Card, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
-import { IconChecks, IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
+import {
+  ActionIcon,
+  Card,
+  Center,
+  Group,
+  ScrollArea,
+  SegmentedControl,
+  Stack,
+  Text,
+  Tooltip
+} from '@mantine/core'
+import {
+  IconChecks,
+  IconEye,
+  IconEyeOff,
+  IconList,
+  IconListNumbers,
+  IconListTree,
+  IconPlus
+} from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
 import { SongPart, SongSettings } from '../../../../../../types/models/Song.ts'
 import { useEffect, useRef, useState } from 'react'
@@ -13,12 +31,19 @@ import LoadingOverlayDebounced from '../../../../../../components/loader/Loading
 import { useMain } from '../../../../../../context/MainContext.tsx'
 import { ClickSelectProvider } from '../../../../../../context/ClickSelectContext.tsx'
 import CustomRehearsalButton from './components/CustomRehearsalButton.tsx'
-import SongPartsWidget from '../parts/SongPartsWidget.tsx'
+import SongParts from '../parts/SongParts.tsx'
+import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
+import AddNewSongPart from '../parts/components/AddNewSongPart.tsx'
+
+enum OutlineView {
+  Sections,
+  Parts
+}
 
 interface SongOutlineWidgetProps {
   parts: SongPart[]
-  settings: SongSettings
   songId: string
+  settings: SongSettings
   defaultSongArrangementId?: string
   isFetching?: boolean
   bandMembers?: BandMember[]
@@ -39,10 +64,12 @@ function SongOutlineWidget({
 
   const [showDetails, setShowDetails] = useState(false)
   const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
-
   const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
   const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
+  const [outlineView, setOutlineView] = useState(OutlineView.Parts)
+  const part_or_section = outlineView === OutlineView.Sections ? 'section' : 'part'
+  const partOrSection = outlineView === OutlineView.Sections ? 'Section' : 'Part'
 
   useEffect(() => setShowDetails(false), [songId])
 
@@ -71,20 +98,19 @@ function SongOutlineWidget({
 
   return (
     <ClickSelectProvider data={parts}>
-      <Card ref={ref} variant={'widget'} aria-label={'parts-widget'} p={0}>
+      <Card ref={ref} variant={'widget'} aria-label={'outline-widget'} p={0}>
         <Stack gap={0}>
           <LoadingOverlayDebounced visible={isFetching} timeout={750} />
 
-          {/*Toolbar*/}
           <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
             <Text fw={600} inline>
-              Parts
+              Outline
             </Text>
 
             <Tooltip.Group openDelay={500} closeDelay={100}>
-              <Tooltip label={'Add New Part'}>
+              <Tooltip label={`Add New ${partOrSection}`}>
                 <ActionIcon
-                  aria-label={'add-new-part'}
+                  aria-label={`add-new-${part_or_section}`}
                   variant={'grey'}
                   size={'sm'}
                   onClick={toggleAdd}
@@ -99,7 +125,7 @@ function SongOutlineWidget({
                     ? showDetails
                       ? 'Hide details'
                       : 'Show Details'
-                    : 'To show details you need parts'
+                    : `To show details you need ${part_or_section}s`
                 }
               >
                 <ActionIcon
@@ -173,6 +199,42 @@ function SongOutlineWidget({
                 songId={songId}
                 bandMembers={bandMembers}
               />
+
+              <SegmentedControl<OutlineView>
+                value={outlineView}
+                onChange={setOutlineView}
+                size={'xs'}
+                color={'gray'}
+                radius={'12px'}
+                data={[
+                  {
+                    value: OutlineView.Sections,
+                    label: (
+                      <Tooltip label={'Sections View'}>
+                        <Center>
+                          <IconListTree size={16} aria-label={'sections-view'} />
+                        </Center>
+                      </Tooltip>
+                    )
+                  },
+                  {
+                    value: OutlineView.Parts,
+                    label: (
+                      <Tooltip label={'Parts View'}>
+                        <Center>
+                          <IconList size={16} aria-label={'parts-view'} />
+                        </Center>
+                      </Tooltip>
+                    )
+                  }
+                ]}
+                styles={{
+                  label: {
+                    width: '24px',
+                    padding: '3px'
+                  }
+                }}
+              />
             </Tooltip.Group>
           </Group>
 
@@ -183,18 +245,33 @@ function SongOutlineWidget({
             mah={(showDetails ? 2 : 1) * 383.35}
             style={{ transition: 'max-height 0.25s' }}
           >
-            <SongPartsWidget
-              parts={parts}
-              settings={settings}
-              songId={songId}
-              showDetails={showDetails}
-              openedAdd={openedAdd}
-              toggleAdd={toggleAdd}
-              isFetching={isFetching}
-              bandMembers={bandMembers}
-              isArtistBand={isArtistBand}
-              scrollAddIntoView={scrollAddIntoView}
-            />
+            <Stack gap={0}>
+              <SongParts
+                parts={parts}
+                songId={songId}
+                showDetails={showDetails}
+                isFetching={isFetching}
+                bandMembers={bandMembers}
+                isArtistBand={isArtistBand}
+              />
+
+              {outlineView === OutlineView.Parts && parts.length === 0 && (
+                <NewHorizontalCard ariaLabel={'add-new-song-part-card'} onClick={toggleAdd}>
+                  Add New Song Part
+                </NewHorizontalCard>
+              )}
+
+              {outlineView === OutlineView.Parts && (
+                <AddNewSongPart
+                  songId={songId}
+                  opened={openedAdd}
+                  onClose={toggleAdd}
+                  settings={settings}
+                  bandMembers={bandMembers}
+                  scrollIntoView={scrollAddIntoView}
+                />
+              )}
+            </Stack>
           </ScrollArea.Autosize>
         </Stack>
 

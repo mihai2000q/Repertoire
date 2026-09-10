@@ -1,10 +1,8 @@
-import { useMoveSongPartMutation } from './state/api/songPartsApi.ts'
+import { useMoveSongPartInSongMutation } from './state/api/songPartsApi.ts'
 import { Box, Stack } from '@mantine/core'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
-import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
-import AddNewSongPart from './components/AddNewSongPart.tsx'
 import { useDidUpdate, useListState } from '@mantine/hooks'
-import { SongPart, SongSettings } from '../../../../../../types/models/Song.ts'
+import { SongPart } from '../../../../../../types/models/Song.ts'
 import SongPartCard from './components/SongPartCard.tsx'
 import { useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
@@ -15,30 +13,22 @@ import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx
 
 interface SongPartsWidgetProps {
   parts: SongPart[]
-  settings: SongSettings
   songId: string
-  showDetails: boolean
-  scrollAddIntoView: () => void
-  openedAdd: boolean
-  toggleAdd: () => void
+  showDetails?: boolean
   isFetching?: boolean
   bandMembers?: BandMember[]
   isArtistBand?: boolean
 }
 
-function SongPartsWidget({
+function SongParts({
   parts,
-  settings,
   songId,
   showDetails,
-  scrollAddIntoView,
-  openedAdd,
-  toggleAdd,
   isFetching,
   bandMembers,
   isArtistBand
 }: SongPartsWidgetProps) {
-  const [moveSongPart, { isLoading: isMoveLoading }] = useMoveSongPartMutation()
+  const [moveSongPartInSong, { isLoading: isMoveLoading }] = useMoveSongPartInSongMutation()
 
   const [internalParts, { reorder, setState }] = useListState<SongPart>(parts)
   useDidUpdate(() => setState(parts), [parts])
@@ -67,7 +57,7 @@ function SongPartsWidget({
 
     if (!destination || source.index === destination.index) return
 
-    moveSongPart({
+    moveSongPartInSong({
       id: parts[source.index].id,
       overId: parts[destination.index].id,
       songId: songId
@@ -75,7 +65,7 @@ function SongPartsWidget({
   }
 
   return (
-    <Stack gap={0}>
+    <Stack gap={0} aria-label={'song-parts'}>
       <SongPartsContextMenu parts={parts} songId={songId}>
         <span style={{ display: 'contents' }}>
           <DragDropContext onDragEnd={onPartsDragEnd}>
@@ -117,23 +107,8 @@ function SongPartsWidget({
         </span>
       </SongPartsContextMenu>
       <SongPartsSelectionDrawer parts={parts} songId={songId} />
-
-      {parts.length === 0 && (
-        <NewHorizontalCard ariaLabel={'add-new-song-part-card'} onClick={toggleAdd}>
-          Add New Song Part
-        </NewHorizontalCard>
-      )}
-
-      <AddNewSongPart
-        songId={songId}
-        opened={openedAdd}
-        onClose={toggleAdd}
-        settings={settings}
-        bandMembers={bandMembers}
-        scrollIntoView={scrollAddIntoView}
-      />
     </Stack>
   )
 }
 
-export default SongPartsWidget
+export default SongParts

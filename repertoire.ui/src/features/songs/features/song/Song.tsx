@@ -9,7 +9,7 @@ import SongDescriptionWidget from './components/widgets/SongDescriptionWidget.ts
 import SongHeader from './components/SongHeader.tsx'
 import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
-import SongOutlineWidget from './features/outline/OutlineWidget.tsx'
+import SongOutlineWidget from './features/outline/SongOutlineWidget.tsx'
 
 function Song() {
   const params = useParams()

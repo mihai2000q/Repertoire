@@ -35,9 +35,9 @@ const songPartsApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Songs']
     }),
-    moveSongPart: build.mutation<HttpMessageResponse, MoveSongPartInSongRequest>({
+    moveSongPartInSong: build.mutation<HttpMessageResponse, MoveSongPartInSongRequest>({
       query: (body) => ({
-        url: 'songs/parts/move',
+        url: 'songs/parts/move-in-song',
         method: 'PUT',
         body: body
       }),
@@ -73,7 +73,7 @@ export const {
   useCreateSongPartMutation,
   useUpdateSongPartMutation,
   useUpdateAllSongPartsMutation,
-  useMoveSongPartMutation,
+  useMoveSongPartInSongMutation,
   useBulkUpdateSongPartsMutation,
   useBulkDeleteSongPartsMutation,
   useDeleteSongPartMutation
