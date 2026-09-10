@@ -241,7 +241,7 @@ func (s songRepository) GetFiltersMetadata(
 	return nil
 }
 
-var compoundSongsFields = []string{"sections_count", "solos_count", "riffs_count"}
+var compoundSongsFields = []string{"sections_count", "solos_count", "parts_count"}
 
 func (s songRepository) GetAllByUser(
 	songs *[]model.EnhancedSong,
