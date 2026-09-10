@@ -20,7 +20,7 @@ import {
   IconPlus
 } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import { SongPart, SongSettings } from '../../../../../../types/models/Song.ts'
+import { SongPart, SongSection, SongSettings } from '../../../../../../types/models/Song.ts'
 import { useEffect, useRef, useState } from 'react'
 import SongArrangementsModal from '../arrangements/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
@@ -34,6 +34,8 @@ import CustomRehearsalButton from './components/CustomRehearsalButton.tsx'
 import SongParts from '../parts/SongParts.tsx'
 import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
 import AddNewSongPart from '../parts/components/AddNewSongPart.tsx'
+import AddNewSongSection from '../sections/components/AddNewSongSection.tsx'
+import SongSections from '../sections/SongSections.tsx'
 
 enum OutlineView {
   Sections,
@@ -41,6 +43,7 @@ enum OutlineView {
 }
 
 interface SongOutlineWidgetProps {
+  sections: SongSection[]
   parts: SongPart[]
   songId: string
   settings: SongSettings
@@ -51,6 +54,7 @@ interface SongOutlineWidgetProps {
 }
 
 function SongOutlineWidget({
+  sections,
   parts,
   settings,
   songId,
@@ -67,7 +71,7 @@ function SongOutlineWidget({
   const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
   const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
-  const [outlineView, setOutlineView] = useState(OutlineView.Parts)
+  const [outlineView, setOutlineView] = useState(OutlineView.Sections)
   const part_or_section = outlineView === OutlineView.Sections ? 'section' : 'part'
   const partOrSection = outlineView === OutlineView.Sections ? 'Section' : 'Part'
 
@@ -246,21 +250,44 @@ function SongOutlineWidget({
             style={{ transition: 'max-height 0.25s' }}
           >
             <Stack gap={0}>
-              <SongParts
-                parts={parts}
-                songId={songId}
-                showDetails={showDetails}
-                isFetching={isFetching}
-                bandMembers={bandMembers}
-                isArtistBand={isArtistBand}
-              />
+              {outlineView === OutlineView.Sections && (
+                <SongSections
+                  sections={sections}
+                  songId={songId}
+                  showDetails={showDetails}
+                  isFetching={isFetching}
+                />
+              )}
+              {outlineView === OutlineView.Parts && (
+                <SongParts
+                  parts={parts}
+                  songId={songId}
+                  showDetails={showDetails}
+                  isFetching={isFetching}
+                  bandMembers={bandMembers}
+                  isArtistBand={isArtistBand}
+                />
+              )}
 
+              {outlineView === OutlineView.Sections && sections.length === 0 && (
+                <NewHorizontalCard ariaLabel={'add-new-song-section-card'} onClick={toggleAdd}>
+                  Add New Song Section
+                </NewHorizontalCard>
+              )}
               {outlineView === OutlineView.Parts && parts.length === 0 && (
                 <NewHorizontalCard ariaLabel={'add-new-song-part-card'} onClick={toggleAdd}>
                   Add New Song Part
                 </NewHorizontalCard>
               )}
 
+              {outlineView === OutlineView.Sections && (
+                <AddNewSongSection
+                  songId={songId}
+                  opened={openedAdd}
+                  onClose={toggleAdd}
+                  scrollIntoView={scrollAddIntoView}
+                />
+              )}
               {outlineView === OutlineView.Parts && (
                 <AddNewSongPart
                   songId={songId}
