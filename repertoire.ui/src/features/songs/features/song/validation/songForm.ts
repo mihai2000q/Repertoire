@@ -28,3 +28,9 @@ export const editSongPartSchema = z.object({
   instrumentId: z.string().optional()
 })
 export type EditSongPartForm = z.infer<typeof editSongPartSchema>
+
+export const editSongSectionSchema = z.object({
+  name: z.string().trim().min(1, 'Name cannot be blank'),
+  typeId: z.string()
+})
+export type EditSongSectionForm = z.infer<typeof editSongSectionSchema>
