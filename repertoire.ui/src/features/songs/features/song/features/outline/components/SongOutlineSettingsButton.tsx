@@ -1,28 +1,28 @@
 import { ActionIcon, Group, Popover, Tooltip } from '@mantine/core'
-import PopoverConfirmation from '../../../../../../../../components/popover/PopoverConfirmation.tsx'
-import BandMemberCompactSelect from '../../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
-import InstrumentCompactSelect from '../../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
+import PopoverConfirmation from '../../../../../../../components/popover/PopoverConfirmation.tsx'
+import BandMemberCompactSelect from '../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
+import InstrumentCompactSelect from '../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { useState } from 'react'
-import { Instrument, SongPart, SongSettings } from '../../../../../../../../types/models/Song.ts'
-import { BandMember } from '../../../../../../../../types/models/Artist.ts'
-import { useUpdateAllSongPartsMutation } from '../../state/api/songPartsApi.ts'
-import { useUpdateSongSettingsMutation } from '../../../../../../../../state/api/songsApi.ts'
+import { Instrument, SongPart, SongSettings } from '../../../../../../../types/models/Song.ts'
+import { BandMember } from '../../../../../../../types/models/Artist.ts'
+import { useUpdateAllSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
+import { useUpdateSongSettingsMutation } from '../../../../../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
 
-interface SongPartsSettingsButtonProps {
+interface SongOutlineSettingsButtonProps {
   settings: SongSettings
   parts: SongPart[]
   songId: string
   bandMembers?: BandMember[]
 }
 
-function SongPartsSettingsButton({
+function SongOutlineSettingsButton({
   parts,
   settings,
   songId,
   bandMembers
-}: SongPartsSettingsButtonProps) {
+}: SongOutlineSettingsButtonProps) {
   const [updateSettings] = useUpdateSongSettingsMutation()
   const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongPartsMutation()
 
@@ -154,4 +154,4 @@ function SongPartsSettingsButton({
   )
 }
 
-export default SongPartsSettingsButton
+export default SongOutlineSettingsButton

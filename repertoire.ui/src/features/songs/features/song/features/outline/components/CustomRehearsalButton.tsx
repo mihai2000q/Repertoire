@@ -12,9 +12,9 @@ import {
 } from '@mantine/core'
 import { IconChecklist, IconStarFilled } from '@tabler/icons-react'
 import { useDisclosure } from '@mantine/hooks'
-import MenuItemConfirmation from '../../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
-import { useAddCustomSongRehearsalMutation } from '../../../../../../../../state/api/songsApi.ts'
-import { useGetSongArrangementsQuery } from '../../../arrangements/state/api/songArrangementsApi.ts'
+import MenuItemConfirmation from '../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
+import { useAddCustomSongRehearsalMutation } from '../../../../../../../state/api/songsApi.ts'
+import { useGetSongArrangementsQuery } from '../../arrangements/state/api/songArrangementsApi.ts'
 import { toast } from 'react-toastify'
 
 interface CustomRehearsalButtonProps {

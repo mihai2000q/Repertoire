@@ -2,7 +2,6 @@ import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from './components/SongLoader.tsx'
 import { useGetSongQuery } from '../../../../state/api/songsApi.ts'
-import SongPartsWidget from './features/parts/SongPartsWidget.tsx'
 import SongInformationWidget from './components/widgets/SongInformationWidget.tsx'
 import SongLinksWidget from './components/widgets/SongLinksWidget.tsx'
 import SongOverallWidget from './components/widgets/SongOverallWidget.tsx'
@@ -10,6 +9,7 @@ import SongDescriptionWidget from './components/widgets/SongDescriptionWidget.ts
 import SongHeader from './components/SongHeader.tsx'
 import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
+import SongOutlineWidget from './features/outline/OutlineWidget.tsx'
 
 function Song() {
   const params = useParams()
@@ -45,7 +45,7 @@ function Song() {
           <Stack>
             <SongDescriptionWidget song={song} />
 
-            <SongPartsWidget
+            <SongOutlineWidget
               songId={songId}
               defaultSongArrangementId={song.defaultArrangementId}
               settings={song.settings}
