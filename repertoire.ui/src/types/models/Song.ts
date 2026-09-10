@@ -30,6 +30,7 @@ export default interface Song {
   album?: Album
   artist?: Artist
   guitarTuning?: GuitarTuning
+  sections: SongSection[]
   parts: SongPart[]
   arrangements: SongArrangement[]
 
@@ -55,6 +56,16 @@ export interface SongPart {
   sectionIds: string[] // TODO: change to sections
   bandMember?: BandMember
   instrument?: Instrument
+}
+
+export interface SongSection {
+  id: string
+  name: string
+  songSectionType: SongSectionType
+  parts: SongPart[]
+  rehearsals: number
+  confidence: number
+  progress: number
 }
 
 export interface SongSectionType {
