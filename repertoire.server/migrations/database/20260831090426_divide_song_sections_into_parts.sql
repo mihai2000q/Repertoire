@@ -44,8 +44,6 @@ ALTER TABLE public.song_part_histories
 CREATE INDEX idx_song_part_histories_part_id ON public.song_part_histories (part_id);
 
 ALTER TABLE public.song_section_occurrences
-    DROP CONSTRAINT song_section_occurrences_pkey;
-ALTER TABLE public.song_section_occurrences
     RENAME TO song_part_occurrences;
 ALTER TABLE public.song_part_occurrences
     ADD COLUMN part_id uuid,
@@ -53,12 +51,12 @@ ALTER TABLE public.song_part_occurrences
         FOREIGN KEY (part_id) REFERENCES public.song_parts (id)
             ON DELETE CASCADE;
 
--- Migrate Song Sections into Song Parts --
+-- Migrate Song Sections into Song Parts (with histories and occurrences) --
 DO
 $$
     DECLARE
         sec          RECORD;
-        part_id      uuid;
+        current_part_id      uuid;
         part_order   bigint;
         riff_type_id uuid;
     BEGIN
@@ -92,56 +90,23 @@ $$
                         sec.rehearsals_score, sec.confidence_score, sec.progress,
                         sec.song_id, sec.band_member_id, sec.instrument_id,
                         sec.created_at, sec.updated_at)
-                RETURNING id INTO part_id;
+                RETURNING id INTO current_part_id;
 
                 -- If the section type is NOT 'Riff', create a SongSectionPart
                 IF sec.song_section_type_id != riff_type_id THEN
                     INSERT INTO public.song_section_parts (section_id, part_id, "order", created_at)
-                    VALUES (sec.id, part_id, 0, sec.created_at);
+                    VALUES (sec.id, current_part_id, 0, sec.created_at);
                 END IF;
-            END LOOP;
-    END
-$$;
 
--- Migrate histories and occurrences to use part_id instead of section_id
-DO
-$$
-    DECLARE
-        hist    RECORD;
-        occ     RECORD;
-        part_id uuid;
-    BEGIN
-        -- For histories
-        FOR hist IN SELECT * FROM public.song_part_histories
-            LOOP
-                -- Find the part that corresponds to this section
-                SELECT sp.id
-                INTO part_id
-                FROM public.song_parts sp
-                         JOIN public.song_section_parts ssp ON ssp.part_id = sp.id
-                WHERE ssp.section_id = hist.song_section_id;
+                -- Migrate histories for this section to the new part
+                UPDATE public.song_part_histories
+                SET part_id = current_part_id
+                WHERE song_section_id = sec.id;
 
-                IF part_id IS NOT NULL THEN
-                    UPDATE public.song_part_histories
-                    SET part_id = part_id
-                    WHERE id = hist.id;
-                END IF;
-            END LOOP;
-
-        -- For occurrences
-        FOR occ IN SELECT * FROM public.song_part_occurrences WHERE section_id IS NOT NULL
-            LOOP
-                SELECT sp.id
-                INTO part_id
-                FROM public.song_parts sp
-                         JOIN public.song_section_parts ssp ON ssp.part_id = sp.id
-                WHERE ssp.section_id = occ.section_id;
-
-                IF part_id IS NOT NULL THEN
-                    UPDATE public.song_part_occurrences
-                    SET part_id = part_id
-                    WHERE id = occ.id;
-                END IF;
+                -- Migrate occurrences for this section to the new part
+                UPDATE public.song_part_occurrences
+                SET part_id = current_part_id
+                WHERE section_id = sec.id;
             END LOOP;
     END
 $$;
@@ -195,8 +160,7 @@ ALTER TABLE public.song_part_histories
     ALTER COLUMN part_id SET NOT NULL;
 ALTER TABLE public.song_part_occurrences
     DROP COLUMN section_id CASCADE,
-    ADD PRIMARY KEY (part_id, arrangement_id),
-    ALTER COLUMN part_id SET NOT NULL;
+    ADD PRIMARY KEY (part_id, arrangement_id);
 -- +goose StatementEnd
 
 -- +goose Down
@@ -205,11 +169,11 @@ ALTER TABLE public.song_part_occurrences
 ALTER TABLE public.song_sections
     ADD COLUMN band_member_id   uuid,
     ADD COLUMN instrument_id    uuid,
-    ADD COLUMN rehearsals       bigint,
-    ADD COLUMN rehearsals_score bigint,
-    ADD COLUMN confidence       bigint,
-    ADD COLUMN confidence_score bigint,
-    ADD COLUMN progress         bigint,
+    ADD COLUMN rehearsals       bigint not null default 0,
+    ADD COLUMN rehearsals_score bigint not null default 0,
+    ADD COLUMN confidence       bigint not null default 0,
+    ADD COLUMN confidence_score bigint not null default 0,
+    ADD COLUMN progress         bigint not null default 0,
     ADD CONSTRAINT fk_song_sections_band_members
         FOREIGN KEY (band_member_id) REFERENCES public.band_members (id)
             ON DELETE SET NULL,
@@ -229,7 +193,6 @@ ALTER TABLE public.song_section_histories
         FOREIGN KEY (song_section_id) REFERENCES public.song_sections (id)
             ON DELETE CASCADE;
 CREATE INDEX idx_song_section_histories_section_id ON public.song_section_histories (song_section_id);
-DROP INDEX idx_song_section_histories_section_id;
 ALTER TABLE public.song_section_occurrences
     ADD COLUMN section_id uuid,
     ADD CONSTRAINT fk_song_section_occurrences_song_sections
@@ -299,17 +262,17 @@ UPDATE public.song_section_types
 SET "order" = 7
 WHERE name = 'Solo';
 
--- 9. Reconstruct sections from parts (using song_section_parts)
+-- 5. Reconstruct sections from parts (using song_section_parts)
 -- We'll group by section_id and compute average stats from all parts in that section.
 -- Reconstruct sections from parts and migrate histories/occurrences
 DO
 $$
     DECLARE
-        part_record  RECORD;
-        sec_id       uuid;
-        next_order   bigint;
-        user_id      uuid;
-        riff_type_id uuid;
+        part_record   RECORD;
+        sec_id        uuid;
+        next_order    bigint;
+        found_user_id uuid;
+        riff_type_id  uuid;
     BEGIN
         -- Loop over all parts
         FOR part_record IN
@@ -341,7 +304,7 @@ $$
                 IF sec_id IS NULL THEN
                     -- Get user_id and riff_type_id for this song
                     SELECT s.user_id
-                    INTO user_id
+                    INTO found_user_id
                     FROM public.songs s
                     WHERE s.id = part_record.song_id;
 
@@ -349,7 +312,7 @@ $$
                     INTO riff_type_id
                     FROM public.song_section_types
                     WHERE name = 'Riff'
-                      AND user_id = user_id;
+                      AND user_id = found_user_id;
 
                     -- Compute next order for this song
                     SELECT COALESCE(MAX("order"), -1) + 1
@@ -378,6 +341,27 @@ $$
                             part_record.created_at,
                             part_record.updated_at)
                     RETURNING id INTO sec_id;
+                ELSE
+                    -- Section already exists: update its stats from the part
+                    UPDATE public.song_sections s
+                    SET rehearsals       = agg.avg_rehearsals,
+                        rehearsals_score = agg.avg_rehearsals_score,
+                        confidence       = agg.avg_confidence,
+                        confidence_score = agg.avg_confidence_score,
+                        progress         = agg.avg_progress
+                    FROM (
+                             SELECT ssp.section_id,
+                                    AVG(p.rehearsals)::bigint       AS avg_rehearsals,
+                                    AVG(p.rehearsals_score)::bigint AS avg_rehearsals_score,
+                                    AVG(p.confidence)::bigint       AS avg_confidence,
+                                    AVG(p.confidence_score)::bigint AS avg_confidence_score,
+                                    AVG(p.progress)::bigint         AS avg_progress
+                             FROM public.song_section_parts ssp
+                                      JOIN public.song_parts p ON p.id = ssp.part_id
+                             WHERE ssp.section_id = sec_id
+                             GROUP BY ssp.section_id
+                         ) agg
+                    WHERE s.id = agg.section_id;
                 END IF;
 
                 -- Now sec_id is guaranteed to be non-NULL.
@@ -398,9 +382,9 @@ ALTER TABLE public.song_section_histories
     ALTER COLUMN song_section_id SET NOT NULL;
 ALTER TABLE public.song_section_occurrences
     DROP COLUMN part_id CASCADE,
-    ALTER COLUMN section_id SET NOT NULL;
+    ADD PRIMARY KEY (section_id, arrangement_id);
 
-DROP TABLE public.song_parts;
-DROP INDEX idx_song_parts_song_id;
 DROP TABLE public.song_section_parts;
+DROP INDEX idx_song_parts_song_id;
+DROP TABLE public.song_parts;
 -- +goose StatementEnd
