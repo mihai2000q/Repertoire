@@ -43,7 +43,7 @@ describe('Custom Rehearsal Button', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<CustomRehearsalButton songId={''} sectionsCount={1} />)
+    reduxRender(<CustomRehearsalButton songId={''} partsCount={1} />)
 
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
     expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
@@ -59,8 +59,8 @@ describe('Custom Rehearsal Button', () => {
     expect(await screen.findByRole('button', { name: 'confirm' })).toBeInTheDocument()
   })
 
-  it("should be disabled when sections' count is 0", () => {
-    reduxRender(<CustomRehearsalButton songId={''} sectionsCount={0} />)
+  it("should be disabled when parts' count is 0", () => {
+    reduxRender(<CustomRehearsalButton songId={''} partsCount={0} />)
 
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
@@ -73,7 +73,7 @@ describe('Custom Rehearsal Button', () => {
       })
     )
 
-    reduxRender(<CustomRehearsalButton songId={''} sectionsCount={1} />)
+    reduxRender(<CustomRehearsalButton songId={''} partsCount={1} />)
 
     expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
   })
@@ -92,7 +92,7 @@ describe('Custom Rehearsal Button', () => {
     const arrangement = arrangements[0]
     const songId = 'some-id'
 
-    reduxRender(withToastify(<CustomRehearsalButton songId={songId} sectionsCount={1} />))
+    reduxRender(withToastify(<CustomRehearsalButton songId={songId} partsCount={1} />))
 
     await user.click(screen.getByRole('button', { name: 'add-custom-rehearsal' }))
 

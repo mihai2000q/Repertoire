@@ -1,31 +1,31 @@
 import { useAddPerfectSongRehearsalMutation } from '../../../../../../state/api/songsApi.ts'
-import { useMoveSongSectionMutation } from './state/api/songSectionsApi.ts'
+import { useMoveSongPartMutation } from './state/api/songPartsApi.ts'
 import { ActionIcon, Box, Card, Group, ScrollArea, Stack, Text, Tooltip } from '@mantine/core'
 import { IconChecks, IconEye, IconEyeOff, IconListNumbers, IconPlus } from '@tabler/icons-react'
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
-import AddNewSongSection from './components/AddNewSongSection.tsx'
+import AddNewSongPart from './components/AddNewSongPart.tsx'
 import { useDidUpdate, useDisclosure, useListState } from '@mantine/hooks'
-import { SongSection, SongSettings } from '../../../../../../types/models/Song.ts'
-import SongSectionCard from './components/SongSectionCard.tsx'
+import { SongPart, SongSettings } from '../../../../../../types/models/Song.ts'
+import SongPartCard from './components/SongPartCard.tsx'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import SongArrangementsModal from '../arrangements/SongArrangementsModal.tsx'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../types/models/Artist.ts'
 import PopoverConfirmation from '../../../../../../components/popover/PopoverConfirmation.tsx'
-import SongSectionsSettingsButton from './components/toolbar/SongSectionsSettingsButton.tsx'
+import SongPartsSettingsButton from './components/toolbar/SongPartsSettingsButton.tsx'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../../../../context/MainContext.tsx'
-import SongSectionsContextMenu from './components/SongSectionsContextMenu.tsx'
-import SongSectionsSelectionDrawer from './components/SongSectionsSelectionDrawer.tsx'
+import SongPartsContextMenu from './components/SongPartsContextMenu.tsx'
+import SongPartsSelectionDrawer from './components/SongPartsSelectionDrawer.tsx'
 import {
   ClickSelectProvider,
   useClickSelect
 } from '../../../../../../context/ClickSelectContext.tsx'
 import CustomRehearsalButton from './components/toolbar/CustomRehearsalButton.tsx'
 
-interface SongSectionsWidgetProps {
-  sections: SongSection[]
+interface SongPartsWidgetProps {
+  parts: SongPart[]
   settings: SongSettings
   songId: string
   defaultSongArrangementId?: string
@@ -34,16 +34,16 @@ interface SongSectionsWidgetProps {
   isArtistBand?: boolean
 }
 
-function SongSectionsWidget({
-  sections,
+function SongPartsWidget({
+  parts,
   settings,
   songId,
   defaultSongArrangementId,
   isFetching,
   bandMembers,
   isArtistBand
-}: SongSectionsWidgetProps) {
-  const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
+}: SongPartsWidgetProps) {
+  const [moveSongPart, { isLoading: isMoveLoading }] = useMoveSongPartMutation()
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
 
@@ -68,26 +68,26 @@ function SongSectionsWidget({
     })
   }
 
-  const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
-  useDidUpdate(() => setState(sections), [sections])
+  const [internalParts, { reorder, setState }] = useListState<SongPart>(parts)
+  useDidUpdate(() => setState(parts), [parts])
 
-  const [maxSectionRehearsals, maxSectionProgress] = useMemo(() => {
+  const [maxPartRehearsals, maxPartProgress] = useMemo(() => {
     let rehearsals = 0
     let progress = 0
 
-    sections.forEach((section) => {
-      if (section.rehearsals > rehearsals) rehearsals = section.rehearsals
-      if (section.progress > progress) progress = section.progress
+    parts.forEach((part) => {
+      if (part.rehearsals > rehearsals) rehearsals = part.rehearsals
+      if (part.progress > progress) progress = part.progress
     })
 
     return [rehearsals, progress]
-  }, [sections])
+  }, [parts])
 
   const rehearsalsToastId = useRef<number | string>(null)
 
-  function showRehearsalsToast(sectionName: string) {
+  function showRehearsalsToast(partName: string) {
     if (rehearsalsToastId.current) toast.dismiss(rehearsalsToastId.current)
-    rehearsalsToastId.current = toast.info(`${sectionName} rehearsals' have been increased by 1!`)
+    rehearsalsToastId.current = toast.info(`${partName} rehearsals' have been increased by 1!`)
   }
 
   function handleShowDetails() {
@@ -101,33 +101,33 @@ function SongSectionsWidget({
     setOpenedPerfectRehearsalPopover(false)
   }
 
-  function onSectionsDragEnd({ source, destination }) {
+  function onPartsDragEnd({ source, destination }) {
     reorder({ from: source.index, to: destination?.index || 0 })
 
     if (!destination || source.index === destination.index) return
 
-    moveSongSection({
-      id: sections[source.index].id,
-      overId: sections[destination.index].id,
+    moveSongPart({
+      id: parts[source.index].id,
+      overId: parts[destination.index].id,
       songId: songId
     })
   }
 
   return (
-    <ClickSelectProvider data={sections}>
-      <Card ref={ref} variant={'widget'} aria-label={'sections-widget'} p={0}>
+    <ClickSelectProvider data={parts}>
+      <Card ref={ref} variant={'widget'} aria-label={'parts-widget'} p={0}>
         <Stack gap={0}>
           <LoadingOverlayDebounced visible={isFetching || isMoveLoading} timeout={750} />
 
           <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
             <Text fw={600} inline>
-              Sections
+              Parts
             </Text>
 
             <Tooltip.Group openDelay={500} closeDelay={100}>
-              <Tooltip label={'Add New Section'}>
+              <Tooltip label={'Add New Part'}>
                 <ActionIcon
-                  aria-label={'add-new-section'}
+                  aria-label={'add-new-part'}
                   variant={'grey'}
                   size={'sm'}
                   onClick={openedAdd ? closeAdd : openAdd}
@@ -138,18 +138,18 @@ function SongSectionsWidget({
 
               <Tooltip
                 label={
-                  sections.length > 0
+                  parts.length > 0
                     ? showDetails
                       ? 'Hide details'
                       : 'Show Details'
-                    : 'To show details you need sections'
+                    : 'To show details you need parts'
                 }
               >
                 <ActionIcon
                   aria-label={showDetails ? 'hide-details' : 'show-details'}
                   variant={'grey'}
                   size={'sm'}
-                  disabled={sections.length === 0}
+                  disabled={parts.length === 0}
                   onClick={handleShowDetails}
                 >
                   {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
@@ -170,12 +170,12 @@ function SongSectionsWidget({
               <CustomRehearsalButton
                 songId={songId}
                 defaultSongArrangementId={defaultSongArrangementId}
-                sectionsCount={sections.length}
+                partsCount={parts.length}
               />
 
               <PopoverConfirmation
                 label={
-                  "Increase sections' rehearsals based on occurrences from default arrangement"
+                  "Increase parts' rehearsals based on occurrences from default arrangement"
                 }
                 popoverProps={{
                   opened: openedPerfectRehearsalPopover,
@@ -188,8 +188,8 @@ function SongSectionsWidget({
               >
                 <Tooltip
                   label={
-                    sections.length === 0
-                      ? 'To add a perfect rehearsal, you need sections'
+                    parts.length === 0
+                      ? 'To add a perfect rehearsal, you need parts'
                       : !defaultSongArrangementId
                         ? 'To add a perfect rehearsal, you need a default arrangement'
                         : 'Add Perfect Rehearsal'
@@ -200,7 +200,7 @@ function SongSectionsWidget({
                     aria-label={'add-perfect-rehearsal'}
                     variant={'grey'}
                     size={'sm'}
-                    disabled={sections.length === 0 || !defaultSongArrangementId}
+                    disabled={parts.length === 0 || !defaultSongArrangementId}
                     onClick={() =>
                       setOpenedPerfectRehearsalPopover(
                         isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
@@ -212,9 +212,9 @@ function SongSectionsWidget({
                 </Tooltip>
               </PopoverConfirmation>
 
-              <SongSectionsSettingsButton
+              <SongPartsSettingsButton
                 settings={settings}
-                sections={sections}
+                parts={parts}
                 songId={songId}
                 bandMembers={bandMembers}
               />
@@ -229,32 +229,32 @@ function SongSectionsWidget({
             style={{ transition: 'max-height 0.25s' }}
           >
             <Stack gap={0}>
-              <SongSectionsContextMenu songId={songId}>
+              <SongPartsContextMenu parts={parts} songId={songId}>
                 <span style={{ display: 'contents' }}>
-                  <DragDropContext onDragEnd={onSectionsDragEnd}>
+                  <DragDropContext onDragEnd={onPartsDragEnd}>
                     <Droppable droppableId="dnd-list" direction="vertical">
                       {(provided) => (
                         <Box ref={provided.innerRef} {...provided.droppableProps}>
-                          {internalSections.map((section, index) => {
+                          {internalParts.map((part, index) => {
                             // eslint-disable-next-line react-hooks/rules-of-hooks
                             const { isClickSelectionActive } = useClickSelect()
                             return (
                               <Draggable
-                                key={section.id}
+                                key={part.id}
                                 index={index}
-                                draggableId={section.id}
+                                draggableId={part.id}
                                 isDragDisabled={
                                   isFetching || isMoveLoading || isClickSelectionActive
                                 }
                               >
                                 {(provided, snapshot) => (
-                                  <SongSectionCard
-                                    section={section}
+                                  <SongPartCard
+                                    part={part}
                                     songId={songId}
                                     isDragging={snapshot.isDragging}
                                     showDetails={showDetails}
-                                    maxSectionProgress={maxSectionProgress}
-                                    maxSectionRehearsals={maxSectionRehearsals}
+                                    maxPartProgress={maxPartProgress}
+                                    maxPartRehearsals={maxPartRehearsals}
                                     draggableProvided={provided}
                                     bandMembers={bandMembers}
                                     isArtistBand={isArtistBand}
@@ -270,19 +270,19 @@ function SongSectionsWidget({
                     </Droppable>
                   </DragDropContext>
                 </span>
-              </SongSectionsContextMenu>
-              <SongSectionsSelectionDrawer songId={songId} />
+              </SongPartsContextMenu>
+              <SongPartsSelectionDrawer parts={parts} songId={songId} />
 
-              {sections.length === 0 && (
+              {parts.length === 0 && (
                 <NewHorizontalCard
-                  ariaLabel={'add-new-song-section-card'}
+                  ariaLabel={'add-new-song-part-card'}
                   onClick={openedAdd ? closeAdd : openAdd}
                 >
-                  Add New Song Section
+                  Add New Song Part
                 </NewHorizontalCard>
               )}
 
-              <AddNewSongSection
+              <AddNewSongPart
                 songId={songId}
                 opened={openedAdd}
                 onClose={closeAdd}
@@ -305,4 +305,4 @@ function SongSectionsWidget({
   )
 }
 
-export default SongSectionsWidget
+export default SongPartsWidget

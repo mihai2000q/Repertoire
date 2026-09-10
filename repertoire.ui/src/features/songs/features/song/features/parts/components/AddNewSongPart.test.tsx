@@ -1,25 +1,14 @@
 import { emptySongSettings, reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
-import AddNewSongSection from './AddNewSongSection.tsx'
+import AddNewSongPart from './AddNewSongPart.tsx'
 import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { Instrument, SongSectionType } from '../../../../../../../types/models/Song.ts'
-import { CreateSongSectionRequest } from '../types/requests/SongSectionRequests.ts'
+import { Instrument } from '../../../../../../../types/models/Song.ts'
+import { CreateSongPartRequest } from '../types/requests/SongPartRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 
-describe('Add New Song Section', () => {
-  const sectionTypes: SongSectionType[] = [
-    {
-      id: '1',
-      name: 'Solo'
-    },
-    {
-      id: '2',
-      name: 'Riff'
-    }
-  ]
-
+describe('Add New Song Part', () => {
   const instruments: Instrument[] = [
     {
       id: '1',
@@ -51,9 +40,6 @@ describe('Add New Song Section', () => {
   const handlers = [
     http.get('/songs/instruments', async () => {
       return HttpResponse.json(instruments)
-    }),
-    http.get('/songs/sections/types', async () => {
-      return HttpResponse.json(sectionTypes)
     })
   ]
 
@@ -67,7 +53,7 @@ describe('Add New Song Section', () => {
 
   it('should render', async () => {
     const [{ rerender }] = reduxRender(
-      <AddNewSongSection
+      <AddNewSongPart
         opened={true}
         onClose={() => {}}
         songId={''}
@@ -78,16 +64,14 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(await screen.findByRole('textbox', { name: /name/i })).toHaveFocus()
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument()
 
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
 
     rerender(
-      <AddNewSongSection
+      <AddNewSongPart
         opened={true}
         onClose={() => {}}
         songId={''}
@@ -103,7 +87,7 @@ describe('Add New Song Section', () => {
     const defaultBandMember = bandMembers[1]
 
     reduxRender(
-      <AddNewSongSection
+      <AddNewSongPart
         opened={true}
         onClose={() => {}}
         songId={''}
@@ -116,26 +100,25 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('button', { name: defaultInstrument.name })).toBeInTheDocument()
   })
 
-  it('should send create request when name is typed and type is selected', async () => {
+  it('should send create request when name is typed', async () => {
     const user = userEvent.setup()
 
     const onClose = vitest.fn()
     const songId = 'some id'
 
-    const newSectionType = sectionTypes[0]
-    const newName = 'Section 1'
+    const newName = 'Part 1'
 
-    let capturedRequest: CreateSongSectionRequest
+    let capturedRequest: CreateSongPartRequest
     server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
+      http.post('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongPartRequest
+        return HttpResponse.json({ message: 'part added!' })
       })
     )
 
     reduxRender(
       withToastify(
-        <AddNewSongSection
+        <AddNewSongPart
           opened={true}
           onClose={onClose}
           songId={songId}
@@ -144,24 +127,20 @@ describe('Add New Song Section', () => {
       )
     )
 
-    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
-
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(capturedRequest).toStrictEqual({
-      typeId: newSectionType.id,
       name: newName,
-      songId: songId
+      songId: songId,
+      sectionIds: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   it('should send create request when all fields are filled', async () => {
@@ -170,22 +149,21 @@ describe('Add New Song Section', () => {
     const onClose = vitest.fn()
     const songId = 'some id'
 
-    const newSectionType = sectionTypes[0]
-    const newName = 'Section 1'
+    const newName = 'Part 1'
     const newInstrument = instruments[0]
     const newBandMember = bandMembers[0]
 
-    let capturedRequest: CreateSongSectionRequest
+    let capturedRequest: CreateSongPartRequest
     server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
+      http.post('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongPartRequest
+        return HttpResponse.json({ message: 'part added!' })
       })
     )
 
     reduxRender(
       withToastify(
-        <AddNewSongSection
+        <AddNewSongPart
           opened={true}
           onClose={onClose}
           songId={songId}
@@ -202,9 +180,6 @@ describe('Add New Song Section', () => {
     await user.click(screen.getByRole('button', { name: 'select-instrument' }))
     await user.click(await screen.findByRole('option', { name: newInstrument.name }))
 
-    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
-
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
     await user.click(screen.getByRole('button', { name: /add/i }))
@@ -212,9 +187,9 @@ describe('Add New Song Section', () => {
     expect(capturedRequest).toStrictEqual({
       bandMemberId: newBandMember.id,
       instrumentId: newInstrument.id,
-      typeId: newSectionType.id,
       name: newName,
-      songId: songId
+      songId: songId,
+      sectionIds: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -224,7 +199,6 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
   })
 
   it('should send create request when there are default settings', async () => {
@@ -238,21 +212,20 @@ describe('Add New Song Section', () => {
       defaultInstrument: instruments[0]
     }
 
-    const newSectionType = sectionTypes[0]
-    const newName = 'Section 1'
+    const newName = 'Part 1'
     const newInstrument = instruments[1]
 
-    let capturedRequest: CreateSongSectionRequest
+    let capturedRequest: CreateSongPartRequest
     server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
+      http.post('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongPartRequest
+        return HttpResponse.json({ message: 'part added!' })
       })
     )
 
     reduxRender(
       withToastify(
-        <AddNewSongSection
+        <AddNewSongPart
           opened={true}
           onClose={onClose}
           songId={songId}
@@ -266,9 +239,6 @@ describe('Add New Song Section', () => {
     await user.clear(screen.getByRole('textbox', { name: /search/i }))
     await user.click(await screen.findByRole('option', { name: newInstrument.name }))
 
-    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
-
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
     await user.click(screen.getByRole('button', { name: /add/i }))
@@ -276,9 +246,9 @@ describe('Add New Song Section', () => {
     expect(capturedRequest).toStrictEqual({
       bandMemberId: settings.defaultBandMember.id,
       instrumentId: newInstrument.id,
-      typeId: newSectionType.id,
       name: newName,
-      songId: songId
+      songId: songId,
+      sectionIds: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -292,7 +262,7 @@ describe('Add New Song Section', () => {
       screen.getByRole('button', { name: settings.defaultInstrument.name })
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('combobox', { name: /song-section-type/i })).toHaveValue('')
+    expect(await screen.findByRole('combobox', { name: /song-part-type/i })).toHaveValue('')
   })
 
   // Validation
@@ -303,7 +273,7 @@ describe('Add New Song Section', () => {
     const newName = 'New Name'
 
     reduxRender(
-      <AddNewSongSection
+      <AddNewSongPart
         opened={true}
         onClose={() => {}}
         songId={''}
@@ -317,95 +287,29 @@ describe('Add New Song Section', () => {
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
   })
 
-  it('should not send create request when neither type is selected nor name is typed', async () => {
-    const user = userEvent.setup()
-
-    let capturedRequest: CreateSongSectionRequest
-    server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
-      })
-    )
-
-    reduxRender(
-      <AddNewSongSection
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
-
-    await user.click(screen.getByRole('button', { name: /add/i }))
-
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
-
-    expect(capturedRequest).toBeUndefined()
-  })
-
   it('should not send create request when name is not typed', async () => {
     const user = userEvent.setup()
 
-    const newSectionType = sectionTypes[0]
-
-    let capturedRequest: CreateSongSectionRequest
+    let capturedRequest: CreateSongPartRequest
     server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
+      http.post('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as CreateSongPartRequest
+        return HttpResponse.json({ message: 'part added!' })
       })
     )
 
     reduxRender(
-      <AddNewSongSection
+      <AddNewSongPart
         opened={true}
         onClose={() => {}}
         songId={''}
         settings={emptySongSettings}
       />
     )
-
-    await user.click(screen.getByRole('combobox', { name: /song-section-type/i }))
-    await user.click(await screen.findByText(newSectionType.name))
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
-
-    expect(capturedRequest).toBeUndefined()
-  })
-
-  it('should not send create request when type is not selected', async () => {
-    const user = userEvent.setup()
-
-    const newName = 'Section 1'
-
-    let capturedRequest: CreateSongSectionRequest
-    server.use(
-      http.post('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as CreateSongSectionRequest
-        return HttpResponse.json({ message: 'section added!' })
-      })
-    )
-
-    reduxRender(
-      <AddNewSongSection
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
-
-    await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
-
-    await user.click(screen.getByRole('button', { name: /add/i }))
-
-    expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
 
     expect(capturedRequest).toBeUndefined()
   })
@@ -414,7 +318,7 @@ describe('Add New Song Section', () => {
     const user = userEvent.setup()
 
     const uut = (opened = true) => (
-      <AddNewSongSection
+      <AddNewSongPart
         opened={opened}
         onClose={() => {}}
         songId={''}
@@ -426,13 +330,11 @@ describe('Add New Song Section', () => {
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInvalid()
 
     rerender(uut(false))
     rerender(uut())
 
-    expect(screen.getByRole('combobox', { name: /song-section-type/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
   })
 })

@@ -1,21 +1,28 @@
-import { reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
-import SongSectionsContextMenu from './SongSectionsContextMenu.tsx'
+import { emptySongPart, reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import SongPartsContextMenu from './SongPartsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { BulkRehearsalsSongSectionsRequest } from '../types/requests/SongSectionRequests.ts'
+import { BulkUpdateSongPartsRequest } from '../types/requests/SongPartRequests.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
+import { SongPart } from '../../../../../../../types/models/Song.ts'
 
 // Mock the context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
-describe('Song Sections Context Menu', () => {
+describe('Song Parts Context Menu', () => {
   const dataTestId = 'dataTestId'
-  const selectedIds = ['1', '2', '3']
+  const selectedIds = ['1', '3']
   const clearSelection = vi.fn()
+
+  const parts: SongPart[] = [
+    { ...emptySongPart, id: '1', rehearsals: 10, confidence: 2 },
+    { ...emptySongPart, id: '2', rehearsals: 5, confidence: 10 },
+    { ...emptySongPart, id: '3', rehearsals: 20, confidence: 50 }
+  ]
 
   const server = setupServer()
 
@@ -43,9 +50,9 @@ describe('Song Sections Context Menu', () => {
   const render = (songId = '1') =>
     reduxRender(
       withToastify(
-        <SongSectionsContextMenu songId={songId}>
+        <SongPartsContextMenu parts={parts} songId={songId}>
           <div data-testid={dataTestId} />
-        </SongSectionsContextMenu>
+        </SongPartsContextMenu>
       )
     )
 
@@ -109,9 +116,9 @@ describe('Song Sections Context Menu', () => {
     })
 
     rerender(
-      <SongSectionsContextMenu songId={'1'}>
+      <SongPartsContextMenu parts={parts} songId={'1'}>
         <div data-testid={dataTestId} />
-      </SongSectionsContextMenu>
+      </SongPartsContextMenu>
     )
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
@@ -120,15 +127,16 @@ describe('Song Sections Context Menu', () => {
   it('should bulk rehearsals by 1 on add rehearsals menu item', async () => {
     const user = userEvent.setup()
 
-    let capturedRequest: BulkRehearsalsSongSectionsRequest
+    let capturedRequest: BulkUpdateSongPartsRequest
     server.use(
-      http.post(`/songs/sections/bulk-rehearsals`, async (req) => {
-        capturedRequest = (await req.request.json()) as BulkRehearsalsSongSectionsRequest
+      http.post(`/songs/parts/bulk-update`, async (req) => {
+        capturedRequest = (await req.request.json()) as BulkUpdateSongPartsRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     const songId = '1'
+    const selectedParts = parts.filter((p) => selectedIds.some((pId) => pId === p.id))
 
     render(songId)
 
@@ -139,11 +147,13 @@ describe('Song Sections Context Menu', () => {
     await user.click(screen.getByRole('menuitem', { name: /add rehearsals/i }))
     await user.click(screen.getByRole('button', { name: /confirm/i })) // menu item confirmation
 
-    expect(
-      screen.getByText(`Rehearsals added to ${selectedIds.length} sections!`)
-    ).toBeInTheDocument()
+    expect(screen.getByText(`Rehearsals added to ${selectedIds.length} parts!`)).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({
-      sections: selectedIds.map((id) => ({ id: id, rehearsals: 1 })),
+      requests: selectedParts.map((p) => ({
+        id: p.id,
+        rehearsals: p.rehearsals + 1,
+        confidence: p.confidence
+      })),
       songId: songId
     })
     expect(clearSelection).toHaveBeenCalledOnce()
@@ -160,6 +170,6 @@ describe('Song Sections Context Menu', () => {
     })
     await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
   })
 })

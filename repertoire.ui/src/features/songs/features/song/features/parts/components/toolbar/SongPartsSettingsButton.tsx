@@ -3,28 +3,28 @@ import PopoverConfirmation from '../../../../../../../../components/popover/Popo
 import BandMemberCompactSelect from '../../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { useState } from 'react'
-import { Instrument, SongSection, SongSettings } from '../../../../../../../../types/models/Song.ts'
+import { Instrument, SongPart, SongSettings } from '../../../../../../../../types/models/Song.ts'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
-import { useUpdateAllSongSectionsMutation } from '../../state/api/songSectionsApi.ts'
+import { useUpdateAllSongPartsMutation } from '../../state/api/songPartsApi.ts'
 import { useUpdateSongSettingsMutation } from '../../../../../../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
 
-interface SongSectionsSettingsButtonProps {
+interface SongPartsSettingsButtonProps {
   settings: SongSettings
-  sections: SongSection[]
+  parts: SongPart[]
   songId: string
   bandMembers?: BandMember[]
 }
 
-function SongSectionsSettingsButton({
-  sections,
+function SongPartsSettingsButton({
+  parts,
   settings,
   songId,
   bandMembers
-}: SongSectionsSettingsButtonProps) {
+}: SongPartsSettingsButtonProps) {
   const [updateSettings] = useUpdateSongSettingsMutation()
-  const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongSectionsMutation()
+  const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongPartsMutation()
 
   const [defaultInstrument, setDefaultInstrument] = useState(settings.defaultInstrument)
   const [defaultBandMember, setDefaultBandMember] = useState(settings.defaultBandMember)
@@ -46,7 +46,7 @@ function SongSectionsSettingsButton({
       defaultInstrumentId: newInstrument?.id,
       defaultBandMemberId: defaultBandMember?.id
     }).unwrap()
-    if (newInstrument && sections.filter((s) => s.instrument?.id !== newInstrument.id).length > 0) {
+    if (newInstrument && parts.filter((s) => s.instrument?.id !== newInstrument.id).length > 0) {
       setOpenedUpdatedDefaultInstrumentPopover(true)
     }
   }
@@ -58,12 +58,12 @@ function SongSectionsSettingsButton({
       defaultInstrumentId: defaultInstrument?.id,
       defaultBandMemberId: newBandMember?.id
     }).unwrap()
-    if (newBandMember && sections.filter((s) => s.bandMember?.id !== newBandMember.id).length > 0) {
+    if (newBandMember && parts.filter((s) => s.bandMember?.id !== newBandMember.id).length > 0) {
       setOpenedUpdatedDefaultBandMemberPopover(true)
     }
   }
 
-  async function handleUpdateAllSectionsInstruments() {
+  async function handleUpdateAllPartsInstruments() {
     await updateAll({
       songId: songId,
       instrumentId: defaultInstrument?.id
@@ -71,7 +71,7 @@ function SongSectionsSettingsButton({
     setOpenedUpdatedDefaultInstrumentPopover(false)
   }
 
-  async function handleUpdateAllSectionsBandMembers() {
+  async function handleUpdateAllPartsBandMembers() {
     await updateAll({
       songId: songId,
       bandMemberId: defaultBandMember?.id
@@ -107,7 +107,7 @@ function SongSectionsSettingsButton({
       <Popover.Dropdown>
         <Group gap={'xs'}>
           <PopoverConfirmation
-            label={"Would you like to update all sections' band members?"}
+            label={"Would you like to update all parts' band members?"}
             popoverProps={{
               opened: openedUpdatedDefaultBandMemberPopover,
               onChange: setOpenedUpdatedDefaultBandMemberPopover,
@@ -117,7 +117,7 @@ function SongSectionsSettingsButton({
             }}
             isLoading={isUpdateAllLoading}
             onCancel={() => setOpenedUpdatedDefaultBandMemberPopover(false)}
-            onConfirm={handleUpdateAllSectionsBandMembers}
+            onConfirm={handleUpdateAllPartsBandMembers}
           >
             <BandMemberCompactSelect
               bandMember={defaultBandMember}
@@ -129,7 +129,7 @@ function SongSectionsSettingsButton({
           </PopoverConfirmation>
 
           <PopoverConfirmation
-            label={"Would you like to update all sections' instruments?"}
+            label={"Would you like to update all parts' instruments?"}
             popoverProps={{
               opened: openedUpdatedDefaultInstrumentPopover,
               onChange: setOpenedUpdatedDefaultInstrumentPopover,
@@ -139,7 +139,7 @@ function SongSectionsSettingsButton({
             }}
             isLoading={isUpdateAllLoading}
             onCancel={() => setOpenedUpdatedDefaultInstrumentPopover(false)}
-            onConfirm={handleUpdateAllSectionsInstruments}
+            onConfirm={handleUpdateAllPartsInstruments}
           >
             <InstrumentCompactSelect
               instrument={defaultInstrument}
@@ -154,4 +154,4 @@ function SongSectionsSettingsButton({
   )
 }
 
-export default SongSectionsSettingsButton
+export default SongPartsSettingsButton

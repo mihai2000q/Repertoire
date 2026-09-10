@@ -19,13 +19,13 @@ import { toast } from 'react-toastify'
 
 interface CustomRehearsalButtonProps {
   songId: string
-  sectionsCount: number
+  partsCount: number
   defaultSongArrangementId?: string
 }
 
 function CustomRehearsalButton({
   songId,
-  sectionsCount,
+  partsCount,
   defaultSongArrangementId
 }: CustomRehearsalButtonProps) {
   const [opened, { toggle, close }] = useDisclosure(false)
@@ -60,15 +60,15 @@ function CustomRehearsalButton({
               ? 'Loading arrangements...'
               : arrangements?.length === 0
                 ? 'To add a custom rehearsal, you need arrangements'
-                : sectionsCount === 0
-                  ? 'To add a custom rehearsal, you need sections'
+                : partsCount === 0
+                  ? 'To add a custom rehearsal, you need parts'
                   : 'Add Custom Rehearsal'
           }
           disabled={opened}
         >
           <ActionIcon
             aria-label={'add-custom-rehearsal'}
-            disabled={sectionsCount === 0 || arrangements?.length === 0}
+            disabled={partsCount === 0 || arrangements?.length === 0}
             loading={isLoading}
             variant={'grey'}
             size={'sm'}

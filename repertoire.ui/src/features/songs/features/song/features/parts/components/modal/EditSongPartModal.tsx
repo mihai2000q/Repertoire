@@ -1,4 +1,4 @@
-import { useUpdateSongSectionMutation } from '../../state/api/songSectionsApi.ts'
+import { useUpdateSongPartMutation } from '../../state/api/songPartsApi.ts'
 import { useEffect, useState } from 'react'
 import {
   Button,
@@ -13,84 +13,76 @@ import {
   TextInput,
   Tooltip
 } from '@mantine/core'
-import { SongSection } from '../../../../../../../../types/models/Song.ts'
+import { SongPart } from '../../../../../../../../types/models/Song.ts'
 import { schemaResolver, useForm } from '@mantine/form'
-import { EditSongSectionForm, editSongSectionSchema } from '../../../../validation/songForm.ts'
-import SongSectionTypeSelect from '../../../../../../../../components/form/select/SongSectionTypeSelect.tsx'
+import { EditSongPartForm, editSongPartSchema } from '../../../../validation/songForm.ts'
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import BandMemberSelect from '../../../../../../../../components/form/select/BandMemberSelect.tsx'
 import InstrumentSelect from '../../../../../../../../components/form/select/InstrumentSelect.tsx'
 
-interface EditSongSectionModalProps {
+interface EditSongPartModalProps {
   opened: boolean
   onClose: () => void
-  section: SongSection
+  part: SongPart
   bandMembers: BandMember[]
 }
 
-function EditSongSectionModal({
+function EditSongPartModal({
   opened,
   onClose,
-  section,
+  part,
   bandMembers
-}: EditSongSectionModalProps) {
-  const [updateSongSectionMutation, { isLoading }] = useUpdateSongSectionMutation()
+}: EditSongPartModalProps) {
+  const [updateSongPartMutation, { isLoading }] = useUpdateSongPartMutation()
 
   const [hasChanged, setHasChanged] = useState(false)
 
   const [rehearsalsError, setRehearsalsError] = useState<string | null>()
 
-  const form = useForm<EditSongSectionForm>({
+  const form = useForm<EditSongPartForm>({
     mode: 'uncontrolled',
     initialValues: {
-      name: section.name,
-      rehearsals: section.rehearsals,
-      confidence: section.confidence,
-      typeId: section.songSectionType.id,
-      bandMemberId: section.bandMember?.id,
-      instrumentId: section.instrument?.id
+      name: part.name,
+      rehearsals: part.rehearsals,
+      confidence: part.confidence,
+      bandMemberId: part.bandMember?.id,
+      instrumentId: part.instrument?.id
     },
     validateInputOnBlur: true,
     validateInputOnChange: false,
     clearInputErrorOnChange: true,
-    validate: schemaResolver(editSongSectionSchema),
+    validate: schemaResolver(editSongPartSchema),
     onValuesChange: (values) => {
       setHasChanged(
-        values.name !== section.name ||
-          (typeof values.rehearsals === 'number' && values.rehearsals !== section.rehearsals) ||
-          values.confidence !== section.confidence ||
-          values.typeId !== section.songSectionType.id ||
-          values.bandMemberId !== section.bandMember?.id ||
-          values.instrumentId !== section.instrument?.id
+        values.name !== part.name ||
+          (typeof values.rehearsals === 'number' && values.rehearsals !== part.rehearsals) ||
+          values.confidence !== part.confidence ||
+          values.bandMemberId !== part.bandMember?.id ||
+          values.instrumentId !== part.instrument?.id
       )
 
       if (typeof values.rehearsals !== 'number') setRehearsalsError('Cannot be blank')
-      else if (values.rehearsals < section.rehearsals)
+      else if (values.rehearsals < part.rehearsals)
         setRehearsalsError('Has to be higher than initial value')
       else setRehearsalsError(null)
     }
   })
   useEffect(() => {
-    form.setFieldValue('rehearsals', section.rehearsals)
-  }, [section])
+    form.setFieldValue('rehearsals', part.rehearsals)
+    form.setFieldValue('confidence', part.confidence)
+  }, [part])
 
-  const [type, setType] = useState<ComboboxItem>({
-    value: section.songSectionType.id,
-    label: section.songSectionType.name
-  })
-  useEffect(() => form.setFieldValue('typeId', type?.value), [type])
-
-  const [bandMember, setBandMember] = useState<BandMember>(section.bandMember)
+  const [bandMember, setBandMember] = useState<BandMember>(part.bandMember)
   useEffect(() => form.setFieldValue('bandMemberId', bandMember?.id), [bandMember])
-  useDidUpdate(() => setBandMember(section.bandMember), [section.bandMember])
+  useDidUpdate(() => setBandMember(part.bandMember), [part.bandMember])
 
   const [instrument, setInstrument] = useState<ComboboxItem>(
-    section.instrument
+    part.instrument
       ? {
-          value: section.instrument.id,
-          label: section.instrument.name
+          value: part.instrument.id,
+          label: part.instrument.name
         }
       : undefined
   )
@@ -98,33 +90,33 @@ function EditSongSectionModal({
   useDidUpdate(
     () =>
       setInstrument(
-        section.instrument
+        part.instrument
           ? {
-              value: section.instrument.id,
-              label: section.instrument.name
+              value: part.instrument.id,
+              label: part.instrument.name
             }
           : undefined
       ),
-    [section.instrument]
+    [part.instrument]
   )
 
-  async function updateSongSection({
+  async function updateSongPart({
     name,
     rehearsals,
     confidence,
     bandMemberId,
     instrumentId
-  }: EditSongSectionForm) {
+  }: EditSongPartForm) {
     name = name.trim()
 
     if (rehearsalsError) return
 
-    await updateSongSectionMutation({
-      id: section.id,
-      typeId: type.value,
+    await updateSongPartMutation({
+      id: part.id,
       name: name,
-      rehearsals: typeof rehearsals !== 'string' ? rehearsals : section.rehearsals,
+      rehearsals: typeof rehearsals !== 'string' ? rehearsals : part.rehearsals,
       confidence: confidence,
+      sectionIds: [],
       bandMemberId: bandMemberId,
       instrumentId: instrumentId
     }).unwrap()
@@ -135,8 +127,8 @@ function EditSongSectionModal({
   }
 
   return (
-    <Modal opened={opened} onClose={onClose} title={'Edit Song Section'}>
-      <form onSubmit={form.onSubmit(updateSongSection)}>
+    <Modal opened={opened} onClose={onClose} title={'Edit Song Part'}>
+      <form onSubmit={form.onSubmit(updateSongPart)}>
         <LoadingOverlay visible={isLoading} loaderProps={{ type: 'bars' }} />
 
         <Stack px={'xs'} py={0}>
@@ -149,14 +141,6 @@ function EditSongSectionModal({
           />
 
           <Group>
-            <SongSectionTypeSelect
-              flex={1}
-              label={'Type'}
-              placeholder={'Enter Type'}
-              option={type}
-              onOptionChange={setType}
-            />
-
             <NumberInput
               allowNegative={false}
               allowDecimal={false}
@@ -205,4 +189,4 @@ function EditSongSectionModal({
   )
 }
 
-export default EditSongSectionModal
+export default EditSongPartModal

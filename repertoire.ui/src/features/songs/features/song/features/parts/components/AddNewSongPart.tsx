@@ -1,15 +1,14 @@
-import { useCreateSongSectionMutation } from '../state/api/songSectionsApi.ts'
-import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
+import { useCreateSongPartMutation } from '../state/api/songPartsApi.ts'
+import { Button, Collapse, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import SongSectionTypeSelect from '../../../../../../../components/form/select/SongSectionTypeSelect.tsx'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import BandMemberCompactSelect from '../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { Instrument, SongSettings } from '../../../../../../../types/models/Song.ts'
 
-interface AddNewSongSectionProps {
+interface AddNewSongPartProps {
   opened: boolean
   onClose: () => void
   songId: string
@@ -18,15 +17,15 @@ interface AddNewSongSectionProps {
   scrollIntoView?: () => void
 }
 
-function AddNewSongSection({
+function AddNewSongPart({
   opened,
   onClose,
   songId,
   settings,
   bandMembers,
   scrollIntoView
-}: AddNewSongSectionProps) {
-  const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
+}: AddNewSongPartProps) {
+  const [createSongPartMutation, { isLoading }] = useCreateSongPartMutation()
 
   const nameInputRef = useFocusTrap(opened)
 
@@ -34,13 +33,8 @@ function AddNewSongSection({
   const [nameError, setNameError] = useState(false)
   useEffect(() => setNameError(name.trim().length === 0), [name])
 
-  const [typeError, setTypeError] = useState(false)
-  const [type, setType] = useState<ComboboxItem>(null)
-  useEffect(() => setTypeError(!type), [type])
-
   useEffect(() => {
     setNameError(false)
-    setTypeError(false)
   }, [opened])
 
   const [bandMember, setBandMember] = useState<BandMember>(settings.defaultBandMember)
@@ -54,17 +48,16 @@ function AddNewSongSection({
     if (opened) scrollIntoView()
   }
 
-  async function addSection() {
-    if (!type || name.trim().length === 0) {
-      setTypeError(!type)
+  async function addPart() {
+    if (name.trim().length === 0) {
       setNameError(name.trim().length === 0)
       return
     }
 
     const nameTrimmed = name.trim()
 
-    await createSongSectionMutation({
-      typeId: type.value,
+    await createSongPartMutation({
+      sectionIds: [],
       name: nameTrimmed,
       songId: songId,
       bandMemberId: bandMember?.id,
@@ -76,13 +69,12 @@ function AddNewSongSection({
     onClose()
     setBandMember(settings.defaultBandMember)
     setInstrument(settings.defaultInstrument)
-    setType(null)
     setName('')
   }
 
   return (
     <Collapse expanded={opened} onTransitionEnd={handleOnTransitionEnd}>
-      <Group gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-section'}>
+      <Group gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-part'}>
         <Group gap={8}>
           <BandMemberCompactSelect
             bandMember={bandMember}
@@ -98,18 +90,6 @@ function AddNewSongSection({
             position={'top'}
             transitionProps={{ duration: 160, transition: 'fade-up' }}
           />
-
-          <SongSectionTypeSelect
-            w={100}
-            option={type}
-            onOptionChange={setType}
-            error={typeError}
-            comboboxProps={{
-              position: 'top-start',
-              width: 125,
-              transitionProps: { duration: 160, transition: 'fade-up' }
-            }}
-          />
         </Group>
 
         <TextInput
@@ -117,13 +97,13 @@ function AddNewSongSection({
           flex={1}
           maxLength={30}
           aria-label={'name'}
-          placeholder={'Name of Section'}
+          placeholder={'Name of Part'}
           value={name}
           onChange={setName}
           error={nameError}
         />
 
-        <Button disabled={isLoading} onClick={addSection}>
+        <Button disabled={isLoading} onClick={addPart}>
           Add
         </Button>
       </Group>
@@ -131,4 +111,4 @@ function AddNewSongSection({
   )
 }
 
-export default AddNewSongSection
+export default AddNewSongPart

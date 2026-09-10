@@ -1,19 +1,19 @@
 import {
   emptySongArrangement,
-  emptySongSection,
+  emptySongPart,
   emptySongSettings,
   reduxRender,
   withToastify
 } from '../../../../../../test-utils.tsx'
-import SongSectionsWidget from './SongSectionsWidget.tsx'
-import { SongArrangement, SongSection } from '../../../../../../types/models/Song.ts'
+import SongPartsWidget from './SongPartsWidget.tsx'
+import { SongArrangement, SongPart } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { AddPerfectSongRehearsalRequest } from '../../../../../../types/requests/SongRequests.ts'
-import { MoveSongSectionRequest } from './types/requests/SongSectionRequests.ts'
+import { MoveSongPartInSongRequest } from './types/requests/SongPartRequests.ts'
 import { createRef } from 'react'
 
 // Mock Main Context
@@ -24,43 +24,31 @@ vi.mock('../../../../../../context/MainContext.tsx', () => ({
   }))
 }))
 
-describe('Song Sections Widget', () => {
-  const sections: SongSection[] = [
+describe('Song Parts Widget', () => {
+  const parts: SongPart[] = [
     {
-      ...emptySongSection,
+      ...emptySongPart,
       id: '1',
       name: 'Chorus 1',
       rehearsals: 0,
       confidence: 0,
-      progress: 0,
-      songSectionType: {
-        id: '',
-        name: 'Chorus'
-      }
+      progress: 0
     },
     {
-      ...emptySongSection,
+      ...emptySongPart,
       id: '2',
       name: 'James Solo',
       rehearsals: 7,
       confidence: 50,
-      progress: 163,
-      songSectionType: {
-        id: '',
-        name: 'Solo'
-      }
+      progress: 163
     },
     {
-      ...emptySongSection,
+      ...emptySongPart,
       id: '3',
       name: 'James Riff',
       rehearsals: 1,
       confidence: 36,
-      progress: 40,
-      songSectionType: {
-        id: '',
-        name: 'Riff'
-      }
+      progress: 40
     }
   ]
 
@@ -81,7 +69,7 @@ describe('Song Sections Widget', () => {
     http.get(`/songs/arrangements`, () => {
       return HttpResponse.json(arrangements)
     }),
-    http.put(`/songs/sections`, () => {
+    http.put(`/songs/parts`, () => {
       return HttpResponse.json({ message: 'it worked' })
     })
   ]
@@ -99,16 +87,16 @@ describe('Song Sections Widget', () => {
 
   it('should render', async () => {
     reduxRender(
-      <SongSectionsWidget
-        sections={sections}
+      <SongPartsWidget
+        parts={parts}
         songId={''}
         settings={emptySongSettings}
         defaultSongArrangementId={'id'}
       />
     )
 
-    expect(screen.getByText(/sections/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
+    expect(screen.getByText(/parts/i)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-new-part' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
@@ -118,17 +106,17 @@ describe('Song Sections Widget', () => {
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
 
-    const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
-    for (let i = 0; i < sections.length; i++) {
-      expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
+    const renderedParts = screen.getAllByLabelText(/song-part-(?!details)/)
+    for (let i = 0; i < parts.length; i++) {
+      expect(renderedParts[i]).toHaveAccessibleName(`song-part-${parts[i].name}`)
     }
-    screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
+    screen.queryAllByLabelText(/song-part-details-/).forEach((d) => expect(d).not.toBeVisible())
   })
 
-  it('should disable a few options when there are no sections', () => {
+  it('should disable a few options when there are no parts', () => {
     reduxRender(
-      <SongSectionsWidget
-        sections={[]}
+      <SongPartsWidget
+        parts={[]}
         songId={''}
         settings={emptySongSettings}
         defaultSongArrangementId={'id'}
@@ -142,8 +130,8 @@ describe('Song Sections Widget', () => {
 
   it('should disable perfect rehearsal when a default arrangement is not set', () => {
     reduxRender(
-      <SongSectionsWidget
-        sections={sections}
+      <SongPartsWidget
+        parts={parts}
         songId={''}
         settings={emptySongSettings}
         defaultSongArrangementId={null}
@@ -154,29 +142,29 @@ describe('Song Sections Widget', () => {
   })
 
   describe('on toolbar options', () => {
-    it('should open add new song section when clicking on add new section button', async () => {
+    it('should open add new song part when clicking on add new part button', async () => {
       const user = userEvent.setup()
 
       reduxRender(
-        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+        <SongPartsWidget parts={parts} songId={''} settings={emptySongSettings} />
       )
 
-      await user.click(screen.getByRole('button', { name: 'add-new-section' }))
-      expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
+      await user.click(screen.getByRole('button', { name: 'add-new-part' }))
+      expect(screen.getByLabelText('add-new-song-part')).toBeInTheDocument()
     })
 
     it('should show details when clicking on show details', async () => {
       const user = userEvent.setup()
 
       reduxRender(
-        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+        <SongPartsWidget parts={parts} songId={''} settings={emptySongSettings} />
       )
 
       await user.click(screen.getByRole('button', { name: 'show-details' }))
       expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'hide-details' })).toBeInTheDocument()
 
-      screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).toBeVisible())
+      screen.queryAllByLabelText(/song-part-details-/).forEach((d) => expect(d).toBeVisible())
 
       await user.click(screen.getByRole('button', { name: 'hide-details' }))
       expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
@@ -187,7 +175,7 @@ describe('Song Sections Widget', () => {
       const user = userEvent.setup()
 
       reduxRender(
-        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+        <SongPartsWidget parts={parts} songId={''} settings={emptySongSettings} />
       )
 
       await user.click(screen.getByRole('button', { name: /song-arrangements/i }))
@@ -209,8 +197,8 @@ describe('Song Sections Widget', () => {
 
       reduxRender(
         withToastify(
-          <SongSectionsWidget
-            sections={sections}
+          <SongPartsWidget
+            parts={parts}
             songId={songId}
             settings={emptySongSettings}
             defaultSongArrangementId={'id'}
@@ -221,7 +209,7 @@ describe('Song Sections Widget', () => {
       await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
 
       expect(await screen.findByRole('dialog')).toBeInTheDocument()
-      expect(screen.getByText(/increase sections' rehearsals .* occurrences/i)).toBeInTheDocument()
+      expect(screen.getByText(/increase parts' rehearsals .* occurrences/i)).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'confirm' }))
 
@@ -230,107 +218,107 @@ describe('Song Sections Widget', () => {
     })
   })
 
-  it.skip('should be able to reorder sections', async () => {
-    const section = sections[0]
-    const overSection = sections[2]
+  it.skip('should be able to reorder parts', async () => {
+    const part = parts[0]
+    const overPart = parts[2]
     const songId = 'some-id'
 
-    let capturedRequest: MoveSongSectionRequest
+    let capturedRequest: MoveSongPartInSongRequest
     server.use(
       http.put('/songs/sections/types', async (req) => {
-        capturedRequest = (await req.request.json()) as MoveSongSectionRequest
+        capturedRequest = (await req.request.json()) as MoveSongPartInSongRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     reduxRender(
-      <SongSectionsWidget sections={sections} songId={songId} settings={emptySongSettings} />
+      <SongPartsWidget parts={parts} songId={songId} settings={emptySongSettings} />
     )
 
-    fireEvent.mouseDown(screen.getByLabelText(`song-section-${section.name}`))
-    fireEvent.dragStart(screen.getByLabelText(`song-section-${section.name}`))
-    fireEvent.dragOver(screen.getByLabelText(`song-section-${overSection.name}`))
-    fireEvent.drop(screen.getByLabelText(`song-section-${overSection.name}`))
-    fireEvent.mouseUp(screen.getByLabelText(`song-section-${overSection.name}`))
+    fireEvent.mouseDown(screen.getByLabelText(`song-part-${part.name}`))
+    fireEvent.dragStart(screen.getByLabelText(`song-part-${part.name}`))
+    fireEvent.dragOver(screen.getByLabelText(`song-part-${overPart.name}`))
+    fireEvent.drop(screen.getByLabelText(`song-part-${overPart.name}`))
+    fireEvent.mouseUp(screen.getByLabelText(`song-part-${overPart.name}`))
 
-    const renderedSections = await screen.findAllByLabelText(/song-section-(?!details)/)
-    const expectedSections = [sections[1], sections[2], sections[0]]
+    const renderedParts = await screen.findAllByLabelText(/song-part-(?!details)/)
+    const expectedParts = [parts[1], parts[2], parts[0]]
 
-    for (let i = 0; i < sections.length; i++) {
-      expect(renderedSections[i]).toHaveAccessibleName(`song-section-${expectedSections[i].name}`)
+    for (let i = 0; i < parts.length; i++) {
+      expect(renderedParts[i]).toHaveAccessibleName(`song-part-${expectedParts[i].name}`)
     }
 
     expect(capturedRequest).toStrictEqual({
-      id: section.id,
-      overId: overSection.id,
+      id: part.id,
+      overId: overPart.id,
       songId: songId
     })
   })
 
-  it('should show add new song section card and open add new song section, when there are no sections', async () => {
+  it('should show add new song part card and open add new song part, when there are no parts', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionsWidget sections={[]} songId={''} settings={emptySongSettings} />)
+    reduxRender(<SongPartsWidget parts={[]} songId={''} settings={emptySongSettings} />)
 
-    expect(screen.getByLabelText('add-new-song-section-card')).toBeInTheDocument()
-    await user.click(screen.getByLabelText('add-new-song-section-card'))
-    expect(screen.getByLabelText('add-new-song-section')).toBeInTheDocument()
+    expect(screen.getByLabelText('add-new-song-part-card')).toBeInTheDocument()
+    await user.click(screen.getByLabelText('add-new-song-part-card'))
+    expect(screen.getByLabelText('add-new-song-part')).toBeInTheDocument()
   })
 
-  it('should show toast when adding 1 rehearsal to section and dismiss on when adding to another section', async () => {
+  it('should show toast when adding 1 rehearsal to part and dismiss on when adding to another part', async () => {
     const user = userEvent.setup()
 
-    const section1 = sections[0]
-    const section2 = sections[1]
+    const part1 = parts[0]
+    const part2 = parts[1]
 
     reduxRender(
       withToastify(
-        <SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />
+        <SongPartsWidget parts={parts} songId={''} settings={emptySongSettings} />
       )
     )
 
-    // click the first section
+    // click the first part
     await user.click(
-      within(screen.getByLabelText(`song-section-${section1.name}`)).getByRole('button', {
+      within(screen.getByLabelText(`song-part-${part1.name}`)).getByRole('button', {
         name: 'add-rehearsal'
       })
     )
     expect(
-      await screen.findByText(new RegExp(`${section1.name} rehearsals.*increased.*1`, 'i'))
+      await screen.findByText(new RegExp(`${part1.name} rehearsals.*increased.*1`, 'i'))
     ).toBeInTheDocument()
 
-    // click the second section
+    // click the second part
     await user.click(
-      within(screen.getByLabelText(`song-section-${section2.name}`)).getByRole('button', {
+      within(screen.getByLabelText(`song-part-${part2.name}`)).getByRole('button', {
         name: 'add-rehearsal'
       })
     )
 
     expect(
-      await screen.findByText(new RegExp(`${section2.name} rehearsals.*increased.*1`, 'i'))
+      await screen.findByText(new RegExp(`${part2.name} rehearsals.*increased.*1`, 'i'))
     ).toBeInTheDocument()
     // not working - re-enable when switched to mantine notifs
     // expect(
-    //   screen.queryByText(new RegExp(`${section1.name} rehearsals.*increased.*1`, 'i'))
+    //   screen.queryByText(new RegExp(`${part1.name} rehearsals.*increased.*1`, 'i'))
     // ).not.toBeInTheDocument()
   })
 
-  it('should show the drawer when selecting sections, and the context menu when right-clicking after selection', async () => {
+  it('should show the drawer when selecting parts, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionsWidget sections={sections} songId={''} settings={emptySongSettings} />)
+    reduxRender(<SongPartsWidget parts={parts} songId={''} settings={emptySongSettings} />)
 
     // selection drawer
     await user.keyboard('{Control>}')
-    await user.click(screen.getByLabelText(`song-section-${sections[0].name}`))
+    await user.click(screen.getByLabelText(`song-part-${parts[0].name}`))
     await user.keyboard('{/Control}')
-    expect(screen.getByLabelText('song-sections-selection-drawer')).toBeInTheDocument()
+    expect(screen.getByLabelText('song-parts-selection-drawer')).toBeInTheDocument()
 
     // context menu
     // await user.pointer({
     //   keys: '[MouseRight>]',
-    //   target: screen.getByLabelText(`song-section-card-${songs[0].title}`)
+    //   target: screen.getByLabelText(`song-part-card-${songs[0].title}`)
     // })
-    // expect(await screen.findByRole('menu', { name: 'song-sections-context-menu' })).toBeInTheDocument()
+    // expect(await screen.findByRole('menu', { name: 'song-parts-context-menu' })).toBeInTheDocument()
   })
 })

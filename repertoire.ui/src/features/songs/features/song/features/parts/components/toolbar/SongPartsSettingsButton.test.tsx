@@ -1,19 +1,19 @@
 import {
-  emptySongSection,
+  emptySongPart,
   emptySongSettings,
   reduxRender
 } from '../../../../../../../../test-utils.tsx'
-import SongSectionsSettingsButton from './SongSectionsSettingsButton.tsx'
+import SongPartsSettingsButton from './SongPartsSettingsButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { Instrument, SongSection } from '../../../../../../../../types/models/Song.ts'
+import { Instrument, SongPart } from '../../../../../../../../types/models/Song.ts'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import { UpdateSongSettingsRequest } from '../../../../../../../../types/requests/SongRequests.ts'
-import { UpdateAllSongSectionsRequest } from '../../types/requests/SongSectionRequests.ts'
+import { UpdateAllSongPartsRequest } from '../../types/requests/SongPartRequests.ts'
 
-describe('Song Sections Settings Button', () => {
+describe('Song Parts Settings Button', () => {
   const instruments: Instrument[] = [
     {
       id: '1',
@@ -63,7 +63,7 @@ describe('Song Sections Settings Button', () => {
     const user = userEvent.setup()
 
     const [{ rerender }] = reduxRender(
-      <SongSectionsSettingsButton settings={emptySongSettings} sections={[]} songId={''} />
+      <SongPartsSettingsButton settings={emptySongSettings} parts={[]} songId={''} />
     )
 
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
@@ -75,9 +75,9 @@ describe('Song Sections Settings Button', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
 
     rerender(
-      <SongSectionsSettingsButton
+      <SongPartsSettingsButton
         settings={emptySongSettings}
-        sections={[]}
+        parts={[]}
         songId={''}
         bandMembers={bandMembers}
       />
@@ -94,9 +94,9 @@ describe('Song Sections Settings Button', () => {
     const defaultBandMember = bandMembers[1]
 
     reduxRender(
-      <SongSectionsSettingsButton
+      <SongPartsSettingsButton
         settings={{ ...emptySongSettings, defaultInstrument, defaultBandMember }}
-        sections={[]}
+        parts={[]}
         songId={''}
         bandMembers={bandMembers}
       />
@@ -126,12 +126,12 @@ describe('Song Sections Settings Button', () => {
       }
       const newBandMember = bandMembers[1]
 
-      const sections: SongSection[] = [{ ...emptySongSection, bandMember: bandMembers[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
 
       reduxRender(
-        <SongSectionsSettingsButton
+        <SongPartsSettingsButton
           settings={songSettings}
-          sections={sections}
+          parts={parts}
           songId={''}
           bandMembers={bandMembers}
         />
@@ -148,16 +148,16 @@ describe('Song Sections Settings Button', () => {
         })
       )
 
-      expect(screen.getByText(/update all sections' band members/i)).toBeInTheDocument()
+      expect(screen.getByText(/update all parts' band members/i)).toBeInTheDocument()
     })
 
-    it('should send update all song sections request when changing the band member and accepting the band members popover', async () => {
+    it('should send update all song parts request when changing the band member and accepting the band members popover', async () => {
       const user = userEvent.setup()
 
-      let capturedRequest: UpdateAllSongSectionsRequest
+      let capturedRequest: UpdateAllSongPartsRequest
       server.use(
-        http.put('/songs/sections/all', async (req) => {
-          capturedRequest = (await req.request.json()) as UpdateAllSongSectionsRequest
+        http.put('/songs/parts/all', async (req) => {
+          capturedRequest = (await req.request.json()) as UpdateAllSongPartsRequest
           return HttpResponse.json({ message: 'it worked' })
         })
       )
@@ -165,12 +165,12 @@ describe('Song Sections Settings Button', () => {
       const newBandMember = bandMembers[1]
       const songId = 'some-song-id'
 
-      const sections: SongSection[] = [{ ...emptySongSection, bandMember: bandMembers[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
 
       reduxRender(
-        <SongSectionsSettingsButton
+        <SongPartsSettingsButton
           settings={emptySongSettings}
-          sections={sections}
+          parts={parts}
           songId={songId}
           bandMembers={bandMembers}
         />
@@ -189,18 +189,18 @@ describe('Song Sections Settings Button', () => {
       )
     })
 
-    it('should not always display the updated band member popover (when there are no sections with distinct members)', async () => {
+    it('should not always display the updated band member popover (when there are no parts with distinct members)', async () => {
       const user = userEvent.setup()
 
       const newBandMember = bandMembers[1]
       const songId = 'some-song-id'
 
-      const sections: SongSection[] = [{ ...emptySongSection, bandMember: newBandMember }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMember: newBandMember }]
 
       reduxRender(
-        <SongSectionsSettingsButton
+        <SongPartsSettingsButton
           settings={emptySongSettings}
-          sections={sections}
+          parts={parts}
           songId={songId}
           bandMembers={bandMembers}
         />
@@ -210,7 +210,7 @@ describe('Song Sections Settings Button', () => {
       await user.click(screen.getByRole('button', { name: 'select-band-member' }))
       await user.click(await screen.findByRole('option', { name: newBandMember.name }))
 
-      expect(screen.queryByText(/update all sections' band members/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/update all parts' band members/i)).not.toBeInTheDocument()
     })
   })
 
@@ -232,10 +232,10 @@ describe('Song Sections Settings Button', () => {
       }
       const newInstrument = instruments[1]
 
-      const sections: SongSection[] = [{ ...emptySongSection, instrument: instruments[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, instrument: instruments[0] }]
 
       reduxRender(
-        <SongSectionsSettingsButton settings={songSettings} sections={sections} songId={''} />
+        <SongPartsSettingsButton settings={songSettings} parts={parts} songId={''} />
       )
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
@@ -249,16 +249,16 @@ describe('Song Sections Settings Button', () => {
         })
       )
 
-      expect(screen.getByText(/update all sections' instruments/i)).toBeInTheDocument()
+      expect(screen.getByText(/update all parts' instruments/i)).toBeInTheDocument()
     })
 
-    it('should send update all song sections request when changing the instrument and accepting the instruments popover', async () => {
+    it('should send update all song parts request when changing the instrument and accepting the instruments popover', async () => {
       const user = userEvent.setup()
 
-      let capturedRequest: UpdateAllSongSectionsRequest
+      let capturedRequest: UpdateAllSongPartsRequest
       server.use(
-        http.put('/songs/sections/all', async (req) => {
-          capturedRequest = (await req.request.json()) as UpdateAllSongSectionsRequest
+        http.put('/songs/parts/all', async (req) => {
+          capturedRequest = (await req.request.json()) as UpdateAllSongPartsRequest
           return HttpResponse.json({ message: 'it worked' })
         })
       )
@@ -266,12 +266,12 @@ describe('Song Sections Settings Button', () => {
       const newInstrument = instruments[1]
       const songId = 'some-song-id'
 
-      const sections: SongSection[] = [{ ...emptySongSection, instrument: instruments[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, instrument: instruments[0] }]
 
       reduxRender(
-        <SongSectionsSettingsButton
+        <SongPartsSettingsButton
           settings={emptySongSettings}
-          sections={sections}
+          parts={parts}
           songId={songId}
         />
       )
@@ -289,18 +289,18 @@ describe('Song Sections Settings Button', () => {
       )
     })
 
-    it('should not always display the updated instrument popover (when there are no sections with distinct instruments)', async () => {
+    it('should not always display the updated instrument popover (when there are no parts with distinct instruments)', async () => {
       const user = userEvent.setup()
 
       const newInstrument = instruments[1]
       const songId = 'some-song-id'
 
-      const sections: SongSection[] = [{ ...emptySongSection, instrument: newInstrument }]
+      const parts: SongPart[] = [{ ...emptySongPart, instrument: newInstrument }]
 
       reduxRender(
-        <SongSectionsSettingsButton
+        <SongPartsSettingsButton
           settings={emptySongSettings}
-          sections={sections}
+          parts={parts}
           songId={songId}
         />
       )
@@ -309,7 +309,7 @@ describe('Song Sections Settings Button', () => {
       await user.click(screen.getByRole('button', { name: 'select-instrument' }))
       await user.click(await screen.findByRole('option', { name: newInstrument.name }))
 
-      expect(screen.queryByText(/update all sections' instruments/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/update all parts' instruments/i)).not.toBeInTheDocument()
     })
   })
 })

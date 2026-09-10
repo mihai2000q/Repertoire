@@ -1,15 +1,14 @@
-import { emptySongSection, reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
+import { emptySongPart, reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
 import {
   Instrument,
-  SongSection,
-  SongSectionType
+  SongPart
 } from '../../../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import { fireEvent, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
-import { UpdateSongSectionRequest } from '../../types/requests/SongSectionRequests.ts'
-import EditSongSectionModal from './EditSongSectionModal.tsx'
+import { UpdateSongPartRequest } from '../../types/requests/SongPartRequests.ts'
+import EditSongPartModal from './EditSongPartModal.tsx'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 
 describe('Edit Song Description Modal', () => {
@@ -37,30 +36,15 @@ describe('Edit Song Description Modal', () => {
     }
   ]
 
-  const sectionTypes: SongSectionType[] = [
-    {
-      id: '1',
-      name: 'Solo'
-    },
-    {
-      id: '2',
-      name: 'Riff'
-    }
-  ]
-
-  const section: SongSection = {
-    ...emptySongSection,
+  const part: SongPart = {
+    ...emptySongPart,
     id: 'some-id',
-    name: 'section 1',
-    songSectionType: sectionTypes[1],
+    name: 'part 1',
     rehearsals: 12,
     confidence: 50
   }
 
   const handlers = [
-    http.get(`/songs/sections/types`, () => {
-      return HttpResponse.json(sectionTypes)
-    }),
     http.get(`/songs/instruments`, () => {
       return HttpResponse.json(instruments)
     })
@@ -78,45 +62,39 @@ describe('Edit Song Description Modal', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={() => {}}
-        section={section}
+        part={part}
         bandMembers={bandMembers}
       />
     )
 
-    expect(screen.getByRole('dialog', { name: /edit song section/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /edit song section/i })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /edit song part/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /edit song part/i })).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
-    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(section.name)
-
-    expect(await screen.findByRole('combobox', { name: /type/i })).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: /type/i })).not.toBeInvalid()
-    expect(await screen.findByRole('combobox', { name: /type/i })).toHaveValue(
-      section.songSectionType.name
-    )
+    expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue(part.name)
 
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).not.toBeInvalid()
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
-      section.rehearsals.toString()
+      part.rehearsals.toString()
     )
 
     expect(screen.getByRole('combobox', { name: /band member/i })).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
-      section.bandMember?.name ?? ''
+      part.bandMember?.name ?? ''
     )
 
     expect(screen.getByRole('combobox', { name: /instrument/i })).toBeInTheDocument()
     expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
-      section.instrument?.name ?? ''
+      part.instrument?.name ?? ''
     )
 
     expect(screen.getByRole('slider', { name: /confidence/i })).toBeInTheDocument()
-    expect(screen.getByRole('slider', { name: /confidence/i })).toHaveValue(section.confidence)
+    expect(screen.getByRole('slider', { name: /confidence/i })).toHaveValue(part.confidence)
 
     expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /save/i })).toBeDisabled()
@@ -127,33 +105,31 @@ describe('Edit Song Description Modal', () => {
   it('should send update request when the field values have changed', async () => {
     const user = userEvent.setup()
 
-    const newName = 'New Section Name'
-    const newType = sectionTypes[0]
+    const newName = 'New Part Name'
     const newRehearsals = 23
     const newConfidence = 82
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateSongSectionRequest
+    let capturedRequest: UpdateSongPartRequest
     server.use(
-      http.put('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongSectionRequest
+      http.put('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateSongPartRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     const [{ rerender }] = reduxRender(
       withToastify(
-        <EditSongSectionModal
+        <EditSongPartModal
           opened={true}
           onClose={onClose}
-          section={section}
+          part={part}
           bandMembers={bandMembers}
         />
       )
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const typeField = screen.getByRole('combobox', { name: /type/i })
     const rehearsalsField = screen.getByRole('textbox', { name: /rehearsals/i })
     const confidenceField = screen.getByRole('slider', { name: /confidence/i })
     const saveButton = screen.getByRole('button', { name: /save/i })
@@ -161,13 +137,10 @@ describe('Edit Song Description Modal', () => {
     await user.clear(nameField)
     await user.type(nameField, newName)
 
-    await user.click(typeField)
-    await user.click(await screen.findByText(newType.name))
-
     await user.clear(rehearsalsField)
     await user.type(rehearsalsField, newRehearsals.toString())
 
-    for (let i = section.confidence; i < newConfidence; i++) {
+    for (let i = part.confidence; i < newConfidence; i++) {
       fireEvent.keyDown(confidenceField, { key: 'ArrowRight' })
     }
 
@@ -175,9 +148,8 @@ describe('Edit Song Description Modal', () => {
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(capturedRequest).toStrictEqual({
-      id: section.id,
+      id: part.id,
       name: newName,
-      typeId: newType.id,
       rehearsals: newRehearsals,
       confidence: newConfidence
     })
@@ -186,13 +158,12 @@ describe('Edit Song Description Modal', () => {
     expect(await screen.findByText(`${newName} updated!`)).toBeInTheDocument()
 
     rerender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={onClose}
-        section={{
-          ...section,
+        part={{
+          ...part,
           name: newName,
-          songSectionType: newType,
           rehearsals: newRehearsals,
           confidence: newConfidence
         }}
@@ -209,20 +180,20 @@ describe('Edit Song Description Modal', () => {
     const newInstrument = instruments[0]
     const onClose = vitest.fn()
 
-    let capturedRequest: UpdateSongSectionRequest
+    let capturedRequest: UpdateSongPartRequest
     server.use(
-      http.put('/songs/sections', async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongSectionRequest
+      http.put('/songs/parts', async (req) => {
+        capturedRequest = (await req.request.json()) as UpdateSongPartRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     const [{ rerender }] = reduxRender(
       withToastify(
-        <EditSongSectionModal
+        <EditSongPartModal
           opened={true}
           onClose={onClose}
-          section={section}
+          part={part}
           bandMembers={bandMembers}
         />
       )
@@ -242,24 +213,23 @@ describe('Edit Song Description Modal', () => {
     await user.click(screen.getByRole('button', { name: /save/i }))
 
     expect(capturedRequest).toStrictEqual({
-      id: section.id,
-      name: section.name,
-      typeId: section.songSectionType.id,
-      rehearsals: section.rehearsals,
-      confidence: section.confidence,
+      id: part.id,
+      name: part.name,
+      rehearsals: part.rehearsals,
+      confidence: part.confidence,
       bandMemberId: newBandMember.id,
       instrumentId: newInstrument.id
     })
     expect(onClose).toHaveBeenCalledOnce()
 
-    expect(await screen.findByText(`${section.name} updated!`)).toBeInTheDocument()
+    expect(await screen.findByText(`${part.name} updated!`)).toBeInTheDocument()
 
     rerender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={onClose}
-        section={{
-          ...section,
+        part={{
+          ...part,
           bandMember: newBandMember,
           instrument: newInstrument
         }}
@@ -273,16 +243,15 @@ describe('Edit Song Description Modal', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={() => {}}
-        section={section}
+        part={part}
         bandMembers={bandMembers}
       />
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
-    const typeField = screen.getByRole('combobox', { name: /type/i })
     const rehearsalsField = screen.getByRole('textbox', { name: /rehearsals/i })
     const bandMemberField = screen.getByRole('combobox', { name: /band member/i })
     const instrumentField = screen.getByRole('combobox', { name: /instrument/i })
@@ -291,32 +260,22 @@ describe('Edit Song Description Modal', () => {
 
     // change name
     await user.clear(nameField)
-    await user.type(nameField, section.name + '1')
+    await user.type(nameField, part.name + '1')
     expect(saveButton).not.toBeDisabled()
 
     // reset name
     await user.clear(nameField)
-    await user.type(nameField, section.name)
-    expect(saveButton).toBeDisabled()
-
-    // change type
-    await user.click(typeField)
-    await user.click(await screen.findByText(sectionTypes[0].name))
-    expect(saveButton).not.toBeDisabled()
-
-    // reset type
-    await user.click(typeField)
-    await user.click(await screen.findByText(section.songSectionType.name))
+    await user.type(nameField, part.name)
     expect(saveButton).toBeDisabled()
 
     // change rehearsals
     await user.clear(rehearsalsField)
-    await user.type(rehearsalsField, section.rehearsals.toString() + '1')
+    await user.type(rehearsalsField, part.rehearsals.toString() + '1')
     expect(saveButton).not.toBeDisabled()
 
     // reset rehearsals
     await user.clear(rehearsalsField)
-    await user.type(rehearsalsField, section.rehearsals.toString())
+    await user.type(rehearsalsField, part.rehearsals.toString())
     expect(saveButton).toBeDisabled()
 
     // change band member
@@ -326,7 +285,7 @@ describe('Edit Song Description Modal', () => {
 
     // reset band member
     await user.click(bandMemberField)
-    await user.click(await screen.findByText(section.bandMember?.name ?? bandMembers[0].name))
+    await user.click(await screen.findByText(part.bandMember?.name ?? bandMembers[0].name))
     expect(saveButton).toBeDisabled()
 
     // change an instrument
@@ -336,7 +295,7 @@ describe('Edit Song Description Modal', () => {
 
     // reset instrument
     await user.click(instrumentField)
-    await user.click(await screen.findByText(section.instrument?.name ?? instruments[0].name))
+    await user.click(await screen.findByText(part.instrument?.name ?? instruments[0].name))
     expect(saveButton).toBeDisabled()
 
     // change confidence
@@ -352,10 +311,10 @@ describe('Edit Song Description Modal', () => {
     const user = userEvent.setup()
 
     reduxRender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={() => {}}
-        section={section}
+        part={part}
         bandMembers={bandMembers}
       />
     )
@@ -372,62 +331,62 @@ describe('Edit Song Description Modal', () => {
     expect(rehearsalsField).toBeInvalid()
 
     // reset rehearsals
-    await user.type(rehearsalsField, section.rehearsals.toString())
+    await user.type(rehearsalsField, part.rehearsals.toString())
     expect(rehearsalsField).not.toBeInvalid()
 
     // invalidate rehearsals - cannot be lower than initial value
     await user.clear(rehearsalsField)
-    await user.type(rehearsalsField, (section.rehearsals - 1).toString())
+    await user.type(rehearsalsField, (part.rehearsals - 1).toString())
     expect(rehearsalsField).toBeInvalid()
   })
 
   it('should keep fields updated', async () => {
     const [{ rerender }] = reduxRender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={() => {}}
-        section={section}
+        part={part}
         bandMembers={bandMembers}
       />
     )
 
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
-      section.rehearsals.toString()
+      part.rehearsals.toString()
     )
     expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
-      section.bandMember?.name ?? ''
+      part.bandMember?.name ?? ''
     )
     expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
-      section.instrument?.name ?? ''
+      part.instrument?.name ?? ''
     )
 
-    const newSection = {
-      ...section,
-      rehearsals: section.rehearsals + 1,
+    const newPart = {
+      ...part,
+      rehearsals: part.rehearsals + 1,
       instrument: instruments[0],
       bandMember: bandMembers[1]
     }
 
     rerender(
-      <EditSongSectionModal
+      <EditSongPartModal
         opened={true}
         onClose={() => {}}
-        section={newSection}
+        part={newPart}
         bandMembers={bandMembers}
       />
     )
 
     expect(screen.getByRole('textbox', { name: /rehearsals/i })).toHaveValue(
-      newSection.rehearsals.toString()
+      newPart.rehearsals.toString()
     )
     await waitFor(() =>
       expect(screen.getByRole('combobox', { name: /instrument/i })).toHaveValue(
-        newSection.instrument.name
+        newPart.instrument.name
       )
     )
     await waitFor(() =>
       expect(screen.getByRole('combobox', { name: /band member/i })).toHaveValue(
-        newSection.bandMember.name
+        newPart.bandMember.name
       )
     )
   })

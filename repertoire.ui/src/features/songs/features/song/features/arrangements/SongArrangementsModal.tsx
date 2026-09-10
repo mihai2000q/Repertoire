@@ -75,8 +75,8 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     for (const arrangement of arrangements) {
       if (
         arrangement.name !== internalArrangements.get(arrangement.id).name.trim() ||
-        JSON.stringify(arrangement.sectionOccurrences) !==
-          JSON.stringify(internalArrangements.get(arrangement.id).sectionOccurrences)
+        JSON.stringify(arrangement.partOccurrences) !==
+          JSON.stringify(internalArrangements.get(arrangement.id).partOccurrences)
       ) {
         hasChanged.set(arrangement.id, true)
       } else {
@@ -118,7 +118,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     if (
       internalArrangements.size === 0 ||
       selectedArrangement?.songId !== songId ||
-      selectedArrangement?.sectionOccurrences.length !==
+      selectedArrangement?.partOccurrences.length !==
         arrangements.find((a) => a.id === selectedArrangement?.id)?.sectionOccurrences.length
     ) {
       const newArrangements = new Map<string, SongArrangement>()
@@ -163,7 +163,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   function handleDecreaseOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .sectionOccurrences.find((so) => so.section.id === sectionId)
+      .partOccurrences.find((so) => so.section.id === sectionId)
     if (typeof sectionOccurrences.occurrences === 'number') {
       handleChangeOccurrence(sectionId, sectionOccurrences.occurrences - 1)
     }
@@ -172,7 +172,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   function handleIncreaseOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .sectionOccurrences.find((so) => so.section.id === sectionId)
+      .partOccurrences.find((so) => so.section.id === sectionId)
     if (typeof sectionOccurrences.occurrences === 'number') {
       handleChangeOccurrence(sectionId, sectionOccurrences.occurrences + 1)
     }
@@ -182,8 +182,8 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     const arrangement = internalArrangements.get(selectedArrangement?.id)
     const newArrangement: SongArrangement = {
       ...arrangement,
-      sectionOccurrences: [
-        ...arrangement.sectionOccurrences.map((so) =>
+      partOccurrences: [
+        ...arrangement.partOccurrences.map((so) =>
           so.section.id === sectionId
             ? {
                 ...so,
@@ -202,7 +202,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
   function handleOnBlurOccurrence(sectionId: string) {
     const sectionOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .sectionOccurrences.find((so) => so.section.id === sectionId)
+      .partOccurrences.find((so) => so.section.id === sectionId)
     if (sectionOccurrences.occurrences.toString().trim() === '') {
       handleChangeOccurrence(sectionId, 0)
     }
@@ -237,7 +237,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
       .map(([_, arrangement]) => ({
         id: arrangement.id,
         name: arrangement.name.trim(),
-        occurrences: arrangement.sectionOccurrences.map((so) => ({
+        occurrences: arrangement.partOccurrences.map((so) => ({
           sectionId: so.section.id,
           occurrences: so.toString().trim() === '' ? 0 : (so.occurrences as number)
         }))
@@ -394,7 +394,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
                   <ScrollArea.Autosize mah={'50vh'} scrollbars={'y'} scrollbarSize={7}>
                     <Stack px={'sm'} gap={'xs'}>
-                      {internalArrangements.get(selectedArrangement.id).sectionOccurrences
+                      {internalArrangements.get(selectedArrangement.id).partOccurrences
                         .length === 0 ? (
                         <Center h={100}>
                           <Text>There are no sections. Try to add one</Text>
@@ -402,7 +402,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                       ) : (
                         internalArrangements
                           .get(selectedArrangement.id)
-                          .sectionOccurrences.map((sectionOccurrence) => (
+                          .partOccurrences.map((sectionOccurrence) => (
                             <Group
                               key={sectionOccurrence.section.id}
                               aria-label={`section-${sectionOccurrence.section.name}`}

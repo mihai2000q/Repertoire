@@ -1,7 +1,7 @@
-import { SongArrangement, SongSectionOccurrences } from '../../../../../../types/models/Song.ts'
+import { SongArrangement, SongPartOccurrences } from '../../../../../../types/models/Song.ts'
 import {
   emptySongArrangement,
-  emptySongSection,
+  emptySongPart,
   reduxRender,
   withToastify
 } from '../../../../../../test-utils.tsx'
@@ -24,10 +24,10 @@ describe('Song Arrangements Modal', () => {
       id: '1',
       name: 'Partial Rehearsal',
       songId: songId,
-      sectionOccurrences: [
+      partOccurrences: [
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '1',
             name: 'The Verse',
             songSectionType: { id: '1', name: 'Verse' }
@@ -36,7 +36,7 @@ describe('Song Arrangements Modal', () => {
         },
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '2',
             name: 'The Chorus',
             songSectionType: { id: '2', name: 'Chorus' }
@@ -45,7 +45,7 @@ describe('Song Arrangements Modal', () => {
         },
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '3',
             name: 'The Solo',
             songSectionType: { id: '3', name: 'Solo' }
@@ -59,10 +59,10 @@ describe('Song Arrangements Modal', () => {
       id: '2',
       name: 'Perfect Rehearsal',
       songId: songId,
-      sectionOccurrences: [
+      partOccurrences: [
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '1',
             name: 'The Verse',
             songSectionType: { id: '1', name: 'Verse' }
@@ -71,7 +71,7 @@ describe('Song Arrangements Modal', () => {
         },
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '2',
             name: 'The Chorus',
             songSectionType: { id: '2', name: 'Chorus' }
@@ -80,7 +80,7 @@ describe('Song Arrangements Modal', () => {
         },
         {
           section: {
-            ...emptySongSection,
+            ...emptySongPart,
             id: '3',
             name: 'The Solo',
             songSectionType: { id: '3', name: 'Solo' }
@@ -128,7 +128,7 @@ describe('Song Arrangements Modal', () => {
     expect(screen.getByRole('button', { name: 'delete' })).toBeInTheDocument()
 
     // content
-    selectedArrangement.sectionOccurrences.forEach((sectionOccurrence) => {
+    selectedArrangement.partOccurrences.forEach((sectionOccurrence) => {
       const sectionItem = screen.getByLabelText(`section-${sectionOccurrence.section.name}`)
       expect(sectionItem).toBeInTheDocument()
 
@@ -282,7 +282,7 @@ describe('Song Arrangements Modal', () => {
 
     const nameTextBox = await screen.findByRole('textbox', { name: 'name' })
     const section = screen.getByLabelText(
-      `section-${selectedArrangement.sectionOccurrences[0].section.name}`
+      `section-${selectedArrangement.partOccurrences[0].section.name}`
     )
 
     await user.type(nameTextBox, 's')
@@ -290,14 +290,14 @@ describe('Song Arrangements Modal', () => {
 
     expect(nameTextBox).toHaveValue(selectedArrangement.name + 's')
     expect(within(section).getByRole('textbox', { name: 'section-occurrences' })).toHaveValue(
-      ((selectedArrangement.sectionOccurrences[0].occurrences as number) + 1).toString()
+      ((selectedArrangement.partOccurrences[0].occurrences as number) + 1).toString()
     )
 
     await user.click(screen.getByRole('button', { name: 'reset' }))
 
     expect(nameTextBox).toHaveValue(selectedArrangement.name)
     expect(within(section).getByRole('textbox', { name: 'section-occurrences' })).toHaveValue(
-      selectedArrangement.sectionOccurrences[0].occurrences.toString()
+      selectedArrangement.partOccurrences[0].occurrences.toString()
     )
   })
 
@@ -342,7 +342,7 @@ describe('Song Arrangements Modal', () => {
     const resetButton = screen.getByRole('button', { name: /reset/i })
 
     const section = screen.getByLabelText(
-      `section-${selectedArrangement.sectionOccurrences[0].section.name}`
+      `section-${selectedArrangement.partOccurrences[0].section.name}`
     )
 
     // arrangement 1
@@ -389,7 +389,7 @@ describe('Song Arrangements Modal', () => {
     const resetButton = screen.getByRole('button', { name: /reset/i })
 
     const section = screen.getByLabelText(
-      `section-${selectedArrangement.sectionOccurrences[0].section.name}`
+      `section-${selectedArrangement.partOccurrences[0].section.name}`
     )
 
     await user.clear(nameTextBox)
@@ -422,15 +422,15 @@ describe('Song Arrangements Modal', () => {
     const newName = 'Arr'
     const newSectionOccurrences = [
       {
-        ...selectedArrangement.sectionOccurrences[0],
+        ...selectedArrangement.partOccurrences[0],
         occurrences: 5
       },
       {
-        ...selectedArrangement.sectionOccurrences[1],
+        ...selectedArrangement.partOccurrences[1],
         occurrences: 1
       },
       {
-        ...selectedArrangement.sectionOccurrences[2],
+        ...selectedArrangement.partOccurrences[2],
         occurrences: 1
       }
     ]
@@ -485,33 +485,33 @@ describe('Song Arrangements Modal', () => {
     )
 
     const newName = 'Arr'
-    const newSectionOccurrences: SongSectionOccurrences[] = [
+    const newSectionOccurrences: SongPartOccurrences[] = [
       {
-        ...arrangements[0].sectionOccurrences[0],
+        ...arrangements[0].partOccurrences[0],
         occurrences: 5
       },
       {
-        ...arrangements[0].sectionOccurrences[1],
+        ...arrangements[0].partOccurrences[1],
         occurrences: 1
       },
       {
-        ...arrangements[0].sectionOccurrences[2],
+        ...arrangements[0].partOccurrences[2],
         occurrences: 1
       }
     ]
 
     const newName2 = 'Arr2'
-    const newSectionOccurrences2: SongSectionOccurrences[] = [
+    const newSectionOccurrences2: SongPartOccurrences[] = [
       {
-        ...arrangements[1].sectionOccurrences[0],
+        ...arrangements[1].partOccurrences[0],
         occurrences: 5
       },
       {
-        ...arrangements[1].sectionOccurrences[1],
+        ...arrangements[1].partOccurrences[1],
         occurrences: 1
       },
       {
-        ...arrangements[1].sectionOccurrences[2],
+        ...arrangements[1].partOccurrences[2],
         occurrences: 1
       }
     ]
@@ -524,7 +524,7 @@ describe('Song Arrangements Modal', () => {
 
     async function makeChangesOnArrangement(
       name: string,
-      sectionOccurrences: SongSectionOccurrences[]
+      sectionOccurrences: SongPartOccurrences[]
     ) {
       await user.clear(nameTextBox)
       await user.type(nameTextBox, name)
@@ -614,7 +614,7 @@ describe('Song Arrangements Modal', () => {
       const newArrangement: SongArrangement = {
         id: newArrangementId,
         name: newArrangementName,
-        sectionOccurrences: selectedArrangement.sectionOccurrences.map((so) => ({
+        partOccurrences: selectedArrangement.partOccurrences.map((so) => ({
           ...so,
           occurrences: 0
         })),
@@ -714,7 +714,7 @@ describe('Song Arrangements Modal', () => {
       const newArrangements: SongArrangement[] = arrangements.map((a) => ({
         id: a.id + 'new',
         name: a.name + '-New',
-        sectionOccurrences: a.sectionOccurrences,
+        sectionOccurrences: a.partOccurrences,
         songId: newSongId
       }))
       const newSelectedArrangement = newArrangements[0]
@@ -742,7 +742,7 @@ describe('Song Arrangements Modal', () => {
       )
 
       // first render check
-      for (const sectionOccurrence of selectedArrangement.sectionOccurrences) {
+      for (const sectionOccurrence of selectedArrangement.partOccurrences) {
         expect(
           await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
         ).toBeInTheDocument()
@@ -751,15 +751,15 @@ describe('Song Arrangements Modal', () => {
       // prepare second render
       const newSectionOccurrence = {
         section: {
-          ...emptySongSection,
+          ...emptySongPart,
           id: '4',
           name: 'The new Section',
           songSectionType: { id: '1', name: 'Verse' }
         },
         occurrences: 0
       }
-      const newSectionOccurrences: SongSectionOccurrences[] = [
-        ...selectedArrangement.sectionOccurrences,
+      const newSectionOccurrences: SongPartOccurrences[] = [
+        ...selectedArrangement.partOccurrences,
         newSectionOccurrence
       ]
 
@@ -772,7 +772,7 @@ describe('Song Arrangements Modal', () => {
             },
             {
               ...arrangements[1],
-              sectionOccurrences: [...arrangements[1].sectionOccurrences, newSectionOccurrence]
+              sectionOccurrences: [...arrangements[1].partOccurrences, newSectionOccurrence]
             }
           ])
         })
@@ -795,16 +795,16 @@ describe('Song Arrangements Modal', () => {
       )
 
       // first render check
-      for (const sectionOccurrence of selectedArrangement.sectionOccurrences) {
+      for (const sectionOccurrence of selectedArrangement.partOccurrences) {
         expect(
           await screen.findByLabelText(`section-${sectionOccurrence.section.name}`)
         ).toBeInTheDocument()
       }
 
       // prepare second render
-      const deletedSectionOccurrence = selectedArrangement.sectionOccurrences[2]
-      const newSectionOccurrences: SongSectionOccurrences[] =
-        selectedArrangement.sectionOccurrences.filter(
+      const deletedSectionOccurrence = selectedArrangement.partOccurrences[2]
+      const newSectionOccurrences: SongPartOccurrences[] =
+        selectedArrangement.partOccurrences.filter(
           (so) => so.section.id !== deletedSectionOccurrence.section.id
         )
 
@@ -817,7 +817,7 @@ describe('Song Arrangements Modal', () => {
             },
             {
               ...arrangements[1],
-              sectionOccurrences: arrangements[1].sectionOccurrences.filter(
+              sectionOccurrences: arrangements[1].partOccurrences.filter(
                 (so) => so.section.id !== deletedSectionOccurrence.section.id
               )
             }

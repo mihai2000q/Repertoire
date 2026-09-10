@@ -1,4 +1,4 @@
-import { SongSection as SongSectionModel } from '../../../../../../../types/models/Song.ts'
+import { SongPart as SongPartModel } from '../../../../../../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
@@ -28,10 +28,10 @@ import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import {
-  useDeleteSongSectionMutation,
-  useUpdateSongSectionMutation
-} from '../state/api/songSectionsApi.ts'
-import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
+  useDeleteSongPartMutation,
+  useUpdateSongPartMutation
+} from '../state/api/songPartsApi.ts'
+import EditSongPartModal from './modal/EditSongPartModal.tsx'
 import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'
@@ -56,60 +56,60 @@ function getRehearsalsWidth(rehearsalsMaxLength: number) {
   return (rehearsalsMaxLength > 2 ? 9 : rehearsalsMaxLength > 1 ? 10 : 12) * rehearsalsMaxLength
 }
 
-interface SongSectionCardProps {
-  section: SongSectionModel
+interface SongPartCardProps {
+  part: SongPartModel
   songId: string
   isDragging: boolean
   showDetails: boolean
-  maxSectionProgress: number
-  maxSectionRehearsals: number
+  maxPartProgress: number
+  maxPartRehearsals: number
   draggableProvided?: DraggableProvided
   bandMembers?: BandMember[]
   isArtistBand?: boolean
   showRehearsalsToast?: (name: string) => void
 }
 
-function SongSectionCard({
-  section,
+function SongPartCard({
+  part,
   songId,
   isDragging,
   showDetails,
-  maxSectionProgress,
-  maxSectionRehearsals,
+  maxPartProgress,
+  maxPartRehearsals,
   draggableProvided,
   bandMembers,
   isArtistBand,
   showRehearsalsToast
-}: SongSectionCardProps) {
+}: SongPartCardProps) {
   const { ref: hoverRef, hovered } = useHover()
   const {
     ref: selectableRef,
     isClickSelected,
     isClickSelectionActive,
     isLastInSelection
-  } = useClickSelectSelectable(section.id)
+  } = useClickSelectSelectable(part.id)
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
-    getRehearsalsMarginLeft(maxSectionRehearsals.toString().length)
+    getRehearsalsMarginLeft(maxPartRehearsals.toString().length)
   )
   const [rehearsalsWidth, setRehearsalsWidth] = useState(
-    getRehearsalsWidth(maxSectionRehearsals.toString().length)
+    getRehearsalsWidth(maxPartRehearsals.toString().length)
   )
   useEffect(() => {
-    const rehearsalsMaxLength = maxSectionRehearsals.toString().length
+    const rehearsalsMaxLength = maxPartRehearsals.toString().length
     setRehearsalsMarginLeft(getRehearsalsMarginLeft(rehearsalsMaxLength))
     setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))
-  }, [maxSectionRehearsals])
+  }, [maxPartRehearsals])
 
-  const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
-  const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
+  const [updateSongPartMutation, { isLoading: isUpdateLoading }] = useUpdateSongPartMutation()
+  const [deleteSongPartMutation, { isLoading: isDeleteLoading }] = useDeleteSongPartMutation()
 
   const getInstrumentIcon = useInstrumentIcon()
 
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu } = useDoubleMenu()
 
-  const [openedEditSongSection, { open: openEditSongSection, close: closeEditSongSection }] =
+  const [openedEditSongPart, { open: openEditSongPart, close: closeEditSongPart }] =
     useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
@@ -117,24 +117,23 @@ function SongSectionCard({
   const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
 
   async function handleAddRehearsal() {
-    await updateSongSectionMutation({
-      ...section,
-      typeId: section.songSectionType.id,
-      bandMemberId: section.bandMember?.id,
-      instrumentId: section.instrument?.id,
-      rehearsals: section.rehearsals + 1
+    await updateSongPartMutation({
+      ...part,
+      bandMemberId: part.bandMember?.id,
+      instrumentId: part.instrument?.id,
+      rehearsals: part.rehearsals + 1
     }).unwrap()
-    showRehearsalsToast?.(section.name)
+    showRehearsalsToast?.(part.name)
   }
 
   async function handleDelete() {
-    await deleteSongSectionMutation({ id: section.id, songId: songId }).unwrap()
-    toast.success(`${section.name} deleted!`)
+    await deleteSongPartMutation({ id: part.id, songId: songId }).unwrap()
+    toast.success(`${part.name} deleted!`)
   }
 
   const menuDropdown = (
     <>
-      <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongSection}>
+      <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongPart}>
         Edit
       </Menu.Item>
       <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
@@ -153,7 +152,7 @@ function SongSectionCard({
         <Stack
           ref={ref}
           py={'xs'}
-          aria-label={`song-section-${section.name}`}
+          aria-label={`song-part-${part.name}`}
           aria-selected={isSelected}
           gap={0}
           sx={(theme) => ({
@@ -214,14 +213,14 @@ function SongSectionCard({
               </Center>
             )}
 
-            {isArtistBand && section.bandMember && (
+            {isArtistBand && part.bandMember && (
               <HoverCard openDelay={200} position="top">
                 <HoverCard.Target>
                   <Avatar
                     size={25}
-                    color={section.bandMember.color}
-                    src={section.bandMember.imageUrl}
-                    alt={section.bandMember.imageUrl && section.bandMember.name}
+                    color={part.bandMember.color}
+                    src={part.bandMember.imageUrl}
+                    alt={part.bandMember.imageUrl && part.bandMember.name}
                   >
                     <IconUser size={15} />
                   </Avatar>
@@ -230,21 +229,21 @@ function SongSectionCard({
                   <Group gap={'xs'} maw={200} wrap={'nowrap'}>
                     <Avatar
                       size={60}
-                      color={section.bandMember.color}
-                      src={section.bandMember.imageUrl}
-                      alt={section.bandMember.imageUrl && section.bandMember.name}
+                      color={part.bandMember.color}
+                      src={part.bandMember.imageUrl}
+                      alt={part.bandMember.imageUrl && part.bandMember.name}
                       style={(theme) => ({ boxShadow: theme.shadows.sm })}
                     >
                       <IconUser size={30} />
                     </Avatar>
                     <Stack gap={0}>
                       <Text fw={500} lineClamp={2}>
-                        {section.bandMember.name}
+                        {part.bandMember.name}
                       </Text>
-                      {section.bandMember.roles.slice(0, 2).map((role, index) => (
+                      {part.bandMember.roles.slice(0, 2).map((role, index) => (
                         <Text key={role.id} c={'dimmed'} fz={'xs'} lineClamp={1} lh={1.05}>
                           {role.name}
-                          {index === 1 && section.bandMember.roles.length > 2 && ' ...'}
+                          {index === 1 && part.bandMember.roles.length > 2 && ' ...'}
                         </Text>
                       ))}
                     </Stack>
@@ -253,17 +252,16 @@ function SongSectionCard({
               </HoverCard>
             )}
 
-            {section.instrument && (
+            {part.instrument && (
               <Box aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
-                <Tooltip openDelay={200} label={section.instrument?.name} withArrow>
-                  {getInstrumentIcon(section.instrument)}
+                <Tooltip openDelay={200} label={part.instrument?.name} withArrow>
+                  {getInstrumentIcon(part.instrument)}
                 </Tooltip>
               </Box>
             )}
 
-            <Text fw={600}>{section.songSectionType.name}</Text>
             <Text flex={1} truncate={'end'}>
-              {section.name}
+              {part.name}
             </Text>
 
             <Group gap={2}>
@@ -300,7 +298,7 @@ function SongSectionCard({
 
           <Collapse expanded={showDetails}>
             <Group
-              aria-label={`song-section-details-${section.name}`}
+              aria-label={`song-part-details-${part.name}`}
               pt={'md'}
               gap={'lg'}
               pr={'lg'}
@@ -309,7 +307,7 @@ function SongSectionCard({
                 role={'tooltip'}
                 label={
                   <>
-                    Rehearsals: <NumberFormatter value={section.rehearsals} />
+                    Rehearsals: <NumberFormatter value={part.rehearsals} />
                   </>
                 }
               >
@@ -323,15 +321,15 @@ function SongSectionCard({
                   inline
                   data-testid={'rehearsals'}
                 >
-                  <NumberFormatter value={section.rehearsals} />
+                  <NumberFormatter value={part.rehearsals} />
                 </Text>
               </Tooltip.Floating>
 
-              <Tooltip.Floating role={'tooltip'} label={`Confidence: ${section.confidence}%`}>
+              <Tooltip.Floating role={'tooltip'} label={`Confidence: ${part.confidence}%`}>
                 <Progress
                   flex={1}
                   size={'sm'}
-                  value={section.confidence}
+                  value={part.confidence}
                   aria-label={'confidence'}
                 />
               </Tooltip.Floating>
@@ -340,7 +338,7 @@ function SongSectionCard({
                 role={'tooltip'}
                 label={
                   <>
-                    Progress: <NumberFormatter value={section.progress} />
+                    Progress: <NumberFormatter value={part.progress} />
                   </>
                 }
               >
@@ -348,7 +346,7 @@ function SongSectionCard({
                   flex={1}
                   size={'sm'}
                   aria-label={'progress'}
-                  value={section.progress === 0 ? 0 : (section.progress / maxSectionProgress) * 100}
+                  value={part.progress === 0 ? 0 : (part.progress / maxPartProgress) * 100}
                   color={'green'}
                 />
               </Tooltip.Floating>
@@ -359,20 +357,20 @@ function SongSectionCard({
 
       <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
-      <EditSongSectionModal
-        opened={openedEditSongSection}
-        onClose={closeEditSongSection}
-        section={section}
+      <EditSongPartModal
+        opened={openedEditSongPart}
+        onClose={closeEditSongPart}
+        part={part}
         bandMembers={bandMembers}
       />
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}
-        title={`Delete Section`}
+        title={`Delete Part`}
         description={
           <Group gap={'xxs'}>
             <Text>Are you sure you want to delete</Text>
-            <Text fw={600}>{section.name}</Text>
+            <Text fw={600}>{part.name}</Text>
             <Text>?</Text>
           </Group>
         }
@@ -383,4 +381,4 @@ function SongSectionCard({
   )
 }
 
-export default SongSectionCard
+export default SongPartCard
