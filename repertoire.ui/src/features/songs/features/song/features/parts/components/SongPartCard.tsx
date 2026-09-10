@@ -260,7 +260,7 @@ function SongPartCard({
               </Box>
             )}
 
-            <Text flex={1} truncate={'end'}>
+            <Text flex={1} fw={500} truncate={'end'}>
               {part.name}
             </Text>
 

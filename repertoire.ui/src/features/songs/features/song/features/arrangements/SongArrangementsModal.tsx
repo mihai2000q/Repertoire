@@ -114,12 +114,12 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
     // on first render
     // when the song changes with another (upon navigation)
-    // and when the sections change
+    // and when the parts change
     if (
       internalArrangements.size === 0 ||
       selectedArrangement?.songId !== songId ||
       selectedArrangement?.partOccurrences.length !==
-        arrangements.find((a) => a.id === selectedArrangement?.id)?.sectionOccurrences.length
+        arrangements.find((a) => a.id === selectedArrangement?.id)?.partOccurrences.length
     ) {
       const newArrangements = new Map<string, SongArrangement>()
       arrangements.forEach((a) => newArrangements.set(a.id, a))
@@ -160,31 +160,31 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     refreshHasError(newArrangements)
   }
 
-  function handleDecreaseOccurrence(sectionId: string) {
-    const sectionOccurrences = internalArrangements
+  function handleDecreaseOccurrence(partId: string) {
+    const partOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .partOccurrences.find((so) => so.section.id === sectionId)
-    if (typeof sectionOccurrences.occurrences === 'number') {
-      handleChangeOccurrence(sectionId, sectionOccurrences.occurrences - 1)
+      .partOccurrences.find((so) => so.part.id === partId)
+    if (typeof partOccurrences.occurrences === 'number') {
+      handleChangeOccurrence(partId, partOccurrences.occurrences - 1)
     }
   }
 
-  function handleIncreaseOccurrence(sectionId: string) {
-    const sectionOccurrences = internalArrangements
+  function handleIncreaseOccurrence(partId: string) {
+    const partOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .partOccurrences.find((so) => so.section.id === sectionId)
-    if (typeof sectionOccurrences.occurrences === 'number') {
-      handleChangeOccurrence(sectionId, sectionOccurrences.occurrences + 1)
+      .partOccurrences.find((so) => so.part.id === partId)
+    if (typeof partOccurrences.occurrences === 'number') {
+      handleChangeOccurrence(partId, partOccurrences.occurrences + 1)
     }
   }
 
-  function handleChangeOccurrence(sectionId: string, occurrence: number | string) {
+  function handleChangeOccurrence(partId: string, occurrence: number | string) {
     const arrangement = internalArrangements.get(selectedArrangement?.id)
     const newArrangement: SongArrangement = {
       ...arrangement,
       partOccurrences: [
         ...arrangement.partOccurrences.map((so) =>
-          so.section.id === sectionId
+          so.part.id === partId
             ? {
                 ...so,
                 occurrences: occurrence
@@ -199,12 +199,12 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
     refreshHasChanged(newArrangements)
   }
 
-  function handleOnBlurOccurrence(sectionId: string) {
-    const sectionOccurrences = internalArrangements
+  function handleOnBlurOccurrence(partId: string) {
+    const partOccurrences = internalArrangements
       .get(selectedArrangement?.id)
-      .partOccurrences.find((so) => so.section.id === sectionId)
-    if (sectionOccurrences.occurrences.toString().trim() === '') {
-      handleChangeOccurrence(sectionId, 0)
+      .partOccurrences.find((so) => so.part.id === partId)
+    if (partOccurrences.occurrences.toString().trim() === '') {
+      handleChangeOccurrence(partId, 0)
     }
   }
 
@@ -238,7 +238,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
         id: arrangement.id,
         name: arrangement.name.trim(),
         occurrences: arrangement.partOccurrences.map((so) => ({
-          sectionId: so.section.id,
+          partId: so.part.id,
           occurrences: so.toString().trim() === '' ? 0 : (so.occurrences as number)
         }))
       }))
@@ -397,42 +397,33 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                       {internalArrangements.get(selectedArrangement.id).partOccurrences
                         .length === 0 ? (
                         <Center h={100}>
-                          <Text>There are no sections. Try to add one</Text>
+                          <Text>There are no parts. Try to add one</Text>
                         </Center>
                       ) : (
                         internalArrangements
                           .get(selectedArrangement.id)
-                          .partOccurrences.map((sectionOccurrence) => (
+                          .partOccurrences.map((partOccurrence) => (
                             <Group
-                              key={sectionOccurrence.section.id}
-                              aria-label={`section-${sectionOccurrence.section.name}`}
+                              key={partOccurrence.part.id}
+                              aria-label={`part-${partOccurrence.part.name}`}
                               gap={'xxs'}
                             >
                               <TextInput
                                 size={'xs'}
-                                w={75}
-                                aria-label={'section-type'}
-                                value={sectionOccurrence.section.songSectionType.name}
-                                readOnly={true}
-                                styles={{ input: { cursor: 'default' } }}
-                                mr={4}
-                              />
-                              <TextInput
-                                size={'xs'}
                                 flex={1}
-                                aria-label={'section-name'}
-                                value={sectionOccurrence.section.name}
+                                aria-label={'part-name'}
+                                value={partOccurrence.part.name}
                                 readOnly={true}
                                 styles={{ input: { cursor: 'default' } }}
                               />
                               <Group gap={'xxs'}>
                                 <ActionIcon
-                                  aria-label={'decrease-section-occurrences'}
+                                  aria-label={'decrease-part-occurrences'}
                                   size={'sm'}
                                   variant={'subtle'}
-                                  disabled={sectionOccurrence.occurrences === 0}
+                                  disabled={partOccurrence.occurrences === 0}
                                   onClick={() =>
-                                    handleDecreaseOccurrence(sectionOccurrence.section.id)
+                                    handleDecreaseOccurrence(partOccurrence.part.id)
                                   }
                                 >
                                   <IconMinus size={16} />
@@ -440,10 +431,10 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                                 <NumberInput
                                   w={40}
                                   size={'xs'}
-                                  aria-label={'section-occurrences'}
-                                  value={sectionOccurrence.occurrences}
+                                  aria-label={'part-occurrences'}
+                                  value={partOccurrence.occurrences}
                                   onChange={(o) =>
-                                    handleChangeOccurrence(sectionOccurrence.section.id, o)
+                                    handleChangeOccurrence(partOccurrence.part.id, o)
                                   }
                                   allowDecimal={false}
                                   allowNegative={false}
@@ -452,15 +443,15 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                                     input: { textAlign: 'center' }
                                   }}
                                   onBlur={() =>
-                                    handleOnBlurOccurrence(sectionOccurrence.section.id)
+                                    handleOnBlurOccurrence(partOccurrence.part.id)
                                   }
                                 />
                                 <ActionIcon
-                                  aria-label={'increase-section-occurrences'}
+                                  aria-label={'increase-part-occurrences'}
                                   size={'sm'}
                                   variant={'subtle'}
                                   onClick={() =>
-                                    handleIncreaseOccurrence(sectionOccurrence.section.id)
+                                    handleIncreaseOccurrence(partOccurrence.part.id)
                                   }
                                 >
                                   <IconPlus size={16} />

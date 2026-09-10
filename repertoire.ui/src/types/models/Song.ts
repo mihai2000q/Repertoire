@@ -80,6 +80,6 @@ export interface SongArrangement {
 }
 
 export interface SongPartOccurrences {
-  section: SongPart
+  part: SongPart
   occurrences: number | string // string, for front end purposes and transformations
 }
