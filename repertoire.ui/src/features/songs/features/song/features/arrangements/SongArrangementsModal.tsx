@@ -294,15 +294,20 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
               />
             </Group>
             <Group gap={'xxs'} wrap={'nowrap'}>
-              <ActionIcon
-                aria-label={isDefault ? 'unset-default' : 'set-default'}
-                variant={'subtle'}
-                size={'sm'}
-                loading={isUpdateDefaultLoading}
-                onClick={handleUpdateDefault}
+              <Tooltip
+                label={isDefault ? 'Remove as default' : 'Set as default arrangement'}
+                openDelay={400}
               >
-                {isDefault ? <IconStarFilled size={14} /> : <IconStar size={14} />}
-              </ActionIcon>
+                <ActionIcon
+                  aria-label={isDefault ? 'unset-default' : 'set-default'}
+                  variant={'subtle'}
+                  size={'sm'}
+                  loading={isUpdateDefaultLoading}
+                  onClick={handleUpdateDefault}
+                >
+                  {isDefault ? <IconStarFilled size={14} /> : <IconStar size={14} />}
+                </ActionIcon>
+              </Tooltip>
               <SongArrangementsMenu
                 arrangements={arrangements}
                 internalArrangements={internalArrangements}
@@ -394,8 +399,8 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
 
                   <ScrollArea.Autosize mah={'50vh'} scrollbars={'y'} scrollbarSize={7}>
                     <Stack px={'sm'} gap={'xs'}>
-                      {internalArrangements.get(selectedArrangement.id).partOccurrences
-                        .length === 0 ? (
+                      {internalArrangements.get(selectedArrangement.id).partOccurrences.length ===
+                      0 ? (
                         <Center h={100}>
                           <Text>There are no parts. Try to add one</Text>
                         </Center>
@@ -422,9 +427,7 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                                   size={'sm'}
                                   variant={'subtle'}
                                   disabled={partOccurrence.occurrences === 0}
-                                  onClick={() =>
-                                    handleDecreaseOccurrence(partOccurrence.part.id)
-                                  }
+                                  onClick={() => handleDecreaseOccurrence(partOccurrence.part.id)}
                                 >
                                   <IconMinus size={16} />
                                 </ActionIcon>
@@ -442,17 +445,13 @@ function SongArrangementsModal({ opened, onClose, songId, defaultId }: SongArran
                                   styles={{
                                     input: { textAlign: 'center' }
                                   }}
-                                  onBlur={() =>
-                                    handleOnBlurOccurrence(partOccurrence.part.id)
-                                  }
+                                  onBlur={() => handleOnBlurOccurrence(partOccurrence.part.id)}
                                 />
                                 <ActionIcon
                                   aria-label={'increase-part-occurrences'}
                                   size={'sm'}
                                   variant={'subtle'}
-                                  onClick={() =>
-                                    handleIncreaseOccurrence(partOccurrence.part.id)
-                                  }
+                                  onClick={() => handleIncreaseOccurrence(partOccurrence.part.id)}
                                 >
                                   <IconPlus size={16} />
                                 </ActionIcon>

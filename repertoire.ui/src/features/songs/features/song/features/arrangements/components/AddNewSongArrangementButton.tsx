@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Popover, Stack, Text, TextInput } from '@mantine/core'
+import { ActionIcon, Group, Popover, Stack, Text, TextInput, Tooltip } from '@mantine/core'
 import { IconPlus, IconSend } from '@tabler/icons-react'
 import { useCreateSongArrangementMutation } from '../state/api/songArrangementsApi.ts'
 import { toast } from 'react-toastify'
@@ -58,14 +58,16 @@ function AddNewSongArrangementButton({
       trapFocus
     >
       <Popover.Target>
-        <ActionIcon
-          variant={'grey'}
-          aria-label={'add-new-arrangement'}
-          size={'sm'}
-          onClick={togglePopover}
-        >
-          <IconPlus size={14} />
-        </ActionIcon>
+        <Tooltip label={'Add New Arrangement'} openDelay={400}>
+          <ActionIcon
+            variant={'grey'}
+            aria-label={'add-new-arrangement'}
+            size={'sm'}
+            onClick={togglePopover}
+          >
+            <IconPlus size={14} />
+          </ActionIcon>
+        </Tooltip>
       </Popover.Target>
 
       <Popover.Dropdown w={250}>
