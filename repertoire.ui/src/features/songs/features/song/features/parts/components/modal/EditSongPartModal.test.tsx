@@ -151,7 +151,8 @@ describe('Edit Song Description Modal', () => {
       id: part.id,
       name: newName,
       rehearsals: newRehearsals,
-      confidence: newConfidence
+      confidence: newConfidence,
+      sectionIds: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -218,7 +219,8 @@ describe('Edit Song Description Modal', () => {
       rehearsals: part.rehearsals,
       confidence: part.confidence,
       bandMemberId: newBandMember.id,
-      instrumentId: newInstrument.id
+      instrumentId: newInstrument.id,
+      sectionIds: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 

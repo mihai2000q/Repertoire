@@ -129,7 +129,7 @@ describe('Song Parts Context Menu', () => {
 
     let capturedRequest: BulkUpdateSongPartsRequest
     server.use(
-      http.post(`/songs/parts/bulk-update`, async (req) => {
+      http.put(`/songs/parts/bulk-update`, async (req) => {
         capturedRequest = (await req.request.json()) as BulkUpdateSongPartsRequest
         return HttpResponse.json({ message: 'it worked' })
       })

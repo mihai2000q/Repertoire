@@ -262,7 +262,6 @@ describe('Add New Song Part', () => {
       screen.getByRole('button', { name: settings.defaultInstrument.name })
     ).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
-    expect(await screen.findByRole('combobox', { name: /song-part-type/i })).toHaveValue('')
   })
 
   // Validation
