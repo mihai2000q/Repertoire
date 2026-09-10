@@ -34,7 +34,7 @@ export default interface Song {
   arrangements: SongArrangement[]
 
   solosCount?: number
-  riffsCount?: number
+  sectionsCount?: number
 
   createdAt: string
   updatedAt: string
