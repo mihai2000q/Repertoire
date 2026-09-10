@@ -1,4 +1,4 @@
-import { useCreateSongPartMutation } from '../state/api/songPartsApi.ts'
+import { useCreateSongPartMutation } from '../../parts/state/api/songPartsApi.ts'
 import { Button, Collapse, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'

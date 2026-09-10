@@ -2,16 +2,16 @@ import {
   emptySongPart,
   emptySongSettings,
   reduxRender
-} from '../../../../../../../test-utils.tsx'
+} from '../../../../../../../../test-utils.tsx'
 import SongOutlineSettingsButton from './SongOutlineSettingsButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { Instrument, SongPart } from '../../../../../../../types/models/Song.ts'
-import { BandMember } from '../../../../../../../types/models/Artist.ts'
-import { UpdateSongSettingsRequest } from '../../../../../../../types/requests/SongRequests.ts'
-import { UpdateAllSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
+import { Instrument, SongPart } from '../../../../../../../../types/models/Song.ts'
+import { BandMember } from '../../../../../../../../types/models/Artist.ts'
+import { UpdateSongSettingsRequest } from '../../../../../../../../types/requests/SongRequests.ts'
+import { UpdateAllSongPartsRequest } from '../../../parts/types/requests/SongPartRequests.ts'
 
 describe('Song Parts Settings Button', () => {
   const instruments: Instrument[] = [
