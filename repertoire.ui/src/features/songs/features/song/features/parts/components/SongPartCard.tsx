@@ -27,15 +27,12 @@ import {
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import {
-  useDeleteSongPartMutation,
-  useUpdateSongPartMutation
-} from '../state/api/songPartsApi.ts'
+import { useDeleteSongPartMutation, useUpdateSongPartMutation } from '../state/api/songPartsApi.ts'
 import EditSongPartModal from './modal/EditSongPartModal.tsx'
 import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'
-import { useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
@@ -108,6 +105,8 @@ function SongPartCard({
   const getInstrumentIcon = useInstrumentIcon()
 
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu } = useDoubleMenu()
+  const [openedDetails, setOpenedDetails] = useState(false)
+  useEffect(() => setOpenedDetails(showDetails), [showDetails])
 
   const [openedEditSongPart, { open: openEditSongPart, close: closeEditSongPart }] =
     useDisclosure(false)
@@ -115,6 +114,12 @@ function SongPartCard({
     useDisclosure(false)
 
   const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
+
+  function handleClick(e: MouseEvent) {
+    if (e.ctrlKey || e.shiftKey) return
+    e.stopPropagation()
+    setOpenedDetails(!openedDetails)
+  }
 
   async function handleAddRehearsal() {
     await updateSongPartMutation({
@@ -133,10 +138,23 @@ function SongPartCard({
 
   const menuDropdown = (
     <>
-      <Menu.Item leftSection={<IconEdit size={14} />} onClick={openEditSongPart}>
+      <Menu.Item
+        leftSection={<IconEdit size={14} />}
+        onClick={(e) => {
+          e.stopPropagation()
+          openEditSongPart()
+        }}
+      >
         Edit
       </Menu.Item>
-      <Menu.Item leftSection={<IconTrash size={14} />} c={'red.5'} onClick={openDeleteWarning}>
+      <Menu.Item
+        leftSection={<IconTrash size={14} />}
+        c={'red.5'}
+        onClick={(e) => {
+          e.stopPropagation()
+          openDeleteWarning()
+        }}
+      >
         Delete
       </Menu.Item>
     </>
@@ -155,8 +173,9 @@ function SongPartCard({
           aria-label={`song-part-${part.name}`}
           aria-selected={isSelected}
           gap={0}
+          onClick={handleClick}
           sx={(theme) => ({
-            cursor: 'default',
+            cursor: 'pointer',
             transition: '0.25s',
             borderRadius: 0,
             border: '1px solid transparent',
@@ -273,7 +292,10 @@ function SongPartCard({
                   aria-label={'add-rehearsal'}
                   disabled={isClickSelectionActive}
                   sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
-                  onClick={handleAddRehearsal}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    handleAddRehearsal()
+                  }}
                 >
                   <IconLocationPlus size={15} />
                 </ActionIcon>
@@ -287,6 +309,7 @@ function SongPartCard({
                     aria-label={'more-menu'}
                     disabled={isClickSelectionActive}
                     sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
+                    onClick={(e) => e.stopPropagation()}
                   >
                     <IconDots size={20} />
                   </ActionIcon>
@@ -296,13 +319,8 @@ function SongPartCard({
             </Group>
           </Group>
 
-          <Collapse expanded={showDetails}>
-            <Group
-              aria-label={`song-part-details-${part.name}`}
-              pt={'md'}
-              gap={'lg'}
-              pr={'lg'}
-            >
+          <Collapse expanded={openedDetails}>
+            <Group aria-label={`song-part-details-${part.name}`} pt={'md'} gap={'lg'} pr={'lg'}>
               <Tooltip.Floating
                 role={'tooltip'}
                 label={
@@ -326,12 +344,7 @@ function SongPartCard({
               </Tooltip.Floating>
 
               <Tooltip.Floating role={'tooltip'} label={`Confidence: ${part.confidence}%`}>
-                <Progress
-                  flex={1}
-                  size={'sm'}
-                  value={part.confidence}
-                  aria-label={'confidence'}
-                />
+                <Progress flex={1} size={'sm'} value={part.confidence} aria-label={'confidence'} />
               </Tooltip.Floating>
 
               <Tooltip.Floating

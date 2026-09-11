@@ -138,21 +138,10 @@ describe('Song Part Card', () => {
     expect(screen.queryByRole('img', { name: bandMember.name })).not.toBeInTheDocument()
   })
 
-  it('should show details', async () => {
+  async function shouldShowDetails(maxPartProgress: number = 0) {
     const user = userEvent.setup()
-    const maxPartProgress = 67
 
-    reduxRender(
-      <SongPartCard
-        part={part}
-        songId={''}
-        maxPartProgress={maxPartProgress}
-        maxPartRehearsals={0}
-        showDetails={true}
-        isDragging={false}
-      />
-    )
-
+    expect(await screen.findByLabelText(`song-part-details-${part.name}`)).toBeVisible()
     expect(screen.getAllByText(part.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
     expect(screen.getByTestId('rehearsals')).toHaveTextContent(part.rehearsals.toString())
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
@@ -176,6 +165,43 @@ describe('Song Part Card', () => {
     expect(
       screen.getByRole('tooltip', { name: new RegExp(part.progress.toString()) })
     ).toBeInTheDocument()
+  }
+
+  it('should show details on click', async () => {
+    const user = userEvent.setup()
+    const maxPartProgress = 67
+
+    reduxRender(
+      <SongPartCard
+        part={part}
+        songId={''}
+        maxPartProgress={maxPartProgress}
+        maxPartRehearsals={0}
+        showDetails={false}
+        isDragging={false}
+      />
+    )
+
+    await user.click(screen.getByLabelText(`song-part-${part.name}`))
+
+    await shouldShowDetails(maxPartProgress)
+  })
+
+  it('should show details from parameter', async () => {
+    const maxPartProgress = 67
+
+    reduxRender(
+      <SongPartCard
+        part={part}
+        songId={''}
+        maxPartProgress={maxPartProgress}
+        maxPartRehearsals={0}
+        showDetails={true}
+        isDragging={false}
+      />
+    )
+
+    await shouldShowDetails(maxPartProgress)
   })
 
   it('should display menu on right click', async () => {
