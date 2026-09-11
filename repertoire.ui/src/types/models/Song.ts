@@ -53,7 +53,7 @@ export interface SongPart {
   rehearsals: number
   confidence: number
   progress: number
-  sectionIds: string[] // TODO: change to sections
+  sections: SongSection[]
   bandMember?: BandMember
   instrument?: Instrument
 }

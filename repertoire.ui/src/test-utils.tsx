@@ -344,7 +344,7 @@ export const emptySongPart: SongPart = {
   confidence: 0,
   progress: 0,
   rehearsals: 0,
-  sectionIds: []
+  sections: []
 }
 
 export const emptySongSection: SongSection = {
