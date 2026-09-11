@@ -15,7 +15,7 @@ function InstrumentsGroup({ instruments }: InstrumentsGroupProps) {
   )
 
   return (
-    <Tooltip label={tooltipLabel}>
+    <Tooltip label={tooltipLabel} openDelay={300}>
       <AvatarGroup>
         {instruments.map((instrument) => (
           <Avatar
