@@ -6,13 +6,13 @@ import { toast } from 'react-toastify'
 import SongSectionTypeSelect from '../../../../../../../components/form/select/SongSectionTypeSelect.tsx'
 
 interface AddNewSongSectionProps {
+  songId: string
   opened: boolean
   onClose: () => void
-  songId: string
   scrollIntoView?: () => void
 }
 
-function AddNewSongSection({ opened, onClose, songId, scrollIntoView }: AddNewSongSectionProps) {
+function AddNewSongSection({ songId, opened, onClose, scrollIntoView }: AddNewSongSectionProps) {
   const [createSongSectionMutation, { isLoading }] = useCreateSongSectionMutation()
 
   const nameInputRef = useFocusTrap(opened)

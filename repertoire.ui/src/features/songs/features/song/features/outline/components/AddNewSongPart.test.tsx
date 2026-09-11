@@ -1,12 +1,19 @@
-import { emptySongSettings, reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import {
+  emptyArtist,
+  emptySong,
+  emptySongSettings,
+  reduxRender,
+  withToastify
+} from '../../../../../../../test-utils.tsx'
 import AddNewSongPart from './AddNewSongPart.tsx'
-import { screen } from '@testing-library/react'
+import { act, screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
 import { Instrument } from '../../../../../../../types/models/Song.ts'
 import { CreateSongPartRequest } from '../../parts/types/requests/SongPartRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
+import { setSong } from '../../../state/slice/songSlice.tsx'
 
 describe('Add New Song Part', () => {
   const instruments: Instrument[] = [
@@ -52,14 +59,9 @@ describe('Add New Song Part', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    const [{ rerender }] = reduxRender(
-      <AddNewSongPart
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
+    const [_, store] = reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: { songId: '', isArtistBand: false, settings: emptySongSettings }
+    })
 
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
@@ -70,15 +72,11 @@ describe('Add New Song Part', () => {
 
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
 
-    rerender(
-      <AddNewSongPart
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-        bandMembers={[]}
-      />
-    )
+    const newSong = {
+      ...emptySong,
+      artist: { ...emptyArtist, isBand: true, bandMembers: bandMembers }
+    }
+    await act(() => store.dispatch(setSong(newSong)))
     expect(screen.getByRole('button', { name: 'select-band-member' })).not.toBeDisabled()
   })
 
@@ -86,15 +84,16 @@ describe('Add New Song Part', () => {
     const defaultInstrument = instruments[1]
     const defaultBandMember = bandMembers[1]
 
-    reduxRender(
-      <AddNewSongPart
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={{ ...emptySongSettings, defaultBandMember, defaultInstrument }}
-        bandMembers={bandMembers}
-      />
-    )
+    const songSettings = { ...emptySongSettings, defaultBandMember, defaultInstrument }
+
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: songSettings
+      }
+    })
 
     expect(screen.getByRole('button', { name: defaultBandMember.name })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: defaultInstrument.name })).toBeInTheDocument()
@@ -116,16 +115,14 @@ describe('Add New Song Part', () => {
       })
     )
 
-    reduxRender(
-      withToastify(
-        <AddNewSongPart
-          opened={true}
-          onClose={onClose}
-          songId={songId}
-          settings={emptySongSettings}
-        />
-      )
-    )
+    reduxRender(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      song: {
+        songId: songId,
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
@@ -161,17 +158,14 @@ describe('Add New Song Part', () => {
       })
     )
 
-    reduxRender(
-      withToastify(
-        <AddNewSongPart
-          opened={true}
-          onClose={onClose}
-          songId={songId}
-          bandMembers={bandMembers}
-          settings={emptySongSettings}
-        />
-      )
-    )
+    reduxRender(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      song: {
+        songId: songId,
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
 
     // fill fields
     await user.click(screen.getByRole('button', { name: 'select-band-member' }))
@@ -223,17 +217,14 @@ describe('Add New Song Part', () => {
       })
     )
 
-    reduxRender(
-      withToastify(
-        <AddNewSongPart
-          opened={true}
-          onClose={onClose}
-          songId={songId}
-          bandMembers={bandMembers}
-          settings={settings}
-        />
-      )
-    )
+    reduxRender(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      song: {
+        songId: songId,
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: settings
+      }
+    })
 
     await user.click(screen.getByRole('button', { name: settings.defaultInstrument.name }))
     await user.clear(screen.getByRole('textbox', { name: /search/i }))
@@ -271,14 +262,14 @@ describe('Add New Song Part', () => {
 
     const newName = 'New Name'
 
-    reduxRender(
-      <AddNewSongPart
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
     await user.clear(screen.getByRole('textbox', { name: /name/i }))
@@ -297,14 +288,14 @@ describe('Add New Song Part', () => {
       })
     )
 
-    reduxRender(
-      <AddNewSongPart
-        opened={true}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 
@@ -316,16 +307,16 @@ describe('Add New Song Part', () => {
   it('should refresh errors when reopened', async () => {
     const user = userEvent.setup()
 
-    const uut = (opened = true) => (
-      <AddNewSongPart
-        opened={opened}
-        onClose={() => {}}
-        songId={''}
-        settings={emptySongSettings}
-      />
-    )
+    const uut = (opened = true) => <AddNewSongPart opened={opened} onClose={() => {}} />
 
-    const [{ rerender }] = reduxRender(uut())
+    const [{ rerender }] = reduxRender(uut(), {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
 
     await user.click(screen.getByRole('button', { name: /add/i }))
 

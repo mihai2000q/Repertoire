@@ -1,10 +1,12 @@
 import {
+  emptyArtist,
+  emptySong,
   emptySongPart,
   emptySongSettings,
   reduxRender
 } from '../../../../../../../../test-utils.tsx'
 import SongOutlineSettingsButton from './SongOutlineSettingsButton.tsx'
-import { screen, waitFor } from '@testing-library/react'
+import { act, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
@@ -12,6 +14,7 @@ import { Instrument, SongPart } from '../../../../../../../../types/models/Song.
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import { UpdateSongSettingsRequest } from '../../../../../../../../types/requests/SongRequests.ts'
 import { UpdateAllSongPartsRequest } from '../../../parts/types/requests/SongPartRequests.ts'
+import { setSong } from '../../../../state/slice/songSlice.tsx'
 
 describe('Song Parts Settings Button', () => {
   const instruments: Instrument[] = [
@@ -62,9 +65,9 @@ describe('Song Parts Settings Button', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    const [{ rerender }] = reduxRender(
-      <SongOutlineSettingsButton settings={emptySongSettings} parts={[]} songId={''} />
-    )
+    const [_, store] = reduxRender(<SongOutlineSettingsButton parts={[]} />, {
+      song: { songId: '', isArtistBand: false, settings: emptySongSettings }
+    })
 
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
 
@@ -74,14 +77,11 @@ describe('Song Parts Settings Button', () => {
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
 
-    rerender(
-      <SongOutlineSettingsButton
-        settings={emptySongSettings}
-        parts={[]}
-        songId={''}
-        bandMembers={bandMembers}
-      />
-    )
+    const newSong = {
+      ...emptySong,
+      artist: { ...emptyArtist, isBand: true, bandMembers: bandMembers }
+    }
+    await act(() => store.dispatch(setSong(newSong)))
 
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-band-member' })).not.toBeDisabled()
@@ -92,15 +92,11 @@ describe('Song Parts Settings Button', () => {
 
     const defaultInstrument = instruments[1]
     const defaultBandMember = bandMembers[1]
+    const songSettings = { ...emptySongSettings, defaultInstrument, defaultBandMember }
 
-    reduxRender(
-      <SongOutlineSettingsButton
-        settings={{ ...emptySongSettings, defaultInstrument, defaultBandMember }}
-        parts={[]}
-        songId={''}
-        bandMembers={bandMembers}
-      />
-    )
+    reduxRender(<SongOutlineSettingsButton parts={[]} />, {
+      song: { songId: '', isArtistBand: false, settings: songSettings }
+    })
 
     await user.click(screen.getByRole('button', { name: 'settings' }))
 
@@ -128,14 +124,14 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
 
-      reduxRender(
-        <SongOutlineSettingsButton
-          settings={songSettings}
-          parts={parts}
-          songId={''}
-          bandMembers={bandMembers}
-        />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: '',
+          isArtistBand: false,
+          artistBandMembers: bandMembers,
+          settings: songSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-band-member' }))
@@ -167,14 +163,14 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
 
-      reduxRender(
-        <SongOutlineSettingsButton
-          settings={emptySongSettings}
-          parts={parts}
-          songId={songId}
-          bandMembers={bandMembers}
-        />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: songId,
+          isArtistBand: false,
+          artistBandMembers: bandMembers,
+          settings: emptySongSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-band-member' }))
@@ -197,14 +193,14 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, bandMember: newBandMember }]
 
-      reduxRender(
-        <SongOutlineSettingsButton
-          settings={emptySongSettings}
-          parts={parts}
-          songId={songId}
-          bandMembers={bandMembers}
-        />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: songId,
+          isArtistBand: false,
+          artistBandMembers: bandMembers,
+          settings: emptySongSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-band-member' }))
@@ -234,9 +230,13 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, instrument: instruments[0] }]
 
-      reduxRender(
-        <SongOutlineSettingsButton settings={songSettings} parts={parts} songId={''} />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: '',
+          isArtistBand: false,
+          settings: songSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-instrument' }))
@@ -268,13 +268,14 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, instrument: instruments[0] }]
 
-      reduxRender(
-        <SongOutlineSettingsButton
-          settings={emptySongSettings}
-          parts={parts}
-          songId={songId}
-        />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: songId,
+          isArtistBand: false,
+          artistBandMembers: bandMembers,
+          settings: emptySongSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-instrument' }))
@@ -297,13 +298,14 @@ describe('Song Parts Settings Button', () => {
 
       const parts: SongPart[] = [{ ...emptySongPart, instrument: newInstrument }]
 
-      reduxRender(
-        <SongOutlineSettingsButton
-          settings={emptySongSettings}
-          parts={parts}
-          songId={songId}
-        />
-      )
+      reduxRender(<SongOutlineSettingsButton parts={parts} />, {
+        song: {
+          songId: songId,
+          isArtistBand: false,
+          artistBandMembers: bandMembers,
+          settings: emptySongSettings
+        }
+      })
 
       await user.click(screen.getByRole('button', { name: 'settings' }))
       await user.click(screen.getByRole('button', { name: 'select-instrument' }))

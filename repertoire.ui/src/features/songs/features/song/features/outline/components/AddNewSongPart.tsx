@@ -6,25 +6,20 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import BandMemberCompactSelect from '../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
-import { Instrument, SongSettings } from '../../../../../../../types/models/Song.ts'
+import { Instrument } from '../../../../../../../types/models/Song.ts'
+import { useAppSelector } from '../../../../../../../state/store.ts'
 
 interface AddNewSongPartProps {
   opened: boolean
   onClose: () => void
-  songId: string
-  settings: SongSettings
-  bandMembers?: BandMember[] | undefined
   scrollIntoView?: () => void
 }
 
-function AddNewSongPart({
-  opened,
-  onClose,
-  songId,
-  settings,
-  bandMembers,
-  scrollIntoView
-}: AddNewSongPartProps) {
+function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps) {
+  const songId = useAppSelector((state) => state.song.songId)
+  const settings = useAppSelector((state) => state.song.settings)
+  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+
   const [createSongPartMutation, { isLoading }] = useCreateSongPartMutation()
 
   const nameInputRef = useFocusTrap(opened)

@@ -3,26 +3,23 @@ import PopoverConfirmation from '../../../../../../../../components/popover/Popo
 import BandMemberCompactSelect from '../../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { useState } from 'react'
-import { Instrument, SongPart, SongSettings } from '../../../../../../../../types/models/Song.ts'
+import { Instrument, SongPart } from '../../../../../../../../types/models/Song.ts'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import { useUpdateAllSongPartsMutation } from '../../../parts/state/api/songPartsApi.ts'
 import { useUpdateSongSettingsMutation } from '../../../../../../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
+import { useAppSelector } from '../../../../../../../../state/store.ts'
 
 interface SongOutlineSettingsButtonProps {
-  settings: SongSettings
   parts: SongPart[]
-  songId: string
-  bandMembers?: BandMember[]
 }
 
-function SongOutlineSettingsButton({
-  parts,
-  settings,
-  songId,
-  bandMembers
-}: SongOutlineSettingsButtonProps) {
+function SongOutlineSettingsButton({ parts }: SongOutlineSettingsButtonProps) {
+  const songId = useAppSelector((state) => state.song.songId)
+  const settings = useAppSelector((state) => state.song.settings)
+  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+
   const [updateSettings] = useUpdateSongSettingsMutation()
   const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongPartsMutation()
 
