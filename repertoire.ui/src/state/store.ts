@@ -3,6 +3,7 @@ import authReducer from './slice/authSlice.ts'
 import drawersReducer from './slice/drawersSlice.ts'
 import globalReducer from './slice/globalSlice.ts'
 import songReducer from '../features/songs/features/song/state/slice/songSlice.tsx'
+import songOutlineReducer from '../features/songs/features/song/features/outline/state/slice/songOutlineSlice.ts'
 import playlistReducer from '../features/playlists/state/slice/playlistSlice.ts'
 import { api } from './api'
 import { useDispatch, useSelector } from 'react-redux'
@@ -14,6 +15,7 @@ const reducer = combineReducers({
   drawers: drawersReducer,
   global: globalReducer,
   song: songReducer,
+  songOutline: songOutlineReducer,
   playlist: playlistReducer,
   [api.reducerPath]: api.reducer,
   [authApi.reducerPath]: authApi.reducer
