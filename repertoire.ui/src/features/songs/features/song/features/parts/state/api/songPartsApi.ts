@@ -1,16 +1,24 @@
 import { api } from '../../../../../../../../state/api.ts'
 import HttpMessageResponse from '../../../../../../../../types/responses/HttpMessageResponse.ts'
 import {
-  BulkDeleteSongPartsRequest, BulkUpdateSongPartsRequest,
+  BulkDeleteSongPartsRequest,
+  BulkUpdateSongPartsRequest,
   CreateSongPartRequest,
   DeleteSongPartRequest,
+  GetSongPartsRequest,
   MoveSongPartInSongRequest,
   UpdateAllSongPartsRequest,
   UpdateSongPartRequest
 } from '../../types/requests/SongPartRequests.ts'
+import { SongPart } from '../../../../../../../../types/models/Song.ts'
+import createQueryParams from '../../../../../../../../utils/createQueryParams.ts'
 
 const songPartsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getSongParts: build.query<SongPart[], GetSongPartsRequest>({
+      query: (arg) => `songs/parts${createQueryParams(arg)}`,
+      providesTags: ['Songs']
+    }),
     createSongPart: build.mutation<HttpMessageResponse, CreateSongPartRequest>({
       query: (body) => ({
         url: 'songs/parts',
@@ -70,6 +78,7 @@ const songPartsApi = api.injectEndpoints({
 })
 
 export const {
+  useGetSongPartsQuery,
   useCreateSongPartMutation,
   useUpdateSongPartMutation,
   useUpdateAllSongPartsMutation,
