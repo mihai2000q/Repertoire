@@ -21,20 +21,17 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import BandMemberSelect from '../../../../../../../../components/form/select/BandMemberSelect.tsx'
 import InstrumentSelect from '../../../../../../../../components/form/select/InstrumentSelect.tsx'
+import { useAppSelector } from '../../../../../../../../state/store.ts'
 
 interface EditSongPartModalProps {
   opened: boolean
   onClose: () => void
   part: SongPart
-  bandMembers: BandMember[]
 }
 
-function EditSongPartModal({
-  opened,
-  onClose,
-  part,
-  bandMembers
-}: EditSongPartModalProps) {
+function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
+  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+
   const [updateSongPartMutation, { isLoading }] = useUpdateSongPartMutation()
 
   const [hasChanged, setHasChanged] = useState(false)

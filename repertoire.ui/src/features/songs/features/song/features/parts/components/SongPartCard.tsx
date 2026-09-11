@@ -30,12 +30,12 @@ import { toast } from 'react-toastify'
 import { useDeleteSongPartMutation, useUpdateSongPartMutation } from '../state/api/songPartsApi.ts'
 import EditSongPartModal from './modal/EditSongPartModal.tsx'
 import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
-import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'
 import { MouseEvent, useEffect, useState } from 'react'
 import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
+import { useAppSelector } from '../../../../../../../state/store.ts'
 
 function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
   return rehearsalsMaxLength > 4
@@ -55,27 +55,19 @@ function getRehearsalsWidth(rehearsalsMaxLength: number) {
 
 interface SongPartCardProps {
   part: SongPartModel
-  songId: string
   isDragging: boolean
-  showDetails: boolean
   maxPartProgress: number
   maxPartRehearsals: number
   draggableProvided?: DraggableProvided
-  bandMembers?: BandMember[]
-  isArtistBand?: boolean
   showRehearsalsToast?: (name: string) => void
 }
 
 function SongPartCard({
   part,
-  songId,
   isDragging,
-  showDetails,
   maxPartProgress,
   maxPartRehearsals,
   draggableProvided,
-  bandMembers,
-  isArtistBand,
   showRehearsalsToast
 }: SongPartCardProps) {
   const { ref: hoverRef, hovered } = useHover()
@@ -86,6 +78,10 @@ function SongPartCard({
     isLastInSelection
   } = useClickSelectSelectable(part.id)
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
+
+  const songId = useAppSelector((state) => state.song.songId)
+  const isArtistBand = useAppSelector((state) => state.song.isArtistBand)
+  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
 
   const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
     getRehearsalsMarginLeft(maxPartRehearsals.toString().length)
@@ -126,6 +122,7 @@ function SongPartCard({
       ...part,
       bandMemberId: part.bandMember?.id,
       instrumentId: part.instrument?.id,
+      sectionIds: part.sections.map((section) => section.id),
       rehearsals: part.rehearsals + 1
     }).unwrap()
     showRehearsalsToast?.(part.name)
@@ -370,12 +367,7 @@ function SongPartCard({
 
       <ContextMenu.Dropdown>{menuDropdown}</ContextMenu.Dropdown>
 
-      <EditSongPartModal
-        opened={openedEditSongPart}
-        onClose={closeEditSongPart}
-        part={part}
-        bandMembers={bandMembers}
-      />
+      <EditSongPartModal opened={openedEditSongPart} onClose={closeEditSongPart} part={part} />
       <WarningModal
         opened={openedDeleteWarning}
         onClose={closeDeleteWarning}

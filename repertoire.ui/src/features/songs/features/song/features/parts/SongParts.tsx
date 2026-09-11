@@ -6,28 +6,22 @@ import { SongPart } from '../../../../../../types/models/Song.ts'
 import SongPartCard from './components/SongPartCard.tsx'
 import { useMemo, useRef } from 'react'
 import { toast } from 'react-toastify'
-import { BandMember } from '../../../../../../types/models/Artist.ts'
 import SongPartsContextMenu from './components/SongPartsContextMenu.tsx'
 import SongPartsSelectionDrawer from './components/SongPartsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
+import { useAppSelector } from '../../../../../../state/store.ts'
 
 interface SongPartsWidgetProps {
   parts: SongPart[]
-  songId: string
-  showDetails?: boolean
   isFetching?: boolean
-  bandMembers?: BandMember[]
-  isArtistBand?: boolean
 }
 
 function SongParts({
   parts,
-  songId,
-  showDetails,
-  isFetching,
-  bandMembers,
-  isArtistBand
+  isFetching
 }: SongPartsWidgetProps) {
+  const songId = useAppSelector((state) => state.song.songId)
+
   const [moveSongPartInSong, { isLoading: isMoveLoading }] = useMoveSongPartInSongMutation()
 
   const [internalParts, { reorder, setState }] = useListState<SongPart>(parts)
@@ -85,14 +79,10 @@ function SongParts({
                         {(provided, snapshot) => (
                           <SongPartCard
                             part={part}
-                            songId={songId}
                             isDragging={snapshot.isDragging}
-                            showDetails={showDetails}
                             maxPartProgress={maxPartProgress}
                             maxPartRehearsals={maxPartRehearsals}
                             draggableProvided={provided}
-                            bandMembers={bandMembers}
-                            isArtistBand={isArtistBand}
                             showRehearsalsToast={showRehearsalsToast}
                           />
                         )}
