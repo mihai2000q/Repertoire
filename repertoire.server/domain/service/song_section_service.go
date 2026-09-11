@@ -13,6 +13,7 @@ type SongSectionService interface {
 	BulkDelete(request requests.BulkDeleteSongSectionsRequest) *httperror.ErrorCode
 	Create(request requests.CreateSongSectionRequest) *httperror.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID, withParts bool) *httperror.ErrorCode
+	GetAll(request requests.GetSongSectionsRequest) ([]model.SongSection, *httperror.ErrorCode)
 	Move(request requests.MoveSongSectionRequest) *httperror.ErrorCode
 	Update(request requests.UpdateSongSectionRequest) *httperror.ErrorCode
 
@@ -23,6 +24,7 @@ type songSectionService struct {
 	bulkDeleteSongSections section.BulkDeleteSongSections
 	createSongSection      section.CreateSongSection
 	deleteSongSection      section.DeleteSongSection
+	getAllSongSections     section.GetAllSongSections
 	moveSongSection        section.MoveSongSection
 	updateSongSection      section.UpdateSongSection
 	getSongSectionTypes    section.GetSongSectionTypes
@@ -32,6 +34,7 @@ func NewSongSectionService(
 	bulkDeleteSongSections section.BulkDeleteSongSections,
 	createSongSection section.CreateSongSection,
 	deleteSongSection section.DeleteSongSection,
+	getAllSongSections section.GetAllSongSections,
 	moveSongSection section.MoveSongSection,
 	updateSongSection section.UpdateSongSection,
 
@@ -41,6 +44,7 @@ func NewSongSectionService(
 		bulkDeleteSongSections: bulkDeleteSongSections,
 		createSongSection:      createSongSection,
 		deleteSongSection:      deleteSongSection,
+		getAllSongSections:     getAllSongSections,
 		moveSongSection:        moveSongSection,
 		updateSongSection:      updateSongSection,
 
@@ -58,6 +62,10 @@ func (s *songSectionService) Create(request requests.CreateSongSectionRequest) *
 
 func (s *songSectionService) Delete(id uuid.UUID, songID uuid.UUID, withParts bool) *httperror.ErrorCode {
 	return s.deleteSongSection.Handle(id, songID, withParts)
+}
+
+func (s *songSectionService) GetAll(request requests.GetSongSectionsRequest) ([]model.SongSection, *httperror.ErrorCode) {
+	return s.getAllSongSections.Handle(request)
 }
 
 func (s *songSectionService) Move(request requests.MoveSongSectionRequest) *httperror.ErrorCode {

@@ -12,6 +12,56 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestValidateGetSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.GetSongSectionsRequest{
+		SongID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateGetSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetSongSectionsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			requests.GetSongSectionsRequest{
+				SongID: uuid.Nil,
+			},
+			"SongID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			require.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetSongSectionsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
+
 var validSectionName = "James Solo"
 
 func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {

@@ -28,6 +28,32 @@ func NewSongSectionHandler(
 	}
 }
 
+func (s SongSectionHandler) GetAll(c *gin.Context) {
+	// TODO: When Gin fixes it, replace with BindQuery
+	querySongId := c.Query("songId")
+	songId, err := uuid.Parse(querySongId)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	var request requests.GetSongSectionsRequest
+	request.SongID = songId
+	errorCode := s.Validator.Validate(&request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	result, errorCode := s.service.GetAll(request)
+	if errorCode != nil {
+		_ = c.AbortWithError(errorCode.Code, errorCode.Error)
+		return
+	}
+
+	c.JSON(http.StatusOK, result)
+}
+
 func (s SongSectionHandler) Create(c *gin.Context) {
 	var request requests.CreateSongSectionRequest
 	errorCode := s.BindAndValidate(c, &request)

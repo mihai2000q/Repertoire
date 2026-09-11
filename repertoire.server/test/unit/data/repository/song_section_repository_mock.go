@@ -52,16 +52,6 @@ func (s *SongSectionRepositoryMock) GetAllByIDsWithSectionParts(sections *[]mode
 	return args.Error(0)
 }
 
-func (s *SongSectionRepositoryMock) GetWithParts(section *model.SongSection, id uuid.UUID) error {
-	args := s.Called(section, id)
-
-	if len(args) > 1 {
-		*section = *args.Get(1).(*model.SongSection)
-	}
-
-	return args.Error(0)
-}
-
 func (s *SongSectionRepositoryMock) GetAllByPartWithSectionParts(sections *[]model.SongSection, partID uuid.UUID) error {
 	args := s.Called(sections, partID)
 
@@ -74,6 +64,16 @@ func (s *SongSectionRepositoryMock) GetAllByPartWithSectionParts(sections *[]mod
 
 func (s *SongSectionRepositoryMock) GetAllByPartIDsWithSectionParts(sections *[]model.SongSection, partIDs []uuid.UUID) error {
 	args := s.Called(sections, partIDs)
+
+	if len(args) > 1 {
+		*sections = *args.Get(1).(*[]model.SongSection)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) GetAllBySong(sections *[]model.SongSection, songID uuid.UUID) error {
+	args := s.Called(sections, songID)
 
 	if len(args) > 1 {
 		*sections = *args.Get(1).(*[]model.SongSection)
