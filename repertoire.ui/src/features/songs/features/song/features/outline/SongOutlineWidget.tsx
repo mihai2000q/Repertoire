@@ -36,6 +36,8 @@ import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCa
 import AddNewSongPart from './components/AddNewSongPart.tsx'
 import AddNewSongSection from './components/AddNewSongSection.tsx'
 import SongSections from '../sections/SongSections.tsx'
+import useLocalStorage from '../../../../../../hooks/useLocalStorage.ts'
+import LocalStorageKeys from '../../../../../../types/enums/keys/LocalStorageKeys.ts'
 
 enum OutlineView {
   Sections,
@@ -71,7 +73,10 @@ function SongOutlineWidget({
   const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
   const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
-  const [outlineView, setOutlineView] = useState(OutlineView.Sections)
+  const [outlineView, setOutlineView] = useLocalStorage({
+    key: LocalStorageKeys.SongOutlineView,
+    defaultValue: OutlineView.Sections
+  })
   const part_or_section = outlineView === OutlineView.Sections ? 'section' : 'part'
   const partOrSection = outlineView === OutlineView.Sections ? 'Section' : 'Part'
 
