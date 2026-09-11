@@ -4,12 +4,19 @@ import {
   BulkDeleteSongSectionsRequest,
   CreateSongSectionRequest,
   DeleteSongSectionRequest,
+  GetSongSectionsRequest,
   MoveSongSectionRequest,
   UpdateSongSectionRequest
 } from '../../types/requests/SongSectionRequests.ts'
+import { SongSection } from '../../../../../../../../types/models/Song.ts'
+import createQueryParams from '../../../../../../../../utils/createQueryParams.ts'
 
 const songSectionsApi = api.injectEndpoints({
   endpoints: (build) => ({
+    getSongSections: build.query<SongSection[], GetSongSectionsRequest>({
+      query: (arg) => `songs/sections${createQueryParams(arg)}`,
+      providesTags: ['Songs']
+    }),
     createSongSection: build.mutation<HttpMessageResponse, CreateSongSectionRequest>({
       query: (body) => ({
         url: 'songs/sections',
@@ -53,6 +60,7 @@ const songSectionsApi = api.injectEndpoints({
 })
 
 export const {
+  useGetSongSectionsQuery,
   useCreateSongSectionMutation,
   useUpdateSongSectionMutation,
   useMoveSongSectionMutation,

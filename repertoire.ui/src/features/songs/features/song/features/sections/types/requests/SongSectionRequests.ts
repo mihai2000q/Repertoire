@@ -1,3 +1,7 @@
+export interface GetSongSectionsRequest {
+  songId: string
+}
+
 export interface CreateSongSectionRequest {
   songId: string
   typeId: string
