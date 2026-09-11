@@ -124,6 +124,7 @@ var songUseCases = fx.Options(
 	fx.Provide(part.NewBulkDeleteSongParts),
 	fx.Provide(part.NewCreateSongPart),
 	fx.Provide(part.NewDeleteSongPart),
+	fx.Provide(part.NewGetAllSongParts),
 	fx.Provide(part.NewMoveSongPartInSong),
 	fx.Provide(part.NewUpdateAllSongParts),
 	fx.Provide(part.NewUpdateSongPart),

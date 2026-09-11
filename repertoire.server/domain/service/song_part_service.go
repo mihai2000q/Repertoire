@@ -4,6 +4,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/part"
 	"repertoire/server/internal/httperror"
+	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )
@@ -13,6 +14,7 @@ type SongPartService interface {
 	BulkDelete(request requests.BulkDeleteSongPartsRequest) *httperror.ErrorCode
 	Create(request requests.CreateSongPartRequest) *httperror.ErrorCode
 	Delete(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode
+	GetAll(request requests.GetSongPartsRequest) ([]model.SongPart, *httperror.ErrorCode)
 	MoveInSong(request requests.MoveSongPartInSongRequest) *httperror.ErrorCode
 	UpdateAll(request requests.UpdateAllSongPartsRequest) *httperror.ErrorCode
 	Update(request requests.UpdateSongPartRequest) *httperror.ErrorCode
@@ -23,6 +25,7 @@ type songPartService struct {
 	bulkDeleteSongParts     part.BulkDeleteSongParts
 	createSongPart          part.CreateSongPart
 	deleteSongPart          part.DeleteSongPart
+	getAllSongParts         part.GetAllSongParts
 	moveSongPartInSong      part.MoveSongPartInSong
 	updateAllSongParts      part.UpdateAllSongParts
 	updateSongPart          part.UpdateSongPart
@@ -33,6 +36,7 @@ func NewSongPartService(
 	bulkDeleteSongParts part.BulkDeleteSongParts,
 	createSongPart part.CreateSongPart,
 	deleteSongPart part.DeleteSongPart,
+	getAllSongParts part.GetAllSongParts,
 	moveSongPartInSong part.MoveSongPartInSong,
 	updateAllSongParts part.UpdateAllSongParts,
 	updateSongPart part.UpdateSongPart,
@@ -42,6 +46,7 @@ func NewSongPartService(
 		bulkDeleteSongParts:     bulkDeleteSongParts,
 		createSongPart:          createSongPart,
 		deleteSongPart:          deleteSongPart,
+		getAllSongParts:         getAllSongParts,
 		moveSongPartInSong:      moveSongPartInSong,
 		updateAllSongParts:      updateAllSongParts,
 		updateSongPart:          updateSongPart,
@@ -62,6 +67,10 @@ func (s *songPartService) Create(request requests.CreateSongPartRequest) *httper
 
 func (s *songPartService) Delete(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	return s.deleteSongPart.Handle(id, songID)
+}
+
+func (s *songPartService) GetAll(request requests.GetSongPartsRequest) ([]model.SongPart, *httperror.ErrorCode) {
+	return s.getAllSongParts.Handle(request)
 }
 
 func (s *songPartService) MoveInSong(request requests.MoveSongPartInSongRequest) *httperror.ErrorCode {

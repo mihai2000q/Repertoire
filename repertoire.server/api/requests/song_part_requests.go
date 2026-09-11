@@ -2,6 +2,10 @@ package requests
 
 import "github.com/google/uuid"
 
+type GetSongPartsRequest struct {
+	SongID uuid.UUID `form:"songId" validate:"required"`
+}
+
 type CreateSongPartRequest struct {
 	SongID       uuid.UUID `validate:"required"`
 	Name         string    `validate:"required,max=30"`

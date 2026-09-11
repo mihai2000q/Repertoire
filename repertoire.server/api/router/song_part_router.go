@@ -13,6 +13,7 @@ type SongPartRouter struct {
 func (s SongPartRouter) RegisterRoutes() {
 	api := s.requestHandler.PrivateRouter.Group("/songs/parts")
 	{
+		api.GET("", s.handler.GetAll)
 		api.POST("", s.handler.Create)
 		api.PUT("", s.handler.Update)
 		api.PUT("/all", s.handler.UpdateAll)

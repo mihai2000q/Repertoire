@@ -25,6 +25,7 @@ type SongPart struct {
 	BandMember *BandMember `json:"bandMember"`
 	Instrument *Instrument `json:"instrument"`
 
+	Sections               []SongSection         `gorm:"many2many:song_section_parts;joinForeignKey:part_id;joinReferences:section_id" json:"sections"`
 	SectionParts           []SongSectionPart     `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`
 	History                []SongPartHistory     `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`
 	ArrangementOccurrences []SongPartOccurrences `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE" json:"-"`

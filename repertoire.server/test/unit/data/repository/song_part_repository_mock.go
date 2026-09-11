@@ -31,6 +31,16 @@ func (s *SongPartRepositoryMock) GetAllByIDs(parts *[]model.SongPart, ids []uuid
 	return args.Error(0)
 }
 
+func (s *SongPartRepositoryMock) GetAllBySong(parts *[]model.SongPart, songID uuid.UUID) error {
+	args := s.Called(parts, songID)
+
+	if len(args) > 1 {
+		*parts = *args.Get(1).(*[]model.SongPart)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongPartRepositoryMock) CountAllBySong(count *int64, songID uuid.UUID) error {
 	args := s.Called(count, songID)
 

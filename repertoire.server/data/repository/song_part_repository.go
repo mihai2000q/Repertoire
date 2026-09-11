@@ -11,6 +11,7 @@ import (
 type SongPartRepository interface {
 	GetWithSong(part *model.SongPart, id uuid.UUID) error
 	GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID) error
+	GetAllBySong(parts *[]model.SongPart, songID uuid.UUID) error
 	CountAllBySong(count *int64, songID uuid.UUID) error
 	CountBySectionIDs(sectionIDs []uuid.UUID) (map[uuid.UUID]int64, error)
 	Create(part *model.SongPart) error
@@ -42,6 +43,19 @@ func (s songPartRepository) GetWithSong(part *model.SongPart, id uuid.UUID) erro
 
 func (s songPartRepository) GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID) error {
 	return s.client.Find(parts, ids).Error
+}
+
+func (s songPartRepository) GetAllBySong(parts *[]model.SongPart, songID uuid.UUID) error {
+	return s.client.Model(&model.SongPart{}).
+		Joins("Instrument").
+		Joins("BandMember").
+		Preload("BandMember.Roles").
+		Preload("Sections").
+		Preload("Sections.SongSectionType").
+		Where(model.SongPart{SongID: songID}).
+		Order("song_order").
+		Find(parts).
+		Error
 }
 
 func (s songPartRepository) CountAllBySong(count *int64, songID uuid.UUID) error {
