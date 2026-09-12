@@ -14,6 +14,7 @@ function SongSectionTypeBadge({ songSectionType }: SongSectionTypeBadgeProps) {
       bg={'gray.1'}
       px={'5px'}
       py={'2px'}
+      inline
       style={(theme) => ({
         borderRadius: theme.radius.md
       })}

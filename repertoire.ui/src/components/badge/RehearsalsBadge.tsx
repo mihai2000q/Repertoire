@@ -18,7 +18,7 @@ function RehearsalsBadge({ rehearsals }: RehearsalsBadgeProps) {
       })}
     >
       <IconRefresh size={13} />
-      <Text fw={500} fz={'xs'} c={'gray.6'}>
+      <Text fw={500} fz={'xs'} c={'gray.6'} inline>
         {rehearsals}
       </Text>
     </Group>
