@@ -10,22 +10,16 @@ import SongHeader from './components/SongHeader.tsx'
 import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import SongOutlineWidget from './features/outline/SongOutlineWidget.tsx'
-import { useAppDispatch } from '../../../../state/store.ts'
-import { setSong } from './state/slice/songSlice.tsx'
 
 function Song() {
   const params = useParams()
-  const dispatch = useAppDispatch()
   const setDocumentTitle = useDynamicDocumentTitle()
   const songId = params['id'] ?? ''
 
   const { data: song, isLoading, isFetching } = useGetSongQuery(songId)
 
   useEffect(() => {
-    if (song) {
-      setDocumentTitle(song.title)
-      dispatch(setSong(song))
-    }
+    if (song) setDocumentTitle(song.title)
   }, [song])
 
   if (isLoading || !song) return <SongLoader />
@@ -51,7 +45,7 @@ function Song() {
           <Stack>
             <SongDescriptionWidget song={song} />
 
-            <SongOutlineWidget isSongFetching={isFetching} />
+            <SongOutlineWidget key={songId} isSongFetching={isFetching} />
           </Stack>
         </Grid.Col>
       </Grid>
