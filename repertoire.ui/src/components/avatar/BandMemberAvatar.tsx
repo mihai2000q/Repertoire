@@ -1,22 +1,24 @@
-import { Avatar, Group, HoverCard, Stack, Text } from '@mantine/core'
+import { Avatar, AvatarProps, Group, HoverCard, Stack, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { BandMember } from '../../types/models/Artist.ts'
 
-interface BandMemberAvatarProps {
+interface BandMemberAvatarProps extends AvatarProps {
   bandMember: BandMember
+  iconSize?: string | number
 }
 
-function BandMemberAvatar({ bandMember }: BandMemberAvatarProps) {
+function BandMemberAvatar({ bandMember, iconSize = 15, ...props }: BandMemberAvatarProps) {
   return (
     <HoverCard openDelay={200} position="top">
       <HoverCard.Target>
         <Avatar
           size={25}
+          {...props}
           color={bandMember.color}
           src={bandMember.imageUrl}
           alt={bandMember.imageUrl && bandMember.name}
         >
-          <IconUser aria-label={`default-icon-${bandMember.name}`} size={15} />
+          <IconUser aria-label={`default-icon-${bandMember.name}`} size={iconSize} />
         </Avatar>
       </HoverCard.Target>
       <HoverCard.Dropdown>
