@@ -145,25 +145,6 @@ func (s songRepository) GetWithAssociations(song *model.Song, id uuid.UUID) erro
 		Joins("Album").
 		Preload("Artist.BandMembers").
 		Preload("Artist.BandMembers.Roles").
-		Preload("Parts", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Joins("Instrument").
-				Joins("BandMember").
-				Preload("BandMember.Roles").
-				Order("song_parts.song_order")
-		}).
-		Preload("Sections", func(db *gorm.DB) *gorm.DB {
-			return db.
-				Joins("SongSectionType").
-				Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-					return db.
-						Joins("Part").
-						Joins("Part.Instrument").
-						Preload("Part.BandMember.Roles").
-						Order("song_section_parts.order")
-				}).
-				Order("song_sections.order")
-		}).
 		Find(song, model.Song{ID: id}).
 		Error
 }
