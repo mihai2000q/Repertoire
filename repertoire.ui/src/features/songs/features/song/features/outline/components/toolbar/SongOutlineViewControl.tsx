@@ -1,27 +1,21 @@
 import { Center, SegmentedControl, Tooltip } from '@mantine/core'
 import { IconList, IconListTree } from '@tabler/icons-react'
-import useLocalStorage from '../../../../../../../../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../../../../../../../../types/enums/keys/LocalStorageKeys.ts'
-import { useEffect } from 'react'
-import { useAppDispatch } from '../../../../../../../../state/store.ts'
+import { useAppDispatch, useAppSelector } from '../../../../../../../../state/store.ts'
 import OutlineView from '../../types/enums/OutlineView.ts'
 import { setView } from '../../state/slice/songOutlineSlice.ts'
 
 function SongOutlineViewControl() {
   const dispatch = useAppDispatch()
+  const view = useAppSelector((state) => state.songOutline.view)
 
-  const [outlineView, localSetOutlineView] = useLocalStorage({
-    key: LocalStorageKeys.SongOutlineView,
-    defaultValue: OutlineView.Sections
-  })
-  useEffect(() => {
-    dispatch(setView(outlineView))
-  }, [outlineView])
+  function handleChange(view: OutlineView) {
+    dispatch(setView(view))
+  }
 
   return (
     <SegmentedControl<OutlineView>
-      value={outlineView}
-      onChange={localSetOutlineView}
+      value={view}
+      onChange={handleChange}
       size={'xs'}
       color={'gray'}
       radius={'12px'}
