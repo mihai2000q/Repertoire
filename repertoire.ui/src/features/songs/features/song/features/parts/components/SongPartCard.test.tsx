@@ -67,19 +67,16 @@ describe('Song Part Card', () => {
   })
 
   it('should render and display minimal info', () => {
-    reduxRender(
-      <SongPartCard part={part} maxPartProgress={0} maxPartRehearsals={0} isDragging={false} />
-    )
+    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
     expect(screen.getByText(part.name)).toBeInTheDocument()
+    expect(screen.getByText(part.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
   })
 
   it('should render and display maximal info', async () => {
-    const user = userEvent.setup()
-
     const bandMember: BandMember = {
       id: '1',
       name: 'Mike',
@@ -101,7 +98,6 @@ describe('Song Part Card', () => {
           instrument: instrument
         }}
         maxPartProgress={0}
-        maxPartRehearsals={0}
         isDragging={false}
       />,
       {
@@ -113,13 +109,9 @@ describe('Song Part Card', () => {
     expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
     expect(screen.getByLabelText('instrument-icon')).toBeInTheDocument()
     expect(screen.getByText(part.name)).toBeInTheDocument()
+    expect(screen.getByText(part.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-
-    await user.hover(screen.getByRole('img', { name: bandMember.name }))
-    expect(await screen.findByText(bandMember.name)).toBeInTheDocument()
-    expect(screen.getAllByRole('img', { name: bandMember.name })).toHaveLength(2)
-    expect(screen.getByText(bandMember.roles[0].name)).toBeInTheDocument()
 
     // when artist is not a band
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
@@ -132,19 +124,12 @@ describe('Song Part Card', () => {
     const user = userEvent.setup()
 
     expect(await screen.findByLabelText(`song-part-details-${part.name}`)).toBeVisible()
-    expect(screen.getAllByText(part.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
-    expect(screen.getByTestId('rehearsals')).toHaveTextContent(part.rehearsals.toString())
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(part.confidence)
     expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'progress' })).toHaveValue(
       (part.progress / maxPartProgress) * 100
     )
-
-    await user.hover(screen.getByTestId('rehearsals'))
-    expect(
-      screen.getByRole('tooltip', { name: new RegExp(part.rehearsals.toString()) })
-    ).toBeInTheDocument()
 
     await user.hover(screen.getByRole('progressbar', { name: 'confidence' }))
     expect(
@@ -161,14 +146,7 @@ describe('Song Part Card', () => {
     const user = userEvent.setup()
     const maxPartProgress = 67
 
-    reduxRender(
-      <SongPartCard
-        part={part}
-        maxPartProgress={maxPartProgress}
-        maxPartRehearsals={0}
-        isDragging={false}
-      />
-    )
+    reduxRender(<SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />)
 
     await user.click(screen.getByLabelText(`song-part-${part.name}`))
 
@@ -178,18 +156,10 @@ describe('Song Part Card', () => {
   it('should show details from redux selector', async () => {
     const maxPartProgress = 67
 
-    reduxRender(
-      <SongPartCard
-        part={part}
-        maxPartProgress={maxPartProgress}
-        maxPartRehearsals={0}
-        isDragging={false}
-      />,
-      {
-        song: { songId: '', isArtistBand: false },
-        songOutline: { view: OutlineView.Parts, showDetails: true }
-      }
-    )
+    reduxRender(<SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />, {
+      song: { songId: '', isArtistBand: false },
+      songOutline: { view: OutlineView.Parts, showDetails: true }
+    })
 
     await shouldShowDetails(maxPartProgress)
   })
@@ -197,9 +167,7 @@ describe('Song Part Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <SongPartCard part={part} maxPartProgress={0} maxPartRehearsals={0} isDragging={false} />
-    )
+    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -213,9 +181,7 @@ describe('Song Part Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <SongPartCard part={part} maxPartProgress={0} maxPartRehearsals={0} isDragging={false} />
-    )
+    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -227,9 +193,7 @@ describe('Song Part Card', () => {
     it('should open edit song part modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <SongPartCard part={part} maxPartProgress={0} maxPartRehearsals={0} isDragging={false} />
-      )
+      reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
@@ -249,9 +213,7 @@ describe('Song Part Card', () => {
       )
 
       reduxRender(
-        withToastify(
-          <SongPartCard part={part} maxPartProgress={0} maxPartRehearsals={0} isDragging={false} />
-        ),
+        withToastify(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />),
         { song: { songId: songId, isArtistBand: false } }
       )
 
@@ -283,7 +245,6 @@ describe('Song Part Card', () => {
       <SongPartCard
         part={part}
         maxPartProgress={0}
-        maxPartRehearsals={0}
         isDragging={false}
         showRehearsalsToast={showToast}
       />
@@ -315,7 +276,6 @@ describe('Song Part Card', () => {
       <SongPartCard
         part={part}
         maxPartProgress={0}
-        maxPartRehearsals={0}
         isDragging={false}
         showRehearsalsToast={vi.fn()}
       />
@@ -346,7 +306,6 @@ describe('Song Part Card', () => {
       <SongPartCard
         part={part}
         maxPartProgress={0}
-        maxPartRehearsals={0}
         isDragging={false}
         showRehearsalsToast={vi.fn()}
       />
@@ -364,7 +323,6 @@ describe('Song Part Card', () => {
         <SongPartCard
           part={part}
           maxPartProgress={0}
-          maxPartRehearsals={0}
           isDragging={false}
           showRehearsalsToast={vi.fn()}
         />
@@ -385,7 +343,6 @@ describe('Song Part Card', () => {
         <SongPartCard
           part={part}
           maxPartProgress={0}
-          maxPartRehearsals={0}
           isDragging={false}
           showRehearsalsToast={vi.fn()}
         />
@@ -409,7 +366,6 @@ describe('Song Part Card', () => {
         <SongPartCard
           part={part}
           maxPartProgress={0}
-          maxPartRehearsals={0}
           isDragging={false}
           showRehearsalsToast={vi.fn()}
         />
@@ -428,7 +384,6 @@ describe('Song Part Card', () => {
         <SongPartCard
           part={part}
           maxPartProgress={0}
-          maxPartRehearsals={0}
           isDragging={true}
           showRehearsalsToast={vi.fn()}
         />
@@ -454,7 +409,6 @@ describe('Song Part Card', () => {
         <SongPartCard
           part={part}
           maxPartProgress={0}
-          maxPartRehearsals={0}
           isDragging={false}
           showRehearsalsToast={vi.fn()}
         />

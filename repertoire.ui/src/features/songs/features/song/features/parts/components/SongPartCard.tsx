@@ -2,15 +2,14 @@ import { SongPart as SongPartModel } from '../../../../../../../types/models/Son
 import {
   ActionIcon,
   alpha,
-  Avatar,
   Box,
   Center,
   Collapse,
   Group,
-  HoverCard,
   Menu,
   NumberFormatter,
   Progress,
+  Space,
   Stack,
   Text,
   Tooltip
@@ -20,9 +19,8 @@ import {
   IconDots,
   IconEdit,
   IconGripVertical,
-  IconLocationPlus,
-  IconTrash,
-  IconUser
+  IconRefresh,
+  IconTrash
 } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
@@ -36,28 +34,13 @@ import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
 import { useAppSelector } from '../../../../../../../state/store.ts'
-
-function getRehearsalsMarginLeft(rehearsalsMaxLength: number) {
-  return rehearsalsMaxLength > 4
-    ? 'xs'
-    : rehearsalsMaxLength > 3
-      ? 'md'
-      : rehearsalsMaxLength > 2
-        ? 20
-        : rehearsalsMaxLength > 1
-          ? 23
-          : 27
-}
-
-function getRehearsalsWidth(rehearsalsMaxLength: number) {
-  return (rehearsalsMaxLength > 2 ? 9 : rehearsalsMaxLength > 1 ? 10 : 12) * rehearsalsMaxLength
-}
+import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
+import BandMemberAvatar from '../../../../../../../components/avatar/BandMemberAvatar.tsx'
 
 interface SongPartCardProps {
   part: SongPartModel
   isDragging: boolean
   maxPartProgress: number
-  maxPartRehearsals: number
   draggableProvided?: DraggableProvided
   showRehearsalsToast?: (name: string) => void
 }
@@ -66,7 +49,6 @@ function SongPartCard({
   part,
   isDragging,
   maxPartProgress,
-  maxPartRehearsals,
   draggableProvided,
   showRehearsalsToast
 }: SongPartCardProps) {
@@ -82,18 +64,6 @@ function SongPartCard({
   const songId = useAppSelector((state) => state.song.songId)
   const isArtistBand = useAppSelector((state) => state.song.isArtistBand)
   const showDetails = useAppSelector((state) => state.songOutline.showDetails)
-
-  const [rehearsalsMarginLeft, setRehearsalsMarginLeft] = useState(
-    getRehearsalsMarginLeft(maxPartRehearsals.toString().length)
-  )
-  const [rehearsalsWidth, setRehearsalsWidth] = useState(
-    getRehearsalsWidth(maxPartRehearsals.toString().length)
-  )
-  useEffect(() => {
-    const rehearsalsMaxLength = maxPartRehearsals.toString().length
-    setRehearsalsMarginLeft(getRehearsalsMarginLeft(rehearsalsMaxLength))
-    setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))
-  }, [maxPartRehearsals])
 
   const [updateSongPartMutation, { isLoading: isUpdateLoading }] = useUpdateSongPartMutation()
   const [deleteSongPartMutation, { isLoading: isDeleteLoading }] = useDeleteSongPartMutation()
@@ -117,7 +87,9 @@ function SongPartCard({
     setOpenedDetails(!openedDetails)
   }
 
-  async function handleAddRehearsal() {
+  async function handleAddRehearsal(e: MouseEvent) {
+    e.stopPropagation()
+
     await updateSongPartMutation({
       ...part,
       bandMemberId: part.bandMember?.id,
@@ -229,45 +201,7 @@ function SongPartCard({
               </Center>
             )}
 
-            {isArtistBand && part.bandMember && (
-              <HoverCard openDelay={200} position="top">
-                <HoverCard.Target>
-                  <Avatar
-                    size={25}
-                    color={part.bandMember.color}
-                    src={part.bandMember.imageUrl}
-                    alt={part.bandMember.imageUrl && part.bandMember.name}
-                  >
-                    <IconUser size={15} />
-                  </Avatar>
-                </HoverCard.Target>
-                <HoverCard.Dropdown>
-                  <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-                    <Avatar
-                      size={60}
-                      color={part.bandMember.color}
-                      src={part.bandMember.imageUrl}
-                      alt={part.bandMember.imageUrl && part.bandMember.name}
-                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                    >
-                      <IconUser size={30} />
-                    </Avatar>
-                    <Stack gap={0}>
-                      <Text fw={500} lineClamp={2}>
-                        {part.bandMember.name}
-                      </Text>
-                      {part.bandMember.roles.slice(0, 2).map((role, index) => (
-                        <Text key={role.id} c={'dimmed'} fz={'xs'} lineClamp={1} lh={1.05}>
-                          {role.name}
-                          {index === 1 && part.bandMember.roles.length > 2 && ' ...'}
-                        </Text>
-                      ))}
-                    </Stack>
-                  </Group>
-                </HoverCard.Dropdown>
-              </HoverCard>
-            )}
-
+            {isArtistBand && part.bandMember && <BandMemberAvatar bandMember={part.bandMember} />}
             {part.instrument && (
               <Box aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
                 <Tooltip openDelay={200} label={part.instrument?.name} withArrow>
@@ -275,10 +209,12 @@ function SongPartCard({
                 </Tooltip>
               </Box>
             )}
-
-            <Text flex={1} fw={500} truncate={'end'}>
+            <Text fw={500} truncate={'end'}>
               {part.name}
             </Text>
+            <RehearsalsBadge rehearsals={part.rehearsals} />
+
+            <Space flex={1} />
 
             <Group gap={2}>
               <Tooltip label={'Add Rehearsal'} openDelay={200} disabled={isClickSelectionActive}>
@@ -289,12 +225,9 @@ function SongPartCard({
                   aria-label={'add-rehearsal'}
                   disabled={isClickSelectionActive}
                   sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    handleAddRehearsal()
-                  }}
+                  onClick={handleAddRehearsal}
                 >
-                  <IconLocationPlus size={15} />
+                  <IconRefresh size={15} />
                 </ActionIcon>
               </Tooltip>
 
@@ -317,29 +250,13 @@ function SongPartCard({
           </Group>
 
           <Collapse expanded={openedDetails}>
-            <Group aria-label={`song-part-details-${part.name}`} pt={'md'} gap={'lg'} pr={'lg'}>
-              <Tooltip.Floating
-                role={'tooltip'}
-                label={
-                  <>
-                    Rehearsals: <NumberFormatter value={part.rehearsals} />
-                  </>
-                }
-              >
-                <Text
-                  ml={rehearsalsMarginLeft}
-                  w={rehearsalsWidth}
-                  fz={12}
-                  ta={'center'}
-                  fw={500}
-                  c={'dimmed'}
-                  inline
-                  data-testid={'rehearsals'}
-                >
-                  <NumberFormatter value={part.rehearsals} />
-                </Text>
-              </Tooltip.Floating>
-
+            <Group
+              aria-label={`song-part-details-${part.name}`}
+              pt={'md'}
+              pb={'xxs'}
+              pl={'60px'}
+              pr={'40px'}
+            >
               <Tooltip.Floating role={'tooltip'} label={`Confidence: ${part.confidence}%`}>
                 <Progress flex={1} size={'sm'} value={part.confidence} aria-label={'confidence'} />
               </Tooltip.Floating>

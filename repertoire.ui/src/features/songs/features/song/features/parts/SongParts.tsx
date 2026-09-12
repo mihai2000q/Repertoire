@@ -10,16 +10,15 @@ import SongPartsContextMenu from './components/SongPartsContextMenu.tsx'
 import SongPartsSelectionDrawer from './components/SongPartsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
 import { useAppSelector } from '../../../../../../state/store.ts'
+import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 
 interface SongPartsWidgetProps {
   parts: SongPart[]
-  isFetching?: boolean
+  isSongFetching?: boolean
+  isPartsFetching?: boolean
 }
 
-function SongParts({
-  parts,
-  isFetching
-}: SongPartsWidgetProps) {
+function SongParts({ parts, isSongFetching, isPartsFetching }: SongPartsWidgetProps) {
   const songId = useAppSelector((state) => state.song.songId)
 
   const [moveSongPartInSong, { isLoading: isMoveLoading }] = useMoveSongPartInSongMutation()
@@ -27,16 +26,14 @@ function SongParts({
   const [internalParts, { reorder, setState }] = useListState<SongPart>(parts)
   useDidUpdate(() => setState(parts), [parts])
 
-  const [maxPartRehearsals, maxPartProgress] = useMemo(() => {
-    let rehearsals = 0
+  const [maxPartProgress] = useMemo(() => {
     let progress = 0
 
     parts.forEach((part) => {
-      if (part.rehearsals > rehearsals) rehearsals = part.rehearsals
       if (part.progress > progress) progress = part.progress
     })
 
-    return [rehearsals, progress]
+    return [progress]
   }, [parts])
 
   const rehearsalsToastId = useRef<number | string>(null)
@@ -60,6 +57,7 @@ function SongParts({
 
   return (
     <Stack gap={0} aria-label={'song-parts'}>
+      <LoadingOverlayDebounced visible={isPartsFetching && !isSongFetching} timeout={750} />
       <SongPartsContextMenu parts={parts} songId={songId}>
         <span style={{ display: 'contents' }}>
           <DragDropContext onDragEnd={onPartsDragEnd}>
@@ -74,14 +72,18 @@ function SongParts({
                         key={part.id}
                         index={index}
                         draggableId={part.id}
-                        isDragDisabled={isFetching || isMoveLoading || isClickSelectionActive}
+                        isDragDisabled={
+                          isSongFetching ||
+                          isPartsFetching ||
+                          isMoveLoading ||
+                          isClickSelectionActive
+                        }
                       >
                         {(provided, snapshot) => (
                           <SongPartCard
                             part={part}
                             isDragging={snapshot.isDragging}
                             maxPartProgress={maxPartProgress}
-                            maxPartRehearsals={maxPartRehearsals}
                             draggableProvided={provided}
                             showRehearsalsToast={showRehearsalsToast}
                           />
