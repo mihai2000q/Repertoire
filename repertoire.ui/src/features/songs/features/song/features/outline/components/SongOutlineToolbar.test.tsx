@@ -1,0 +1,300 @@
+import {
+  emptySong,
+  emptySongArrangement,
+  emptySongPart,
+  emptySongSettings,
+  reduxRender,
+  withToastify
+} from '../../../../../../../test-utils.tsx'
+import { SongArrangement, SongPart } from '../../../../../../../types/models/Song.ts'
+import { act, screen } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
+import { http, HttpResponse } from 'msw'
+import { setupServer } from 'msw/node'
+import { AddPerfectSongRehearsalRequest } from '../../../../../../../types/requests/SongRequests.ts'
+import { createRef } from 'react'
+import SongOutlineToolbar from './SongOutlineToolbar.tsx'
+import { RootState } from '../../../../../../../state/store.ts'
+import OutlineView from '../types/enums/OutlineView.ts'
+import { setSong } from '../../../state/slice/songSlice.tsx'
+
+// Mock Main Context
+vi.mock('../../../../../../../context/MainContext.tsx', () => ({
+  useMain: vi.fn(() => ({
+    ref: createRef(),
+    mainScroll: { ref: createRef() }
+  }))
+}))
+
+describe('Song Outline Toolbar', () => {
+  const parts: SongPart[] = [
+    {
+      ...emptySongPart,
+      id: '1',
+      name: 'Chorus 1',
+      rehearsals: 0,
+      confidence: 0,
+      progress: 0
+    },
+    {
+      ...emptySongPart,
+      id: '2',
+      name: 'James Solo',
+      rehearsals: 7,
+      confidence: 50,
+      progress: 163
+    },
+    {
+      ...emptySongPart,
+      id: '3',
+      name: 'James Riff',
+      rehearsals: 1,
+      confidence: 36,
+      progress: 40
+    }
+  ]
+
+  const arrangements: SongArrangement[] = [{ ...emptySongArrangement, id: '1' }]
+
+  const handlers = [
+    http.get('/songs/arrangements', () => {
+      return HttpResponse.json(arrangements)
+    }),
+    http.get('/songs/instruments', () => {
+      return HttpResponse.json([])
+    }),
+    http.get('/songs/sections/types', () => {
+      return HttpResponse.json([])
+    })
+  ]
+
+  const server = setupServer(...handlers)
+
+  afterEach(() => {
+    server.resetHandlers()
+    vi.restoreAllMocks()
+  })
+
+  beforeAll(() => server.listen())
+
+  afterAll(() => server.close())
+
+  it('should render for sections', async () => {
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      }
+    })
+
+    expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'sections-view' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'sections-view' })).toBeChecked()
+    expect(screen.getByRole('radio', { name: 'parts-view' })).toBeInTheDocument()
+  })
+
+  it('should render for parts', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} parts={parts} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      },
+      songOutline: { view: OutlineView.Parts, showDetails: false }
+    })
+
+    await user.click(screen.getByRole('radio', { name: 'parts-view' }))
+
+    expect(screen.getByRole('button', { name: 'add-new-part' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'manage-song-arrangements' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeInTheDocument()
+    expect(await screen.findByRole('button', { name: 'add-custom-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'sections-view' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'parts-view' })).toBeInTheDocument()
+    expect(screen.getByRole('radio', { name: 'parts-view' })).toBeChecked()
+  })
+
+  it('should disable a few options when there are no section parts', () => {
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={[]} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      }
+    })
+
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
+  })
+
+  it('should disable a few options when there are no parts', () => {
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} parts={[]} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      },
+      songOutline: { view: OutlineView.Parts, showDetails: false }
+    })
+
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
+  })
+
+  it('should disable perfect rehearsal when a default arrangement is not set', () => {
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        defaultArrangementId: undefined,
+        settings: emptySongSettings
+      }
+    })
+
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
+  })
+
+  it('should call toggle add when clicking on add new section button', async () => {
+    const user = userEvent.setup()
+
+    const toggleAdd = vi.fn()
+
+    reduxRender(<SongOutlineToolbar toggleAdd={toggleAdd} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        settings: emptySongSettings
+      }
+    })
+
+    await user.click(screen.getByRole('button', { name: 'add-new-section' }))
+    expect(toggleAdd).toHaveBeenCalledOnce()
+  })
+
+  it('should call toggle add when clicking on add new part button', async () => {
+    const user = userEvent.setup()
+
+    const toggleAdd = vi.fn()
+
+    reduxRender(<SongOutlineToolbar toggleAdd={toggleAdd} />, {
+      song: { songId: '', isArtistBand: false, settings: emptySongSettings },
+      songOutline: { view: OutlineView.Parts, showDetails: false }
+    })
+
+    await user.click(screen.getByRole('button', { name: 'add-new-part' }))
+    expect(toggleAdd).toHaveBeenCalledOnce()
+  })
+
+  it('should show details when clicking on show details', async () => {
+    const user = userEvent.setup()
+
+    const [_, store] = reduxRender(
+      <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />,
+      {
+        song: {
+          songId: '',
+          isArtistBand: false,
+          settings: emptySongSettings
+        }
+      }
+    )
+
+    await user.click(screen.getByRole('button', { name: 'show-details' }))
+    expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'hide-details' })).toBeInTheDocument()
+    expect((store.getState() as RootState).songOutline.showDetails).toBeTruthy()
+
+    await user.click(screen.getByRole('button', { name: 'hide-details' }))
+    expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'hide-details' })).not.toBeInTheDocument()
+    expect((store.getState() as RootState).songOutline.showDetails).toBeFalsy()
+  })
+
+  it('should open song arrangements modal when clicking on song arrangements button', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        settings: emptySongSettings
+      }
+    })
+
+    await user.click(screen.getByRole('button', { name: /song-arrangements/i }))
+    expect(await screen.findByRole('dialog', { name: /song arrangements/i })).toBeInTheDocument()
+  })
+
+  it('should open add perfect rehearsal popover when on clicking add perfect rehearsal button and send request', async () => {
+    const user = userEvent.setup()
+
+    let capturedRequest: AddPerfectSongRehearsalRequest
+    server.use(
+      http.post('/songs/perfect-rehearsal', async (req) => {
+        capturedRequest = (await req.request.json()) as AddPerfectSongRehearsalRequest
+        return HttpResponse.json({ message: 'it worked' })
+      })
+    )
+
+    const songId = 'some-id'
+
+    reduxRender(withToastify(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />), {
+      song: {
+        songId: songId,
+        isArtistBand: false,
+        settings: emptySongSettings,
+        defaultArrangementId: '1'
+      }
+    })
+
+    await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
+
+    expect(await screen.findByRole('dialog')).toBeInTheDocument()
+    expect(screen.getByText(/increase parts' rehearsals .* occurrences/i)).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'confirm' }))
+
+    expect(await screen.findByText(/perfect rehearsal added/i)).toBeInTheDocument()
+    expect(capturedRequest).toStrictEqual({ id: songId })
+  })
+
+  it('should hide details when song changes', async () => {
+    const user = userEvent.setup()
+
+    const [_, store] = reduxRender(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
+      song: { songId: '', isArtistBand: false, settings: emptySongSettings }
+    })
+
+    await user.click(screen.getByRole('button', { name: 'show-details' }))
+    expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'hide-details' })).toBeInTheDocument()
+    expect((store.getState() as RootState).songOutline.showDetails).toBeTruthy()
+
+    const newSong = { ...emptySong, id: 'new' }
+    await act(() => store.dispatch(setSong(newSong)))
+    expect((store.getState() as RootState).songOutline.showDetails).toBeFalsy()
+  })
+})

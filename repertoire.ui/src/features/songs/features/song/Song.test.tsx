@@ -40,6 +40,9 @@ describe('Song', () => {
     http.get(`/songs/arrangements`, () => {
       return HttpResponse.json([])
     }),
+    http.get(`/songs/sections`, () => {
+      return HttpResponse.json([])
+    }),
     http.get('/search', async () => {
       const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)

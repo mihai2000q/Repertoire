@@ -1,250 +1,95 @@
-import { useAddPerfectSongRehearsalMutation } from '../../../../../../state/api/songsApi.ts'
-import {
-  ActionIcon,
-  Card,
-  Center,
-  Group,
-  ScrollArea,
-  SegmentedControl,
-  Stack,
-  Text,
-  Tooltip
-} from '@mantine/core'
-import {
-  IconChecks,
-  IconEye,
-  IconEyeOff,
-  IconList,
-  IconListNumbers,
-  IconListTree,
-  IconPlus
-} from '@tabler/icons-react'
-import { useDisclosure } from '@mantine/hooks'
-import { SongPart, SongSection, SongSettings } from '../../../../../../types/models/Song.ts'
-import { useEffect, useRef, useState } from 'react'
-import SongArrangementsModal from '../arrangements/SongArrangementsModal.tsx'
-import { toast } from 'react-toastify'
-import { BandMember } from '../../../../../../types/models/Artist.ts'
-import PopoverConfirmation from '../../../../../../components/popover/PopoverConfirmation.tsx'
-import SongOutlineSettingsButton from './components/toolbar/SongOutlineSettingsButton.tsx'
+import { Card, Group, ScrollArea, Stack, Text } from '@mantine/core'
+import { useRef } from 'react'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../../../../context/MainContext.tsx'
 import { ClickSelectProvider } from '../../../../../../context/ClickSelectContext.tsx'
-import CustomRehearsalButton from './components/toolbar/CustomRehearsalButton.tsx'
 import SongParts from '../parts/SongParts.tsx'
 import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCard.tsx'
 import AddNewSongPart from './components/AddNewSongPart.tsx'
 import AddNewSongSection from './components/AddNewSongSection.tsx'
 import SongSections from '../sections/SongSections.tsx'
-import useLocalStorage from '../../../../../../hooks/useLocalStorage.ts'
-import LocalStorageKeys from '../../../../../../types/enums/keys/LocalStorageKeys.ts'
-
-enum OutlineView {
-  Sections,
-  Parts
-}
+import { useAppSelector } from '../../../../../../state/store.ts'
+import OutlineView from './types/enums/OutlineView.ts'
+import SongOutlineToolbar from './components/SongOutlineToolbar.tsx'
+import { useGetSongSectionsQuery } from '../sections/state/api/songSectionsApi.ts'
+import { useGetSongPartsQuery } from '../parts/state/api/songPartsApi.ts'
+import { useDisclosure } from '@mantine/hooks'
+import SongOutlineWidgetLoader from './components/SongOutlineWidgetLoader.tsx'
+import SongSectionsLoader from './components/SongSectionsLoader.tsx'
+import SongPartsLoader from './components/SongPartsLoader.tsx'
 
 interface SongOutlineWidgetProps {
-  sections: SongSection[]
-  parts: SongPart[]
-  songId: string
-  settings: SongSettings
-  defaultSongArrangementId?: string
-  isFetching?: boolean
-  bandMembers?: BandMember[]
-  isArtistBand?: boolean
+  isSongFetching?: boolean
 }
 
-function SongOutlineWidget({
-  sections,
-  parts,
-  settings,
-  songId,
-  defaultSongArrangementId,
-  isFetching,
-  bandMembers,
-  isArtistBand
-}: SongOutlineWidgetProps) {
-  const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
-    useAddPerfectSongRehearsalMutation()
+function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
+  const songId = useAppSelector((state) => state.song.songId)
 
-  const [showDetails, setShowDetails] = useState(false)
-  const [openedPerfectRehearsalPopover, setOpenedPerfectRehearsalPopover] = useState(false)
-  const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
-    useDisclosure(false)
+  const outlineView = useAppSelector((state) => state.songOutline.view)
+  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
+
+  const {
+    data: sections,
+    isLoading: isSectionsLoading,
+    isFetching: isSectionsFetching
+  } = useGetSongSectionsQuery(
+    {
+      songId: songId
+    },
+    { skip: outlineView !== OutlineView.Sections }
+  )
+  const {
+    data: parts,
+    isLoading: isPartsLoading,
+    isFetching: isPartsFetching
+  } = useGetSongPartsQuery({ songId: songId }, { skip: outlineView !== OutlineView.Parts })
+
   const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
-  const [outlineView, setOutlineView] = useLocalStorage({
-    key: LocalStorageKeys.SongOutlineView,
-    defaultValue: OutlineView.Sections
-  })
-  const part_or_section = outlineView === OutlineView.Sections ? 'section' : 'part'
-  const partOrSection = outlineView === OutlineView.Sections ? 'Section' : 'Part'
-
-  useEffect(() => setShowDetails(false), [songId])
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
-  const scrollAddIntoView = () => {
-    scrollableRef.current.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
+  function scrollAddIntoView() {
+    scrollableRef.current?.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
     mainScroll.ref.current?.scrollTo({
       top: mainScroll.ref.current.scrollHeight,
       behavior: 'smooth'
     })
   }
 
-  function handleShowDetails() {
-    setShowDetails(!showDetails)
-    if (!showDetails) setTimeout(() => ref.current?.scrollIntoView({ behavior: 'smooth' }), 250)
+  function scrollCardIntoView() {
+    ref.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  async function handleAddPerfectRehearsal() {
-    await addPerfectRehearsal({ id: songId }).unwrap()
-    toast.info('Perfect rehearsal added!')
-    setOpenedPerfectRehearsalPopover(false)
+  if (
+    (outlineView === OutlineView.Parts && (isPartsLoading || !parts) && !sections) ||
+    (outlineView === OutlineView.Sections && (isSectionsLoading || !sections) && !parts)
+  ) {
+    return <SongOutlineWidgetLoader outlineView={outlineView} />
   }
 
   return (
-    <ClickSelectProvider data={parts}>
+    <ClickSelectProvider data={outlineView === OutlineView.Sections ? sections : parts}>
       <Card ref={ref} variant={'widget'} aria-label={'outline-widget'} p={0}>
         <Stack gap={0}>
-          <LoadingOverlayDebounced visible={isFetching} timeout={750} />
+          <LoadingOverlayDebounced
+            visible={isSongFetching}
+            timeout={750}
+            loaderProps={{ size: 'lg' }}
+          />
 
           <Group px={'md'} pt={'md'} pb={'sm'} gap={'xxs'}>
             <Text fw={600} inline>
               Outline
             </Text>
 
-            <Tooltip.Group openDelay={500} closeDelay={100}>
-              <Tooltip label={`Add New ${partOrSection}`}>
-                <ActionIcon
-                  aria-label={`add-new-${part_or_section}`}
-                  variant={'grey'}
-                  size={'sm'}
-                  onClick={toggleAdd}
-                >
-                  <IconPlus size={16} />
-                </ActionIcon>
-              </Tooltip>
-
-              <Tooltip
-                label={
-                  parts.length > 0
-                    ? showDetails
-                      ? 'Hide details'
-                      : 'Show Details'
-                    : `To show details you need ${part_or_section}s`
-                }
-              >
-                <ActionIcon
-                  aria-label={showDetails ? 'hide-details' : 'show-details'}
-                  variant={'grey'}
-                  size={'sm'}
-                  disabled={parts.length === 0}
-                  onClick={handleShowDetails}
-                >
-                  {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
-                </ActionIcon>
-              </Tooltip>
-
-              <Tooltip label={'Manage Song Arrangements'}>
-                <ActionIcon
-                  aria-label={'manage-song-arrangements'}
-                  variant={'grey'}
-                  size={'sm'}
-                  onClick={openArrangements}
-                >
-                  <IconListNumbers size={16} />
-                </ActionIcon>
-              </Tooltip>
-
-              <CustomRehearsalButton
-                songId={songId}
-                defaultSongArrangementId={defaultSongArrangementId}
-                partsCount={parts.length}
-              />
-
-              <PopoverConfirmation
-                label={"Increase parts' rehearsals based on occurrences from default arrangement"}
-                popoverProps={{
-                  opened: openedPerfectRehearsalPopover,
-                  onChange: setOpenedPerfectRehearsalPopover,
-                  closeOnClickOutside: !isPerfectRehearsalLoading
-                }}
-                isLoading={isPerfectRehearsalLoading}
-                onCancel={() => setOpenedPerfectRehearsalPopover(false)}
-                onConfirm={handleAddPerfectRehearsal}
-              >
-                <Tooltip
-                  label={
-                    parts.length === 0
-                      ? 'To add a perfect rehearsal, you need parts'
-                      : !defaultSongArrangementId
-                        ? 'To add a perfect rehearsal, you need a default arrangement'
-                        : 'Add Perfect Rehearsal'
-                  }
-                  disabled={openedPerfectRehearsalPopover}
-                >
-                  <ActionIcon
-                    aria-label={'add-perfect-rehearsal'}
-                    variant={'grey'}
-                    size={'sm'}
-                    disabled={parts.length === 0 || !defaultSongArrangementId}
-                    onClick={() =>
-                      setOpenedPerfectRehearsalPopover(
-                        isPerfectRehearsalLoading || !openedPerfectRehearsalPopover
-                      )
-                    }
-                  >
-                    <IconChecks size={16} />
-                  </ActionIcon>
-                </Tooltip>
-              </PopoverConfirmation>
-
-              <SongOutlineSettingsButton
-                settings={settings}
-                parts={parts}
-                songId={songId}
-                bandMembers={bandMembers}
-              />
-
-              <SegmentedControl<OutlineView>
-                value={outlineView}
-                onChange={setOutlineView}
-                size={'xs'}
-                color={'gray'}
-                radius={'12px'}
-                data={[
-                  {
-                    value: OutlineView.Sections,
-                    label: (
-                      <Tooltip label={'Sections View'}>
-                        <Center>
-                          <IconListTree size={16} aria-label={'sections-view'} />
-                        </Center>
-                      </Tooltip>
-                    )
-                  },
-                  {
-                    value: OutlineView.Parts,
-                    label: (
-                      <Tooltip label={'Parts View'}>
-                        <Center>
-                          <IconList size={16} aria-label={'parts-view'} />
-                        </Center>
-                      </Tooltip>
-                    )
-                  }
-                ]}
-                styles={{
-                  label: {
-                    width: '24px',
-                    padding: '3px'
-                  }
-                }}
-              />
-            </Tooltip.Group>
+            <SongOutlineToolbar
+              toggleAdd={toggleAdd}
+              parts={parts}
+              sectionParts={sections?.flatMap((s) => s.parts)}
+              scrollIntoView={scrollCardIntoView}
+            />
           </Group>
 
           <ScrollArea.Autosize
@@ -255,31 +100,33 @@ function SongOutlineWidget({
             style={{ transition: 'max-height 0.25s' }}
           >
             <Stack gap={0}>
-              {outlineView === OutlineView.Sections && (
-                <SongSections
-                  sections={sections}
-                  songId={songId}
-                  showDetails={showDetails}
-                  isFetching={isFetching}
-                />
-              )}
-              {outlineView === OutlineView.Parts && (
-                <SongParts
-                  parts={parts}
-                  songId={songId}
-                  showDetails={showDetails}
-                  isFetching={isFetching}
-                  bandMembers={bandMembers}
-                  isArtistBand={isArtistBand}
-                />
-              )}
+              {outlineView === OutlineView.Sections &&
+                (isSectionsLoading || !sections ? (
+                  <SongSectionsLoader />
+                ) : (
+                  <SongSections
+                    sections={sections}
+                    isSongFetching={isSongFetching}
+                    isSectionsFetching={isSectionsFetching}
+                  />
+                ))}
+              {outlineView === OutlineView.Parts &&
+                (isPartsLoading || !parts ? (
+                  <SongPartsLoader />
+                ) : (
+                  <SongParts
+                    parts={parts}
+                    isSongFetching={isSongFetching}
+                    isPartsFetching={isPartsFetching}
+                  />
+                ))}
 
-              {outlineView === OutlineView.Sections && sections.length === 0 && (
+              {outlineView === OutlineView.Sections && sections?.length === 0 && (
                 <NewHorizontalCard ariaLabel={'add-new-song-section-card'} onClick={toggleAdd}>
                   Add New Song Section
                 </NewHorizontalCard>
               )}
-              {outlineView === OutlineView.Parts && parts.length === 0 && (
+              {outlineView === OutlineView.Parts && parts?.length === 0 && (
                 <NewHorizontalCard ariaLabel={'add-new-song-part-card'} onClick={toggleAdd}>
                   Add New Song Part
                 </NewHorizontalCard>
@@ -295,24 +142,14 @@ function SongOutlineWidget({
               )}
               {outlineView === OutlineView.Parts && (
                 <AddNewSongPart
-                  songId={songId}
                   opened={openedAdd}
                   onClose={toggleAdd}
-                  settings={settings}
-                  bandMembers={bandMembers}
                   scrollIntoView={scrollAddIntoView}
                 />
               )}
             </Stack>
           </ScrollArea.Autosize>
         </Stack>
-
-        <SongArrangementsModal
-          opened={openedArrangements}
-          onClose={closeArrangements}
-          songId={songId}
-          defaultId={defaultSongArrangementId}
-        />
       </Card>
     </ClickSelectProvider>
   )

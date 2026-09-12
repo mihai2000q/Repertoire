@@ -51,16 +51,7 @@ function Song() {
           <Stack>
             <SongDescriptionWidget song={song} />
 
-            <SongOutlineWidget
-              songId={songId}
-              defaultSongArrangementId={song.defaultArrangementId}
-              settings={song.settings}
-              sections={song.sections}
-              parts={song.parts}
-              isFetching={isFetching}
-              bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
-              isArtistBand={song.artist?.isBand}
-            />
+            <SongOutlineWidget isSongFetching={isFetching} />
           </Stack>
         </Grid.Col>
       </Grid>
