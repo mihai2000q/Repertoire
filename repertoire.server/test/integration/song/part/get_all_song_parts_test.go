@@ -44,6 +44,6 @@ func TestGetAllSongParts_WhenSuccessful_ShouldReturnSongParts(t *testing.T) {
 		Find(&parts)
 
 	for i := range responseSongParts {
-		assertion.ResponseSongPart(t, parts[i], responseSongParts[i], true)
+		assertion.ResponseSongPart(t, parts[i], responseSongParts[i], true, true)
 	}
 }

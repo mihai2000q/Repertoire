@@ -278,14 +278,6 @@ func ResponseSong(
 			assert.Nil(t, response.GuitarTuning)
 		}
 
-		for i := range song.Parts {
-			ResponseSongPart(t, song.Parts[i], response.Parts[i], true)
-		}
-
-		for i := range song.Sections {
-			ResponseSongSection(t, song.Sections[i], response.Sections[i], true)
-		}
-
 		for i := range song.Playlists {
 			ResponsePlaylist(t, song.Playlists[i], response.Playlists[i])
 		}
@@ -321,6 +313,7 @@ func ResponseSongPart(
 	songPart model.SongPart,
 	response model.SongPart,
 	withAssociations bool,
+	withSections bool,
 ) {
 	assert.Equal(t, songPart.ID, response.ID)
 	assert.Equal(t, songPart.Name, response.Name)
@@ -340,6 +333,12 @@ func ResponseSongPart(
 			ResponseBandMember(t, *songPart.BandMember, *response.BandMember, true)
 		} else {
 			assert.Nil(t, response.BandMember)
+		}
+	}
+	if withSections {
+		assert.Len(t, response.Sections, len(songPart.Sections))
+		for i := range response.Sections {
+			ResponseSongSection(t, songPart.Sections[i], response.Sections[i], false)
 		}
 	}
 }
@@ -381,7 +380,7 @@ func ResponseSongSection(
 		progress = float64(totalProgress) / partsLen
 
 		for i := range response.Parts {
-			ResponseSongPart(t, parts[i], response.Parts[i], true)
+			ResponseSongPart(t, parts[i], response.Parts[i], true, true)
 		}
 		assert.Equal(t, rehearsals, response.Rehearsals)
 		assert.Equal(t, confidence, response.Confidence)
@@ -412,6 +411,7 @@ func ResponseSongArrangement(
 				t,
 				songArrangement.PartOccurrences[i].Part,
 				response.PartOccurrences[i].Part,
+				false,
 				false,
 			)
 		}

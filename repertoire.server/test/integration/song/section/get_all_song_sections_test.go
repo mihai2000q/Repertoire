@@ -42,6 +42,8 @@ func TestGetAllSongSections_WhenSuccessful_ShouldReturnSongSections(t *testing.T
 				Joins("Part.Instrument").
 				Joins("Part.BandMember").
 				Preload("Part.BandMember.Roles").
+				Preload("Part.Sections").
+				Preload("Part.Sections.SongSectionType").
 				Order("song_section_parts.order")
 		}).
 		Where(model.SongSection{SongID: songID}).
