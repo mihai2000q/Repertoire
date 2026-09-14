@@ -75,7 +75,7 @@ describe('Song Sections', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    reduxRender(<SongSections sections={sections} songId={''} />)
+    reduxRender(<SongSections sections={sections} />)
 
     const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
     for (let i = 0; i < sections.length; i++) {
@@ -97,7 +97,9 @@ describe('Song Sections', () => {
       })
     )
 
-    reduxRender(<SongSections sections={sections} songId={songId} />)
+    reduxRender(<SongSections sections={sections} />, {
+      song: { songId: songId, isArtistBand: false }
+    })
 
     fireEvent.mouseDown(screen.getByLabelText(`song-section-${section.name}`))
     fireEvent.dragStart(screen.getByLabelText(`song-section-${section.name}`))
@@ -122,7 +124,7 @@ describe('Song Sections', () => {
   it('should show the drawer when selecting sections, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSections sections={sections} songId={''} />)
+    reduxRender(<SongSections sections={sections} />)
 
     // selection drawer
     await user.keyboard('{Control>}')

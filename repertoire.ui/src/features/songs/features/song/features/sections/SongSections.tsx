@@ -8,30 +8,31 @@ import { useMemo } from 'react'
 import SongSectionsContextMenu from './components/SongSectionsContextMenu.tsx'
 import SongSectionsSelectionDrawer from './components/SongSectionsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
+import { useAppSelector } from '../../../../../../state/store.ts'
+import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
-  songId: string
-  isFetching?: boolean
-  showDetails?: boolean
+  isSongFetching?: boolean
+  isSectionsFetching?: boolean
 }
 
-function SongSections({ sections, songId, isFetching, showDetails }: SongSectionsWidgetProps) {
+function SongSections({ sections, isSectionsFetching, isSongFetching }: SongSectionsWidgetProps) {
+  const songId = useAppSelector((state) => state.song.songId)
+
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
   useDidUpdate(() => setState(sections), [sections])
 
-  const [maxSectionRehearsals, maxSectionProgress] = useMemo(() => {
-    let rehearsals = 0
+  const [maxSectionProgress] = useMemo(() => {
     let progress = 0
 
     sections.forEach((section) => {
-      if (section.rehearsals > rehearsals) rehearsals = section.rehearsals
       if (section.progress > progress) progress = section.progress
     })
 
-    return [rehearsals, progress]
+    return [progress]
   }, [sections])
 
   function onSectionsDragEnd({ source, destination }) {
@@ -48,6 +49,7 @@ function SongSections({ sections, songId, isFetching, showDetails }: SongSection
 
   return (
     <Stack gap={0} aria-label={'song-sections'}>
+      <LoadingOverlayDebounced visible={isSectionsFetching && !isSongFetching} timeout={750} />
       <SongSectionsContextMenu sections={sections} songId={songId}>
         <span style={{ display: 'contents' }}>
           <DragDropContext onDragEnd={onSectionsDragEnd}>
@@ -62,16 +64,18 @@ function SongSections({ sections, songId, isFetching, showDetails }: SongSection
                         key={section.id}
                         index={index}
                         draggableId={section.id}
-                        isDragDisabled={isFetching || isMoveLoading || isClickSelectionActive}
+                        isDragDisabled={
+                          isSongFetching ||
+                          isSectionsFetching ||
+                          isMoveLoading ||
+                          isClickSelectionActive
+                        }
                       >
                         {(provided, snapshot) => (
                           <SongSectionCard
                             section={section}
-                            songId={songId}
                             isDragging={snapshot.isDragging}
-                            showDetails={showDetails}
                             maxSectionProgress={maxSectionProgress}
-                            maxSectionRehearsals={maxSectionRehearsals}
                             draggableProvided={provided}
                           />
                         )}
