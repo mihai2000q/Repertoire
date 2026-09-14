@@ -45,7 +45,7 @@ function Song() {
           <Stack>
             <SongDescriptionWidget song={song} />
 
-            <SongOutlineWidget key={songId} isSongFetching={isFetching} />
+            <SongOutlineWidget isSongFetching={isFetching} />
           </Stack>
         </Grid.Col>
       </Grid>
