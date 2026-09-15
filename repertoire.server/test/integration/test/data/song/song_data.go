@@ -1,7 +1,8 @@
-package album
+package song
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"time"
@@ -16,7 +17,9 @@ func SeedData(db *gorm.DB) {
 	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Songs)
+	db.Create(&SongParts)
 	db.Create(&SongSections)
+	db.Create(&SongSectionParts)
 	db.Create(&SongArrangements)
 	// Default Song Arrangements (due to cache, when restoring the data, it fails)
 	db.Model(&model.Song{ID: Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
@@ -143,6 +146,14 @@ var Artists = []model.Artist{
 		ID:     uuid.New(),
 		Name:   "Metal",
 		UserID: Users[0].ID,
+		BandMembers: []model.BandMember{
+			{
+				ID:    uuid.New(),
+				Name:  "Member 1",
+				Order: 0,
+				Roles: []model.BandMemberRole{Users[0].BandMemberRoles[0]},
+			},
+		},
 	},
 }
 
@@ -150,7 +161,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		ImageURL:    &[]internal.FilePath{"userId/Some album image path/somewhere.jpeg"}[0],
 		UserID:      Users[0].ID,
 		ArtistID:    &[]uuid.UUID{Artists[0].ID}[0],
@@ -173,7 +184,7 @@ var Songs = []model.Song{
 		ID:            uuid.New(),
 		Title:         "Test Song 1",
 		Description:   "Some description",
-		ReleaseDate:   &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate:   &[]date.Date{date.Date(time.Now())}[0],
 		ImageURL:      &[]internal.FilePath{"userId/Some image path/somewhere.jpeg"}[0],
 		IsRecorded:    true,
 		Bpm:           &[]uint{123}[0],
@@ -256,21 +267,20 @@ var Songs = []model.Song{
 	},
 }
 
-var SongSections = []model.SongSection{
+var SongParts = []model.SongPart{
 	{
-		ID:                uuid.New(),
-		Name:              "Verse 1 - used on update",
-		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
-		BandMemberID:      &Artists[0].BandMembers[0].ID,
-		InstrumentID:      &Users[0].Instruments[1].ID,
-		Order:             0,
-		Confidence:        10,
-		Rehearsals:        10,
-		ConfidenceScore:   12,
-		RehearsalsScore:   45,
-		Progress:          5,
-		SongID:            Songs[0].ID,
-		History: []model.SongSectionHistory{
+		ID:              uuid.New(),
+		Name:            "Verse 1 Riff - used on update",
+		BandMemberID:    &Artists[0].BandMembers[0].ID,
+		InstrumentID:    &Users[0].Instruments[1].ID,
+		SongOrder:       0,
+		Confidence:      10,
+		Rehearsals:      10,
+		ConfidenceScore: 12,
+		RehearsalsScore: 45,
+		Progress:        5,
+		SongID:          Songs[0].ID,
+		History: []model.SongPartHistory{
 			{
 				ID:       uuid.New(),
 				From:     0,
@@ -292,18 +302,75 @@ var SongSections = []model.SongSection{
 		},
 	},
 	{
+		ID:              uuid.New(),
+		Name:            "Chorus 1 Riff - used on delete",
+		BandMemberID:    &Artists[0].BandMembers[1].ID,
+		SongOrder:       1,
+		Confidence:      25,
+		Rehearsals:      50,
+		ConfidenceScore: 30,
+		RehearsalsScore: 550,
+		Progress:        99,
+		SongID:          Songs[0].ID,
+		InstrumentID:    &Users[0].Instruments[0].ID,
+	},
+	{
+		ID:        uuid.New(),
+		Name:      "Verse 2 Riff",
+		SongOrder: 2,
+		SongID:    Songs[0].ID,
+	},
+	{
+		ID:         uuid.New(),
+		Name:       "Solo",
+		Rehearsals: 10,
+		SongOrder:  3,
+		SongID:     Songs[0].ID,
+	},
+
+	{
+		ID:         uuid.New(),
+		Name:       "Test Song Part 1",
+		SongOrder:  0,
+		Rehearsals: 15,
+		SongID:     Songs[4].ID,
+		History: []model.SongPartHistory{
+			{
+				ID:       uuid.New(),
+				From:     0,
+				To:       15,
+				Property: model.RehearsalsProperty,
+			},
+		},
+	},
+	{
+		ID:        uuid.New(),
+		Name:      "Test Song Part 2",
+		SongOrder: 1,
+		SongID:    Songs[4].ID,
+	},
+	{
+		ID:        uuid.New(),
+		Name:      "Test Song Part 3",
+		SongOrder: 2,
+		SongID:    Songs[4].ID,
+	},
+}
+
+var SongSections = []model.SongSection{
+	{
+		ID:                uuid.New(),
+		Name:              "Verse 1 - used on update",
+		SongSectionTypeID: Users[0].SongSectionTypes[2].ID,
+		Order:             0,
+		SongID:            Songs[0].ID,
+	},
+	{
 		ID:                uuid.New(),
 		Name:              "Chorus 1 - used on delete",
 		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		BandMemberID:      &Artists[0].BandMembers[1].ID,
 		Order:             1,
-		Confidence:        25,
-		Rehearsals:        50,
-		ConfidenceScore:   30,
-		RehearsalsScore:   550,
-		Progress:          99,
 		SongID:            Songs[0].ID,
-		InstrumentID:      &Users[0].Instruments[0].ID,
 	},
 	{
 		ID:                uuid.New(),
@@ -316,7 +383,6 @@ var SongSections = []model.SongSection{
 		ID:                uuid.New(),
 		Name:              "Solo",
 		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
-		Rehearsals:        10,
 		Order:             3,
 		SongID:            Songs[0].ID,
 	},
@@ -325,17 +391,8 @@ var SongSections = []model.SongSection{
 		ID:                uuid.New(),
 		Name:              "Test Song Section 1",
 		Order:             0,
-		Rehearsals:        15,
 		SongID:            Songs[4].ID,
 		SongSectionTypeID: Users[0].SongSectionTypes[1].ID,
-		History: []model.SongSectionHistory{
-			{
-				ID:       uuid.New(),
-				From:     0,
-				To:       15,
-				Property: model.RehearsalsProperty,
-			},
-		},
 	},
 	{
 		ID:                uuid.New(),
@@ -353,17 +410,42 @@ var SongSections = []model.SongSection{
 	},
 }
 
+var SongSectionParts = []model.SongSectionPart{
+	{
+		SectionID: SongSections[0].ID,
+		PartID:    SongParts[0].ID,
+		Order:     0,
+	},
+	{
+		SectionID: SongSections[0].ID,
+		PartID:    SongParts[1].ID,
+		Order:     1,
+	},
+
+	{
+		SectionID: SongSections[1].ID,
+		PartID:    SongParts[0].ID,
+		Order:     0,
+	},
+
+	{
+		SectionID: SongSections[2].ID,
+		PartID:    SongParts[2].ID,
+		Order:     0,
+	},
+}
+
 var SongArrangements = []model.SongArrangement{
 	{
 		ID:     uuid.New(),
 		Name:   "Perfect Rehearsal",
 		Order:  0,
 		SongID: Songs[0].ID,
-		SectionOccurrences: []model.SongSectionOccurrences{
-			{SectionID: SongSections[0].ID},
-			{SectionID: SongSections[1].ID},
-			{SectionID: SongSections[2].ID},
-			{SectionID: SongSections[3].ID},
+		PartOccurrences: []model.SongPartOccurrences{
+			{PartID: SongParts[0].ID},
+			{PartID: SongParts[1].ID},
+			{PartID: SongParts[2].ID},
+			{PartID: SongParts[3].ID},
 		},
 	},
 
@@ -372,17 +454,17 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Perfect Rehearsal",
 		Order:  0,
 		SongID: Songs[4].ID,
-		SectionOccurrences: []model.SongSectionOccurrences{
+		PartOccurrences: []model.SongPartOccurrences{
 			{
-				SectionID:   SongSections[4].ID,
+				PartID:      SongParts[4].ID,
 				Occurrences: 2,
 			},
 			{
-				SectionID:   SongSections[5].ID,
+				PartID:      SongParts[5].ID,
 				Occurrences: 0,
 			},
 			{
-				SectionID:   SongSections[6].ID,
+				PartID:      SongParts[6].ID,
 				Occurrences: 10,
 			},
 		},
@@ -392,17 +474,17 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Partial Rehearsal",
 		Order:  1,
 		SongID: Songs[4].ID,
-		SectionOccurrences: []model.SongSectionOccurrences{
+		PartOccurrences: []model.SongPartOccurrences{
 			{
-				SectionID:   SongSections[4].ID,
+				PartID:      SongParts[4].ID,
 				Occurrences: 1,
 			},
 			{
-				SectionID:   SongSections[5].ID,
+				PartID:      SongParts[5].ID,
 				Occurrences: 1,
 			},
 			{
-				SectionID:   SongSections[6].ID,
+				PartID:      SongParts[6].ID,
 				Occurrences: 2,
 			},
 		},
@@ -412,17 +494,17 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Perfect Rehearsal 2",
 		Order:  2,
 		SongID: Songs[4].ID,
-		SectionOccurrences: []model.SongSectionOccurrences{
+		PartOccurrences: []model.SongPartOccurrences{
 			{
-				SectionID:   SongSections[4].ID,
+				PartID:      SongParts[4].ID,
 				Occurrences: 5,
 			},
 			{
-				SectionID:   SongSections[5].ID,
+				PartID:      SongParts[5].ID,
 				Occurrences: 10,
 			},
 			{
-				SectionID:   SongSections[6].ID,
+				PartID:      SongParts[6].ID,
 				Occurrences: 1,
 			},
 		},

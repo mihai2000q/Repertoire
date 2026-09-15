@@ -7,9 +7,9 @@ import (
 )
 
 type ProgressProcessor interface {
-	ComputeRehearsalsScore(history []model.SongSectionHistory) uint64
-	ComputeConfidenceScore(history []model.SongSectionHistory) uint
-	ComputeProgress(section model.SongSection) uint64
+	ComputeRehearsalsScore(history []model.SongPartHistory) uint64
+	ComputeConfidenceScore(history []model.SongPartHistory) uint
+	ComputeProgress(part model.SongPart) uint64
 }
 
 type progressProcessor struct{}
@@ -18,7 +18,7 @@ func NewProgressProcessor() ProgressProcessor {
 	return &progressProcessor{}
 }
 
-func (progressProcessor) ComputeRehearsalsScore(history []model.SongSectionHistory) uint64 {
+func (progressProcessor) ComputeRehearsalsScore(history []model.SongPartHistory) uint64 {
 	if len(history) == 0 {
 		return 0
 	}
@@ -39,10 +39,10 @@ func (progressProcessor) ComputeRehearsalsScore(history []model.SongSectionHisto
 	return rehearsalsScore
 }
 
-func (progressProcessor) ComputeConfidenceScore(history []model.SongSectionHistory) uint {
+func (progressProcessor) ComputeConfidenceScore(history []model.SongPartHistory) uint {
 	historyLength := len(history)
 	if historyLength == 0 {
-		return model.DefaultSongSectionConfidence
+		return model.DefaultSongPartConfidence
 	}
 
 	overallConfidence := int(history[historyLength-1].To - history[0].From)
@@ -96,8 +96,8 @@ func (progressProcessor) ComputeConfidenceScore(history []model.SongSectionHisto
 	return confidenceScore
 }
 
-func (progressProcessor) ComputeProgress(section model.SongSection) uint64 {
-	progress := float64(section.ConfidenceScore) * float64(section.RehearsalsScore) / 100
+func (progressProcessor) ComputeProgress(part model.SongPart) uint64 {
+	progress := float64(part.ConfidenceScore) * float64(part.RehearsalsScore) / 100
 	if progress < 0.5 {
 		return 1
 	}

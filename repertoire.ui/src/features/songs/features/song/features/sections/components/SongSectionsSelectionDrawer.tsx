@@ -4,25 +4,45 @@ import { useDisclosure } from '@mantine/hooks'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../../../utils/plural.ts'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
-import { useBulkRehearsalsSongSectionsMutation } from '../state/api/songSectionsApi.ts'
 import { toast } from 'react-toastify'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
+import { SongPart, SongSection } from '../../../../../../../types/models/Song.ts'
+import { useEffect, useRef, useState } from 'react'
+import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 
-function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
+interface SongSectionsSelectionDrawerProps {
+  sections: SongSection[]
+  songId: string
+}
+
+function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelectionDrawerProps) {
   const { selectedIds, clearSelection, isClickSelectionActive } = useClickSelect()
+  const selectedSections = useRef<SongSection[]>([])
+  const [selectedSectionParts, setSelectedSectionParts] = useState<SongPart[]>([])
+  useEffect(() => {
+    selectedSections.current = sections.filter((s) => selectedIds.some((sId) => sId === s.id))
+    setSelectedSectionParts(selectedSections.current.flatMap((s) => s.parts))
+  }, [selectedIds])
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
-  const [bulkRehearsals, { isLoading: bulkRehearsalsIsLoading }] =
-    useBulkRehearsalsSongSectionsMutation()
+  const [bulkUpdate, { isLoading: bulkUpdateIsLoading }] = useBulkUpdateSongPartsMutation()
 
   async function handleAddRehearsals() {
-    await bulkRehearsals({
-      sections: selectedIds.map((id) => ({ id: id, rehearsals: 1 })),
+    await bulkUpdate({
+      requests: selectedSectionParts.map((p) => ({
+        id: p.id,
+        rehearsals: p.rehearsals + 1,
+        confidence: p.confidence
+      })),
       songId: songId
     }).unwrap()
-    toast.success(`Rehearsals added to ${selectedIds.length} section${plural(selectedIds)}!`)
+    toast.success(
+      `Rehearsals added to
+      ${selectedSectionParts.length} part${plural(selectedSectionParts)}
+      of the selected section${plural(selectedIds)}!`
+    )
     clearSelection()
   }
 
@@ -39,7 +59,8 @@ function SongSectionsSelectionDrawer({ songId }: { songId: string }) {
               <ActionIcon
                 aria-label={'add-rehearsals'}
                 variant={'grey-primary'}
-                loading={bulkRehearsalsIsLoading}
+                loading={bulkUpdateIsLoading}
+                disabled={selectedSectionParts.length === 0}
                 onClick={handleAddRehearsals}
               >
                 <IconLocationPlus size={15} />

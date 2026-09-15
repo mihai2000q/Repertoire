@@ -2,12 +2,9 @@ import { SongSection as SongSectionModel } from '../../../../../../../types/mode
 import {
   ActionIcon,
   alpha,
-  Avatar,
-  Box,
   Center,
   Collapse,
   Group,
-  HoverCard,
   Menu,
   NumberFormatter,
   Progress,
@@ -15,26 +12,13 @@ import {
   Text,
   Tooltip
 } from '@mantine/core'
-import {
-  IconCheck,
-  IconDots,
-  IconEdit,
-  IconGripVertical,
-  IconLocationPlus,
-  IconTrash,
-  IconUser
-} from '@tabler/icons-react'
+import { IconCheck, IconDots, IconEdit, IconGripVertical, IconTrash } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import {
-  useDeleteSongSectionMutation,
-  useUpdateSongSectionMutation
-} from '../state/api/songSectionsApi.ts'
+import { useDeleteSongSectionMutation } from '../state/api/songSectionsApi.ts'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
-import { BandMember } from '../../../../../../../types/models/Artist.ts'
-import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'
 import { useEffect, useState } from 'react'
 import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
@@ -64,9 +48,6 @@ interface SongSectionCardProps {
   maxSectionProgress: number
   maxSectionRehearsals: number
   draggableProvided?: DraggableProvided
-  bandMembers?: BandMember[]
-  isArtistBand?: boolean
-  showRehearsalsToast?: (name: string) => void
 }
 
 function SongSectionCard({
@@ -76,10 +57,7 @@ function SongSectionCard({
   showDetails,
   maxSectionProgress,
   maxSectionRehearsals,
-  draggableProvided,
-  bandMembers,
-  isArtistBand,
-  showRehearsalsToast
+  draggableProvided
 }: SongSectionCardProps) {
   const { ref: hoverRef, hovered } = useHover()
   const {
@@ -102,10 +80,7 @@ function SongSectionCard({
     setRehearsalsWidth(getRehearsalsWidth(rehearsalsMaxLength))
   }, [maxSectionRehearsals])
 
-  const [updateSongSectionMutation, { isLoading: isUpdateLoading }] = useUpdateSongSectionMutation()
   const [deleteSongSectionMutation, { isLoading: isDeleteLoading }] = useDeleteSongSectionMutation()
-
-  const getInstrumentIcon = useInstrumentIcon()
 
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu } = useDoubleMenu()
 
@@ -115,17 +90,6 @@ function SongSectionCard({
     useDisclosure(false)
 
   const isSelected = hovered || openedMenu || openedContextMenu || isDragging || isClickSelected
-
-  async function handleAddRehearsal() {
-    await updateSongSectionMutation({
-      ...section,
-      typeId: section.songSectionType.id,
-      bandMemberId: section.bandMember?.id,
-      instrumentId: section.instrument?.id,
-      rehearsals: section.rehearsals + 1
-    }).unwrap()
-    showRehearsalsToast?.(section.name)
-  }
 
   async function handleDelete() {
     await deleteSongSectionMutation({ id: section.id, songId: songId }).unwrap()
@@ -214,88 +178,25 @@ function SongSectionCard({
               </Center>
             )}
 
-            {isArtistBand && section.bandMember && (
-              <HoverCard openDelay={200} position="top">
-                <HoverCard.Target>
-                  <Avatar
-                    size={25}
-                    color={section.bandMember.color}
-                    src={section.bandMember.imageUrl}
-                    alt={section.bandMember.imageUrl && section.bandMember.name}
-                  >
-                    <IconUser size={15} />
-                  </Avatar>
-                </HoverCard.Target>
-                <HoverCard.Dropdown>
-                  <Group gap={'xs'} maw={200} wrap={'nowrap'}>
-                    <Avatar
-                      size={60}
-                      color={section.bandMember.color}
-                      src={section.bandMember.imageUrl}
-                      alt={section.bandMember.imageUrl && section.bandMember.name}
-                      style={(theme) => ({ boxShadow: theme.shadows.sm })}
-                    >
-                      <IconUser size={30} />
-                    </Avatar>
-                    <Stack gap={0}>
-                      <Text fw={500} lineClamp={2}>
-                        {section.bandMember.name}
-                      </Text>
-                      {section.bandMember.roles.slice(0, 2).map((role, index) => (
-                        <Text key={role.id} c={'dimmed'} fz={'xs'} lineClamp={1} lh={1.05}>
-                          {role.name}
-                          {index === 1 && section.bandMember.roles.length > 2 && ' ...'}
-                        </Text>
-                      ))}
-                    </Stack>
-                  </Group>
-                </HoverCard.Dropdown>
-              </HoverCard>
-            )}
-
-            {section.instrument && (
-              <Box aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
-                <Tooltip openDelay={200} label={section.instrument?.name} withArrow>
-                  {getInstrumentIcon(section.instrument)}
-                </Tooltip>
-              </Box>
-            )}
-
             <Text fw={600}>{section.songSectionType.name}</Text>
             <Text flex={1} truncate={'end'}>
               {section.name}
             </Text>
 
-            <Group gap={2}>
-              <Tooltip label={'Add Rehearsal'} openDelay={200} disabled={isClickSelectionActive}>
+            <Menu opened={openedMenu} onChange={toggleMenu}>
+              <Menu.Target>
                 <ActionIcon
                   variant={'subtle'}
                   size={'md'}
-                  loading={isUpdateLoading}
-                  aria-label={'add-rehearsal'}
+                  aria-label={'more-menu'}
                   disabled={isClickSelectionActive}
                   sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
-                  onClick={handleAddRehearsal}
                 >
-                  <IconLocationPlus size={15} />
+                  <IconDots size={20} />
                 </ActionIcon>
-              </Tooltip>
-
-              <Menu opened={openedMenu} onChange={toggleMenu}>
-                <Menu.Target>
-                  <ActionIcon
-                    variant={'subtle'}
-                    size={'md'}
-                    aria-label={'more-menu'}
-                    disabled={isClickSelectionActive}
-                    sx={{ '&[data-disabled="true"]': { backgroundColor: 'transparent' } }}
-                  >
-                    <IconDots size={20} />
-                  </ActionIcon>
-                </Menu.Target>
-                <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
-              </Menu>
-            </Group>
+              </Menu.Target>
+              <Menu.Dropdown>{menuDropdown}</Menu.Dropdown>
+            </Menu>
           </Group>
 
           <Collapse expanded={showDetails}>
@@ -363,7 +264,6 @@ function SongSectionCard({
         opened={openedEditSongSection}
         onClose={closeEditSongSection}
         section={section}
-        bandMembers={bandMembers}
       />
       <WarningModal
         opened={openedDeleteWarning}

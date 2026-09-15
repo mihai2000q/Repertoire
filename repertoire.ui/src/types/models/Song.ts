@@ -31,10 +31,11 @@ export default interface Song {
   artist?: Artist
   guitarTuning?: GuitarTuning
   sections: SongSection[]
+  parts: SongPart[]
   arrangements: SongArrangement[]
 
   solosCount?: number
-  riffsCount?: number
+  sectionsCount?: number
 
   createdAt: string
   updatedAt: string
@@ -46,15 +47,25 @@ export interface SongSettings {
   defaultInstrument?: Instrument
 }
 
-export interface SongSection {
+export interface SongPart {
   id: string
   name: string
   rehearsals: number
   confidence: number
   progress: number
-  songSectionType: SongSectionType
+  sections: SongSection[]
   bandMember?: BandMember
   instrument?: Instrument
+}
+
+export interface SongSection {
+  id: string
+  name: string
+  songSectionType: SongSectionType
+  parts: SongPart[]
+  rehearsals: number
+  confidence: number
+  progress: number
 }
 
 export interface SongSectionType {
@@ -75,11 +86,11 @@ export interface Instrument {
 export interface SongArrangement {
   id: string
   name: string
-  sectionOccurrences: SongSectionOccurrences[]
+  partOccurrences: SongPartOccurrences[]
   songId: string
 }
 
-export interface SongSectionOccurrences {
-  section: SongSection
+export interface SongPartOccurrences {
+  part: SongPart
   occurrences: number | string // string, for front end purposes and transformations
 }

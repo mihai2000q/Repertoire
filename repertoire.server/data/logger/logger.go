@@ -3,7 +3,7 @@ package logger
 import (
 	"os"
 	"path/filepath"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"sync"
 	"time"
 
@@ -23,7 +23,7 @@ type Logger struct {
 	*zap.Logger
 }
 
-func NewLogger(env internal.Env) *Logger {
+func NewLogger(env env.Env) *Logger {
 	// console encoder
 	consoleConfiguration := zap.NewDevelopmentEncoderConfig()
 	consoleConfiguration.EncodeLevel = zapcore.CapitalColorLevelEncoder
@@ -68,7 +68,7 @@ func getLogFile(logOutput string) string {
 
 var mu sync.Mutex
 
-func dailyRotation(lj *lumberjack.Logger, env internal.Env) {
+func dailyRotation(lj *lumberjack.Logger, env env.Env) {
 	for {
 		now := time.Now()
 		nextMidnight := now.Truncate(24 * time.Hour).Add(24 * time.Hour)

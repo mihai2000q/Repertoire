@@ -4,105 +4,125 @@ import (
 	"errors"
 	"reflect"
 	"repertoire/server/api/requests"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )
 
 type UpdateSong struct {
-	repository              repository.SongRepository
+	songRepository          repository.SongRepository
 	albumRepository         repository.AlbumRepository
+	transactionManager      transaction.Manager
 	messagePublisherService service.MessagePublisherService
+
+	txSongRepo repository.SongRepository
 }
 
 func NewUpdateSong(
-	repository repository.SongRepository,
+	songRepository repository.SongRepository,
 	albumRepository repository.AlbumRepository,
+	transactionManager transaction.Manager,
 	messagePublisherService service.MessagePublisherService,
 ) UpdateSong {
 	return UpdateSong{
-		repository:              repository,
+		songRepository:          songRepository,
 		albumRepository:         albumRepository,
+		transactionManager:      transactionManager,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (u UpdateSong) Handle(request requests.UpdateSongRequest) *wrapper.ErrorCode {
+func (u UpdateSong) Handle(request requests.UpdateSongRequest) *httperror.ErrorCode {
 	var song model.Song
-	err := u.repository.Get(&song, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.songRepository.Get(&song, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
-	artistHasChanged := song.ArtistID != nil && request.ArtistID == nil ||
-		song.ArtistID == nil && request.ArtistID != nil ||
-		song.ArtistID != nil && request.ArtistID != nil && *song.ArtistID != *request.ArtistID
-	albumHasChanged := song.AlbumID != nil && request.AlbumID == nil ||
-		song.AlbumID == nil && request.AlbumID != nil ||
-		song.AlbumID != nil && request.AlbumID != nil && *song.AlbumID != *request.AlbumID
-
-	if (albumHasChanged || artistHasChanged) && request.AlbumID != nil {
-		var album model.Album
-		err = u.albumRepository.Get(&album, *request.AlbumID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		if reflect.ValueOf(album).IsZero() {
-			return wrapper.NotFoundError(errors.New("album not found"))
-		}
-		if request.ArtistID == nil && album.ArtistID != nil ||
-			request.ArtistID != nil && album.ArtistID == nil ||
-			request.ArtistID != nil && album.ArtistID != nil && *request.ArtistID != *album.ArtistID {
-			return wrapper.ConflictError(errors.New("album's artist does not match the request's artist"))
-		}
+	albumHasChanged, errCode := u.ensureRequestArtistBelongsToAlbum(song, request)
+	if errCode != nil {
+		return errCode
 	}
 
-	if albumHasChanged {
-		errCode := u.reorderAlbumSongs(request, &song)
-		if errCode != nil {
-			return errCode
+	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		u.txSongRepo = factory.NewSongRepository()
+
+		if albumHasChanged {
+			if err := u.reorderAlbumSongs(request, &song); err != nil {
+				return err
+			}
 		}
-	}
 
-	song.Title = request.Title
-	song.Description = request.Description
-	song.IsRecorded = request.IsRecorded
-	song.Bpm = request.Bpm
-	song.SongsterrLink = request.SongsterrLink
-	song.YoutubeLink = request.YoutubeLink
-	song.ReleaseDate = request.ReleaseDate
-	song.Difficulty = request.Difficulty
-	song.GuitarTuningID = request.GuitarTuningID
-	song.ArtistID = request.ArtistID
-	song.AlbumID = request.AlbumID
+		song.Title = request.Title
+		song.Description = request.Description
+		song.IsRecorded = request.IsRecorded
+		song.Bpm = request.Bpm
+		song.SongsterrLink = request.SongsterrLink
+		song.YoutubeLink = request.YoutubeLink
+		song.ReleaseDate = request.ReleaseDate
+		song.Difficulty = request.Difficulty
+		song.GuitarTuningID = request.GuitarTuningID
+		song.ArtistID = request.ArtistID
+		song.AlbumID = request.AlbumID
 
-	err = u.repository.Update(&song)
+		if err := u.txSongRepo.Update(&song); err != nil {
+			return err
+		}
+
+		return nil
+	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
-	err = u.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID})
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.messagePublisherService.Publish(topics.SongsUpdatedTopic, []uuid.UUID{song.ID}); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil
 }
 
-func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *model.Song) *wrapper.ErrorCode {
+func (u UpdateSong) ensureRequestArtistBelongsToAlbum(song model.Song, request requests.UpdateSongRequest) (bool, *httperror.ErrorCode) {
+	albumHasChanged := song.AlbumID != nil && request.AlbumID == nil ||
+		song.AlbumID == nil && request.AlbumID != nil ||
+		song.AlbumID != nil && request.AlbumID != nil && *song.AlbumID != *request.AlbumID
+
+	artistHasChanged := song.ArtistID != nil && request.ArtistID == nil ||
+		song.ArtistID == nil && request.ArtistID != nil ||
+		song.ArtistID != nil && request.ArtistID != nil && *song.ArtistID != *request.ArtistID
+
+	if (albumHasChanged || artistHasChanged) && request.AlbumID != nil {
+		var album model.Album
+		if err := u.albumRepository.Get(&album, *request.AlbumID); err != nil {
+			return false, httperror.DatabaseError(err)
+		}
+		if reflect.ValueOf(album).IsZero() {
+			return false, httperror.NotFoundError(errors.New("album not found"))
+		}
+		if request.ArtistID == nil && album.ArtistID != nil ||
+			request.ArtistID != nil && album.ArtistID == nil ||
+			request.ArtistID != nil && album.ArtistID != nil && *request.ArtistID != *album.ArtistID {
+			return false, httperror.ConflictError(errors.New("album's artist does not match the request's artist"))
+		}
+	}
+
+	return albumHasChanged, nil
+}
+
+func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *model.Song) error {
 	// reorder old album, if any
 	if song.AlbumID != nil {
 		var songs []model.Song
-		err := u.repository.GetAllByAlbumAndTrackNo(&songs, *song.AlbumID, *song.AlbumTrackNo)
+		err := u.txSongRepo.GetAllByAlbumAndTrackNo(&songs, *song.AlbumID, *song.AlbumTrackNo)
 		if err != nil {
-			return wrapper.InternalServerError(err)
+			return err
 		}
 
 		for i := range songs {
@@ -110,9 +130,8 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 			songs[i].AlbumTrackNo = &trackNo
 		}
 
-		err = u.repository.UpdateAll(&songs)
-		if err != nil {
-			return wrapper.InternalServerError(err)
+		if err := u.txSongRepo.UpdateAll(&songs); err != nil {
+			return err
 		}
 	}
 
@@ -122,9 +141,8 @@ func (u UpdateSong) reorderAlbumSongs(request requests.UpdateSongRequest, song *
 	}
 
 	var songsCount int64
-	err := u.repository.CountByAlbum(&songsCount, *request.AlbumID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.txSongRepo.CountByAlbum(&songsCount, *request.AlbumID); err != nil {
+		return err
 	}
 
 	trackNo := uint(songsCount) + 1

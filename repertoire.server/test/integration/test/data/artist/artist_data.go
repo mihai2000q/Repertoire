@@ -2,6 +2,7 @@ package artist
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/model"
 	"time"
 
@@ -14,7 +15,7 @@ func SeedData(db *gorm.DB) {
 	db.Create(&Artists)
 	db.Create(&Albums)
 	db.Create(&Songs)
-	db.Create(&SongSections)
+	db.Create(&SongParts)
 	db.Create(&SongArrangements)
 	// Default Song Arrangements
 	db.Model(&model.Song{ID: Artists[1].Songs[0].ID}).Update("default_arrangement_id", SongArrangements[0].ID)
@@ -42,13 +43,6 @@ var Users = []model.User{
 				ID:    uuid.New(),
 				Name:  "Manager",
 				Order: 2,
-			},
-		},
-		SongSectionTypes: []model.SongSectionType{
-			{
-				ID:    uuid.New(),
-				Name:  "Chorus",
-				Order: 0,
 			},
 		},
 	},
@@ -160,7 +154,7 @@ var Albums = []model.Album{
 	{
 		ID:          uuid.New(),
 		Title:       "Test Album 1",
-		ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+		ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 		UserID:      Users[0].ID,
 	},
 	{
@@ -252,19 +246,18 @@ var Songs = []model.Song{
 	},
 }
 
-var SongSections = []model.SongSection{
+var SongParts = []model.SongPart{
 	{
-		ID:                uuid.New(),
-		Name:              "Test Song 1 Section 1",
-		Order:             0,
-		Rehearsals:        16,
-		Confidence:        10,
-		ConfidenceScore:   12,
-		RehearsalsScore:   45,
-		Progress:          5,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		SongID:            Artists[1].Songs[0].ID,
-		History: []model.SongSectionHistory{
+		ID:              uuid.New(),
+		Name:            "Test Song 1 Part 1",
+		SongOrder:       0,
+		Rehearsals:      16,
+		Confidence:      10,
+		ConfidenceScore: 12,
+		RehearsalsScore: 45,
+		Progress:        5,
+		SongID:          Artists[1].Songs[0].ID,
+		History: []model.SongPartHistory{
 			{
 				ID:       uuid.New(),
 				From:     0,
@@ -280,17 +273,16 @@ var SongSections = []model.SongSection{
 		},
 	},
 	{
-		ID:                uuid.New(),
-		Name:              "Test Song Section 2",
-		Order:             1,
-		Rehearsals:        20,
-		Confidence:        30,
-		ConfidenceScore:   25,
-		RehearsalsScore:   45,
-		Progress:          10,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		SongID:            Artists[1].Songs[0].ID,
-		History: []model.SongSectionHistory{
+		ID:              uuid.New(),
+		Name:            "Test Song 1 Part 2",
+		SongOrder:       1,
+		Rehearsals:      20,
+		Confidence:      30,
+		ConfidenceScore: 25,
+		RehearsalsScore: 45,
+		Progress:        10,
+		SongID:          Artists[1].Songs[0].ID,
+		History: []model.SongPartHistory{
 			{
 				ID:       uuid.New(),
 				From:     0,
@@ -307,19 +299,17 @@ var SongSections = []model.SongSection{
 	},
 
 	{
-		ID:                uuid.New(),
-		Name:              "Test Song 2 Section 1",
-		Order:             0,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		SongID:            Artists[1].Songs[1].ID,
+		ID:        uuid.New(),
+		Name:      "Test Song 2 Part 1",
+		SongOrder: 0,
+		SongID:    Artists[1].Songs[1].ID,
 	},
 
 	{
-		ID:                uuid.New(),
-		Name:              "Test Song 3 Section 1",
-		Order:             0,
-		SongSectionTypeID: Users[0].SongSectionTypes[0].ID,
-		SongID:            Artists[2].Songs[0].ID,
+		ID:        uuid.New(),
+		Name:      "Test Song 3 Part 1",
+		SongOrder: 0,
+		SongID:    Artists[2].Songs[0].ID,
 	},
 }
 
@@ -329,9 +319,9 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Test SongArrangement 1",
 		SongID: Artists[1].Songs[0].ID,
 		Order:  0,
-		SectionOccurrences: []model.SongSectionOccurrences{
-			{SectionID: SongSections[0].ID, Occurrences: 7},
-			{SectionID: SongSections[1].ID, Occurrences: 0},
+		PartOccurrences: []model.SongPartOccurrences{
+			{PartID: SongParts[0].ID, Occurrences: 7},
+			{PartID: SongParts[1].ID, Occurrences: 0},
 		},
 	},
 	{
@@ -339,9 +329,9 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Test SongArrangement 2",
 		SongID: Artists[1].Songs[0].ID,
 		Order:  1,
-		SectionOccurrences: []model.SongSectionOccurrences{
-			{SectionID: SongSections[0].ID, Occurrences: 5},
-			{SectionID: SongSections[1].ID, Occurrences: 11},
+		PartOccurrences: []model.SongPartOccurrences{
+			{PartID: SongParts[0].ID, Occurrences: 5},
+			{PartID: SongParts[1].ID, Occurrences: 11},
 		},
 	},
 
@@ -350,8 +340,8 @@ var SongArrangements = []model.SongArrangement{
 		Name:   "Test SongArrangement 1",
 		SongID: Artists[1].Songs[1].ID,
 		Order:  0,
-		SectionOccurrences: []model.SongSectionOccurrences{
-			{SectionID: SongSections[2].ID, Occurrences: 7},
+		PartOccurrences: []model.SongPartOccurrences{
+			{PartID: SongParts[2].ID, Occurrences: 7},
 		},
 	},
 }

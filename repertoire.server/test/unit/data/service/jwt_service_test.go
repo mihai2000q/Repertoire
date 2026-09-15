@@ -3,7 +3,7 @@ package service
 import (
 	"net/http"
 	"repertoire/server/data/service"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/model"
 	"testing"
 	"time"
@@ -11,6 +11,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var privateKey = `-----BEGIN RSA PRIVATE KEY-----
@@ -183,7 +184,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			_uut := service.NewJwtService(internal.Env{JwtPublicKey: tt.publicKey})
+			_uut := service.NewJwtService(env.Env{JwtPublicKey: tt.publicKey})
 
 			key, _ := jwt.ParseRSAPrivateKeyFromPEM([]byte(tt.privateKey))
 			token, _ := tt.claims.SignedString(key)
@@ -192,7 +193,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 			errCode := _uut.Authorize(token)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusUnauthorized, errCode.Code)
 			assert.Error(t, errCode.Error)
 		})
@@ -201,7 +202,7 @@ func TestJwtService_Authorize_WhenTokenIsInvalid_ShouldReturnUnauthorizedError(t
 
 func TestJwtService_Authorize_WhenTokenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -240,7 +241,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
-			env := internal.Env{
+			env := env.Env{
 				JwtPublicKey: tt.publicKey,
 			}
 			_uut := service.NewJwtService(env)
@@ -254,7 +255,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 
 			// then
 			assert.Empty(t, userID)
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Equal(t, http.StatusForbidden, errCode.Code)
 			assert.Error(t, errCode.Error)
 		})
@@ -263,7 +264,7 @@ func TestJwtService_GetUserIdFromJwt_WhenKeysAreNotMatching_ShouldReturnForbidde
 
 func TestJwtService_GetUserIdFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -277,14 +278,14 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsMissing_ShouldReturnForbiddenError
 
 	// then
 	assert.Empty(t, userID)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusForbidden, errCode.Code)
 	assert.Error(t, errCode.Error)
 }
 
 func TestJwtService_GetUserIdFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)
@@ -300,14 +301,14 @@ func TestJwtService_GetUserIdFromJwt_WhenSubIsNotUUID_ShouldReturnForbiddenError
 
 	// then
 	assert.Empty(t, userID)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusForbidden, errCode.Code)
 	assert.Error(t, errCode.Error)
 }
 
 func TestJwtService_GetUserIdFromJwt_WhenSuccessful_ShouldReturnUserId(t *testing.T) {
 	// given
-	env := internal.Env{
+	env := env.Env{
 		JwtPublicKey: publicKey,
 	}
 	_uut := service.NewJwtService(env)

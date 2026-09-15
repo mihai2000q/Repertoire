@@ -4,7 +4,7 @@ import (
 	"repertoire/server/data/database"
 	"repertoire/server/data/logger"
 	"repertoire/server/data/search"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/internal/migration/utils"
 	"repertoire/server/model"
 )
@@ -13,7 +13,7 @@ var uid = "20250529143206"
 var name = "update_release_date"
 
 func main() {
-	env := internal.NewEnv()
+	env := env.NewEnv()
 	log := logger.NewLogger(env)
 	meiliClient := search.NewMeiliClient(env)
 	dbClient := database.NewClient(logger.NewGormLogger(log), env)

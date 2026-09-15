@@ -32,13 +32,12 @@ func NewArtistUpdatedHandler(
 
 func (a ArtistUpdatedHandler) Handle(msg *watermillMessage.Message) error {
 	var artistID uuid.UUID
-	err := json.Unmarshal(msg.Payload, &artistID)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &artistID); err != nil {
 		return err
 	}
 
 	var artist model.Artist
-	err = a.artistRepository.GetWithSongsOrAlbums(&artist, artistID, true, true)
+	err := a.artistRepository.GetWithSongsOrAlbums(&artist, artistID, true, true)
 	if err != nil {
 		return err
 	}

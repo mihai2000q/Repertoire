@@ -19,7 +19,7 @@ export interface UpdateSongArrangementRequest {
 }
 
 export interface UpdateSongSectionOccurrencesRequest {
-  sectionId: string
+  partId: string
   occurrences: number
 }
 

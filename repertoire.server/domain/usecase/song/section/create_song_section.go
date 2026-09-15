@@ -2,113 +2,84 @@ package section
 
 import (
 	"errors"
-	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
 )
 
 type CreateSongSection struct {
-	songSectionRepository     repository.SongSectionRepository
-	songRepository            repository.SongRepository
-	songArrangementRepository repository.SongArrangementRepository
+	songSectionRepository repository.SongSectionRepository
+	songPartRepository    repository.SongPartRepository
 }
 
 func NewCreateSongSection(
 	songSectionRepository repository.SongSectionRepository,
-	songRepository repository.SongRepository,
-	songArrangementRepository repository.SongArrangementRepository,
+	songPartRepository repository.SongPartRepository,
 ) CreateSongSection {
 	return CreateSongSection{
-		songSectionRepository:     songSectionRepository,
-		songRepository:            songRepository,
-		songArrangementRepository: songArrangementRepository,
+		songSectionRepository: songSectionRepository,
+		songPartRepository:    songPartRepository,
 	}
 }
 
-func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *wrapper.ErrorCode {
+func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *httperror.ErrorCode {
+	if len(request.PartIDs) > 0 {
+		errCode := c.ensurePartsBelongToSameSong(request, request.SongID)
+		if errCode != nil {
+			return errCode
+		}
+	}
+
 	var sectionsCount int64
-	err := c.songSectionRepository.CountAllBySong(&sectionsCount, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	var song model.Song
-	err = c.songRepository.Get(&song, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
-	}
-
-	if request.BandMemberID != nil {
-		res, err := c.songRepository.IsBandMemberAssociatedWithSong(request.SongID, *request.BandMemberID)
-		if err != nil {
-			return wrapper.InternalServerError(err)
-		}
-		if !res {
-			return wrapper.ConflictError(errors.New("band member is not part of the artist associated with this song"))
-		}
+	if err := c.songSectionRepository.CountAllBySong(&sectionsCount, request.SongID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	section := model.SongSection{
 		ID:                uuid.New(),
 		Name:              request.Name,
-		Confidence:        model.DefaultSongSectionConfidence,
 		SongSectionTypeID: request.TypeID,
 		Order:             uint(sectionsCount),
 		SongID:            request.SongID,
-		BandMemberID:      request.BandMemberID,
-		InstrumentID:      request.InstrumentID,
+		SectionParts:      c.createSectionParts(request.PartIDs),
 	}
-	err = c.songSectionRepository.Create(&section)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	// update song's new confidence, rehearsals and progress medians
-	song.Confidence = (song.Confidence*float64(sectionsCount) + float64(section.Confidence)) / float64(sectionsCount+1)
-	song.Rehearsals = (song.Rehearsals*float64(sectionsCount) + float64(section.Rehearsals)) / float64(sectionsCount+1)
-	song.Progress = (song.Progress*float64(sectionsCount) + float64(section.Progress)) / float64(sectionsCount+1)
-
-	err = c.songRepository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
-	errCode := c.updateArrangements(section.ID, request.SongID)
-	if errCode != nil {
-		return errCode
+	if err := c.songSectionRepository.Create(&section); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-// Add one new section occurrence on each song arrangement
-func (c CreateSongSection) updateArrangements(sectionID uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
-	var arrangements []model.SongArrangement
-	err := c.songArrangementRepository.GetAllBySong(&arrangements, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+func (c CreateSongSection) ensurePartsBelongToSameSong(
+	request requests.CreateSongSectionRequest,
+	songID uuid.UUID,
+) *httperror.ErrorCode {
+	var parts []model.SongPart
+	if err := c.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
+		return httperror.DatabaseError(err)
 	}
-
-	for i := range arrangements {
-		occurrence := model.SongSectionOccurrences{
-			SectionID:     sectionID,
-			Occurrences:   0,
-			ArrangementID: arrangements[i].ID,
+	if len(parts) != len(request.PartIDs) {
+		return httperror.NotFoundError(errors.New("parts not found"))
+	}
+	for _, p := range parts {
+		if p.SongID != songID {
+			return httperror.ConflictError(errors.New("song part does not belong to the same song as the section"))
 		}
-		arrangements[i].SectionOccurrences = append(arrangements[i].SectionOccurrences, occurrence)
 	}
-
-	err = c.songArrangementRepository.UpdateAllWithAssociations(&arrangements)
-	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-
 	return nil
+}
+
+func (c CreateSongSection) createSectionParts(partIDs []uuid.UUID) []model.SongSectionPart {
+	var sectionParts []model.SongSectionPart
+	for i, id := range partIDs {
+		sectionPart := model.SongSectionPart{
+			PartID: id,
+			Order:  uint(i),
+		}
+		sectionParts = append(sectionParts, sectionPart)
+	}
+	return sectionParts
 }

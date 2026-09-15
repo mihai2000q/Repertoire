@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"repertoire/server/data/logger"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -15,7 +15,7 @@ type Client struct {
 	*gorm.DB
 }
 
-func NewClient(logger *logger.GormLogger, env internal.Env) Client {
+func NewClient(logger *logger.GormLogger, env env.Env) Client {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s",
 		env.DatabaseHost,
 		env.DatabaseUser,

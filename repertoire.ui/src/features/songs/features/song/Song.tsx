@@ -2,7 +2,6 @@ import { Divider, Grid, Stack } from '@mantine/core'
 import { useParams } from 'react-router-dom'
 import SongLoader from './components/SongLoader.tsx'
 import { useGetSongQuery } from '../../../../state/api/songsApi.ts'
-import SongSectionsWidget from './features/sections/SongSectionsWidget.tsx'
 import SongInformationWidget from './components/widgets/SongInformationWidget.tsx'
 import SongLinksWidget from './components/widgets/SongLinksWidget.tsx'
 import SongOverallWidget from './components/widgets/SongOverallWidget.tsx'
@@ -10,6 +9,7 @@ import SongDescriptionWidget from './components/widgets/SongDescriptionWidget.ts
 import SongHeader from './components/SongHeader.tsx'
 import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
+import SongOutlineWidget from './features/outline/SongOutlineWidget.tsx'
 
 function Song() {
   const params = useParams()
@@ -45,15 +45,7 @@ function Song() {
           <Stack>
             <SongDescriptionWidget song={song} />
 
-            <SongSectionsWidget
-              songId={songId}
-              defaultSongArrangementId={song.defaultArrangementId}
-              settings={song.settings}
-              sections={song.sections}
-              isFetching={isFetching}
-              bandMembers={song.artist?.isBand === false ? undefined : song.artist?.bandMembers}
-              isArtistBand={song.artist?.isBand}
-            />
+            <SongOutlineWidget isSongFetching={isFetching} />
           </Stack>
         </Grid.Col>
       </Grid>

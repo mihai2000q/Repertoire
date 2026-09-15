@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/playlist"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -27,7 +28,7 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 	}
 	token := "this is a token"
 
-	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
+	forbiddenError := httperror.ForbiddenError(errors.New("forbidden"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
@@ -35,7 +36,7 @@ func TestCreatePlaylist_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -64,7 +65,7 @@ func TestCreatePlaylist_WhenCreateFails_ShouldReturnInternalServerError(t *testi
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -101,7 +102,7 @@ func TestCreatePlaylist_WhenPublishFails_ShouldReturnInternalServerError(t *test
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

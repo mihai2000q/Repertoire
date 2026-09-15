@@ -184,9 +184,9 @@ function SongCard({ song }: SongCardProps) {
                       <CustomIconGuitarHead size={iconSize} aria-label={'guitar-tuning-icon'} />
                     </LocalTooltip>
                   )}
-                  {song.riffsCount > 1 && (
-                    <LocalTooltip label={`This song has ${song.riffsCount} riffs`}>
-                      <IconBombFilled size={iconSize} aria-label={'riffs-icon'} />
+                  {song.sectionsCount > 4 && (
+                    <LocalTooltip label={`This song has ${song.sectionsCount} sections`}>
+                      <IconBombFilled size={iconSize} aria-label={'sections-icon'} />
                     </LocalTooltip>
                   )}
                   {song.solosCount > 0 && (

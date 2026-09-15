@@ -31,8 +31,7 @@ func NewAlbumCreatedHandler(
 
 func (a AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 	var album model.Album
-	err := json.Unmarshal(msg.Payload, &album)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &album); err != nil {
 		return err
 	}
 
@@ -41,8 +40,7 @@ func (a AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 
 	if album.ArtistID != nil {
 		var artist model.Artist
-		err = a.artistRepository.Get(&artist, *album.ArtistID)
-		if err != nil {
+		if err := a.artistRepository.Get(&artist, *album.ArtistID); err != nil {
 			return err
 		}
 		albumSearch.Artist = artist.ToAlbumSearch()
@@ -52,8 +50,7 @@ func (a AlbumCreatedHandler) Handle(msg *watermillMessage.Message) error {
 		searches = append(searches, album.Artist.ToSearch())
 	}
 
-	err = a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, searches)
-	if err != nil {
+	if err := a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, searches); err != nil {
 		return err
 	}
 	return nil

@@ -2,6 +2,7 @@ package model
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"repertoire/server/model"
 	"testing"
@@ -57,7 +58,7 @@ func TestAlbumSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T)
 				ID:          uuid.New(),
 				Title:       "Some Album",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",
@@ -145,7 +146,7 @@ func TestSongSearch_ToSearch_WhenValid_ShouldReturnCorrectMapping(t *testing.T) 
 				ID:          uuid.New(),
 				Title:       "Some Song",
 				ImageURL:    &[]internal.FilePath{"some_file_path"}[0],
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Artist: &model.Artist{
 					ID:        uuid.New(),
 					Name:      "Some Artist",

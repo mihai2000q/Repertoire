@@ -34,8 +34,7 @@ func NewDeleteFromSearchEngineHandler(
 
 func (d DeleteFromSearchEngineHandler) Handle(msg *message.Message) error {
 	var ids []string
-	err := json.Unmarshal(msg.Payload, &ids)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &ids); err != nil {
 		return err
 	}
 

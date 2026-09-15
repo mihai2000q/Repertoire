@@ -12,7 +12,7 @@ type SongArrangementRepositoryMock struct {
 	mock.Mock
 }
 
-func (s *SongArrangementRepositoryMock) GetAllBySongWithSectionOccurrences(
+func (s *SongArrangementRepositoryMock) GetAllBySongWithPartOccurrences(
 	arrangements *[]model.SongArrangement,
 	ids []uuid.UUID,
 	songID uuid.UUID,

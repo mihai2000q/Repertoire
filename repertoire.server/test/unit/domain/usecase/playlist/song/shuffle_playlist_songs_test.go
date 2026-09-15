@@ -13,6 +13,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestShufflePlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -36,9 +37,36 @@ func TestShufflePlaylistSongs_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	playlistRepository.AssertExpectations(t)
+}
+
+func TestShufflePlaylistSongs_WhenSongsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := song.NewShufflePlaylistSongs(playlistRepository)
+
+	request := requests.ShufflePlaylistSongsRequest{ID: uuid.New()}
+
+	playlistRepository.
+		On(
+			"GetPlaylistSongs",
+			new([]model.PlaylistSong),
+			request.ID,
+		).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
+	assert.Equal(t, "playlist has no songs", errCode.Error.Error())
 
 	playlistRepository.AssertExpectations(t)
 }
@@ -65,7 +93,7 @@ func TestShufflePlaylistSongs_WhenUpdateAllPlaylistSongsFails_ShouldReturnIntern
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

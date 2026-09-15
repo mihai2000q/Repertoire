@@ -1,10 +1,11 @@
 package playlist
 
 import (
+	"errors"
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -12,31 +13,32 @@ import (
 )
 
 type AddArtistsToPlaylist struct {
-	repository       repository.PlaylistRepository
-	artistRepository repository.ArtistRepository
+	playlistRepository repository.PlaylistRepository
+	artistRepository   repository.ArtistRepository
 }
 
 func NewAddArtistsToPlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	artistRepository repository.ArtistRepository,
 ) AddArtistsToPlaylist {
 	return AddArtistsToPlaylist{
-		repository:       repository,
-		artistRepository: artistRepository,
+		playlistRepository: playlistRepository,
+		artistRepository:   artistRepository,
 	}
 }
 
-func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *wrapper.ErrorCode) {
+func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistRequest) (*responses.AddArtistsToPlaylistResponse, *httperror.ErrorCode) {
 	var playlistSongs []model.PlaylistSong
-	err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var artists []model.Artist
-	err = a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.artistRepository.GetAllByIDsWithSongs(&artists, request.ArtistIDs); err != nil {
+		return nil, httperror.DatabaseError(err)
+	}
+	if len(artists) != len(request.ArtistIDs) {
+		return nil, httperror.NotFoundError(errors.New("artists not found"))
 	}
 
 	var duplicateSongIDs []uuid.UUID
@@ -82,9 +84,8 @@ func (a AddArtistsToPlaylist) Handle(request requests.AddArtistsToPlaylistReques
 		}, nil
 	}
 
-	err = a.repository.AddSongs(&newPlaylistSongs)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.playlistRepository.AddSongs(&newPlaylistSongs); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var addedSongIDs []uuid.UUID

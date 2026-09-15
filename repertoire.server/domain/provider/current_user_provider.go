@@ -5,12 +5,12 @@ import (
 	"reflect"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type CurrentUserProvider interface {
-	Get(token string) (model.User, *wrapper.ErrorCode)
+	Get(token string) (model.User, *httperror.ErrorCode)
 }
 
 type currentUserProvider struct {
@@ -28,7 +28,7 @@ func NewCurrentUserProvider(
 	}
 }
 
-func (c *currentUserProvider) Get(token string) (user model.User, e *wrapper.ErrorCode) {
+func (c *currentUserProvider) Get(token string) (user model.User, e *httperror.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return user, errCode
@@ -36,10 +36,10 @@ func (c *currentUserProvider) Get(token string) (user model.User, e *wrapper.Err
 
 	err := c.userRepository.Get(&user, userID)
 	if err != nil {
-		return user, wrapper.InternalServerError(err)
+		return user, httperror.InternalServerError(err)
 	}
 	if reflect.ValueOf(user).IsZero() {
-		return user, wrapper.NotFoundError(errors.New("user not found"))
+		return user, httperror.NotFoundError(errors.New("user not found"))
 	}
 
 	return user, nil

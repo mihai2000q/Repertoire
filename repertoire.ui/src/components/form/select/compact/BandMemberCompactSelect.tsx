@@ -50,7 +50,7 @@ function BandMemberCompactSelect({
 
   const filteredMembers =
     search.trim() !== ''
-      ? bandMembers.filter((member) =>
+      ? bandMembers?.filter((member) =>
           member.name.toLowerCase().includes(search.toLowerCase().trim())
         )
       : bandMembers

@@ -31,8 +31,7 @@ func NewSongsDeletedHandler(
 
 func (s SongsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var songs []model.Song
-	err := json.Unmarshal(msg.Payload, &songs)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &songs); err != nil {
 		return err
 	}
 
@@ -40,7 +39,7 @@ func (s SongsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	for _, song := range songs {
 		ids = append(ids, song.ToSearch().ID)
 	}
-	err = s.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
+	err := s.messagePublisherService.Publish(topics.DeleteFromSearchEngineTopic, ids)
 	if err != nil {
 		return err
 	}

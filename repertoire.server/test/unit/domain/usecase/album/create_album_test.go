@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -29,7 +30,7 @@ func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *tes
 	}
 	token := "this is a token"
 
-	forbiddenError := wrapper.ForbiddenError(errors.New("forbidden"))
+	forbiddenError := httperror.ForbiddenError(errors.New("forbidden"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
@@ -37,7 +38,7 @@ func TestCreateAlbum_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *tes
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -66,7 +67,7 @@ func TestCreateAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testin
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -104,7 +105,7 @@ func TestCreateAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *testing
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -126,7 +127,7 @@ func TestCreateAlbum_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"With Existing Artist",
 			requests.CreateAlbumRequest{
 				Title:       "Some Album",
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				ArtistID:    &[]uuid.UUID{uuid.New()}[0],
 			},
 		},

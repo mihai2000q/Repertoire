@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -17,6 +17,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *testing.T) {
@@ -29,7 +30,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 	}
 	token := "this is a token"
 
-	forbiddenError := wrapper.UnauthorizedError(errors.New("forbidden"))
+	forbiddenError := httperror.UnauthorizedError(errors.New("forbidden"))
 	jwtService.On("GetUserIdFromJwt", token).Return(uuid.Nil, forbiddenError).Once()
 
 	// when
@@ -37,7 +38,7 @@ func TestCreateSong_WhenGetUserIdFromJwtFails_ShouldReturnForbiddenError(t *test
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, forbiddenError, errCode)
 
 	jwtService.AssertExpectations(t)
@@ -68,7 +69,7 @@ func TestCreateSong_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -100,7 +101,7 @@ func TestCreateSong_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -132,7 +133,7 @@ func TestCreateSong_WhenCreateSongFails_ShouldReturnInternalServerError(t *testi
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -169,7 +170,7 @@ func TestCreateSong_WhenPublishFails_ShouldReturnBadRequestError(t *testing.T) {
 
 	// then
 	assert.Empty(t, id)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -207,7 +208,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			"Create song with new album and artist",
 			requests.CreateSongRequest{
 				Title:       "Some Song",
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				AlbumTitle:  &[]string{"New Album Title"}[0],
 				ArtistName:  &[]string{"New Artist Name"}[0],
 			},
@@ -221,7 +222,7 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			},
 			&model.Album{
 				ID:          requestAlbumID,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}, {}, {}},
 			},
 		},
@@ -254,12 +255,12 @@ func TestCreateSong_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			nil,
 		},
 		{
-			"Create song with sections",
+			"Create song with parts",
 			requests.CreateSongRequest{
 				Title: "Some Song",
-				Sections: []requests.CreateSectionRequest{
-					{Name: "First Section", TypeID: uuid.New()},
-					{Name: "Second Section", TypeID: uuid.New()},
+				Parts: []requests.CreatePartRequest{
+					{Name: "First Part"},
+					{Name: "Second Part"},
 				},
 			},
 			nil,
@@ -345,7 +346,7 @@ func assertCreatedSong(
 	assert.Nil(t, song.ImageURL)
 	assert.Equal(t, request.GuitarTuningID, song.GuitarTuningID)
 	assert.Equal(t, userID, song.UserID)
-	assert.Len(t, request.Sections, len(song.Sections))
+	assert.Len(t, request.Parts, len(song.Parts))
 
 	// assert settings
 	assert.NotEmpty(t, song.Settings.ID)
@@ -358,23 +359,13 @@ func assertCreatedSong(
 	assert.Equal(t, uint(0), song.Arrangements[0].Order)
 	assert.Equal(t, song.ID, song.Arrangements[0].SongID)
 
-	for i, section := range request.Sections {
-		assert.NotEmpty(t, song.Sections[i].ID)
-		assert.Equal(t, section.Name, song.Sections[i].Name)
-		assert.Zero(t, song.Sections[i].Rehearsals)
-		assert.Equal(t, model.DefaultSongSectionConfidence, song.Sections[i].Confidence)
-		assert.Zero(t, song.Sections[i].RehearsalsScore)
-		assert.Zero(t, song.Sections[i].ConfidenceScore)
-		assert.Zero(t, song.Sections[i].Progress)
-		assert.Equal(t, uint(i), song.Sections[i].Order)
-		assert.Equal(t, section.TypeID, song.Sections[i].SongSectionTypeID)
-		assert.Equal(t, song.ID, song.Sections[i].SongID)
-
-		// assert section occurrences on arrangement
-		assert.Zero(t, song.Arrangements[0].SectionOccurrences[i].Occurrences)
-		assert.Equal(t, song.Sections[i].ID, song.Arrangements[0].SectionOccurrences[i].SectionID)
-		assert.Equal(t, song.Arrangements[0].ID, song.Arrangements[0].SectionOccurrences[i].ArrangementID)
+	for i, part := range request.Parts {
+		assert.NotEmpty(t, song.Parts[i].ID)
+		assert.Equal(t, part.Name, song.Parts[i].Name)
+		assert.Equal(t, uint(i), song.Parts[i].SongOrder)
+		assert.Equal(t, song.ID, song.Parts[i].SongID)
 	}
+	assert.Empty(t, song.Sections)
 	if request.AlbumTitle != nil {
 		assert.NotNil(t, song.Album)
 		assert.Equal(t, *song.AlbumID, song.Album.ID)

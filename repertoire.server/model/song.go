@@ -2,6 +2,7 @@ package model
 
 import (
 	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/enums"
 	"time"
 
@@ -12,16 +13,16 @@ import (
 
 type EnhancedSong struct {
 	Song
+	PartsCount    float64 `gorm:"->" json:"partsCount"`
 	SectionsCount float64 `gorm:"->" json:"sectionsCount"`
 	SolosCount    float64 `gorm:"->" json:"solosCount"`
-	RiffsCount    float64 `gorm:"->" json:"riffsCount"`
 }
 
 type Song struct {
 	ID             uuid.UUID          `gorm:"primaryKey; type:uuid; <-:create" json:"id"`
 	Title          string             `gorm:"size:100; not null" json:"title"`
 	Description    string             `gorm:"not null" json:"description"`
-	ReleaseDate    *internal.Date     `json:"releaseDate"`
+	ReleaseDate    *date.Date         `json:"releaseDate"`
 	ImageURL       *internal.FilePath `json:"imageUrl"`
 	IsRecorded     bool               `json:"isRecorded"`
 	Bpm            *uint              `json:"bpm"`
@@ -44,6 +45,7 @@ type Song struct {
 	GuitarTuning *GuitarTuning `json:"guitarTuning"`
 	Settings     SongSettings  `json:"settings"`
 
+	Parts         []SongPart        `gorm:"constraint:OnDelete:CASCADE" json:"parts"`
 	Sections      []SongSection     `gorm:"constraint:OnDelete:CASCADE" json:"sections"`
 	Arrangements  []SongArrangement `gorm:"constraint:OnDelete:CASCADE" json:"arrangements"`
 	Playlists     []Playlist        `gorm:"many2many:playlist_songs" json:"playlists"`

@@ -31,7 +31,7 @@ func TestUpdateDefaultSongArrangement_WhenSongIsNotFound_ShouldReturnNotFoundErr
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -45,7 +45,7 @@ func TestUpdateDefaultSongArrangement_WhenArrangementIsNotFound_ShouldReturnInte
 	core.NewTestHandler().PUT(w, "/api/songs/arrangements/default", request)
 
 	// then
-	assert.Equal(t, http.StatusInternalServerError, w.Code)
+	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
 func TestUpdateDefaultSongArrangement_WhenSuccessfulWithArrangement_ShouldUpdateDefaultArrangementOnSongWithTheArrangement(t *testing.T) {
