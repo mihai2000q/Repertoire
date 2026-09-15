@@ -1,7 +1,7 @@
-import { mantineRender } from '../../../../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../../../../test-utils.tsx'
 import SongOutlineWidgetLoader from './SongOutlineWidgetLoader.tsx'
 import { screen } from '@testing-library/react'
-import OutlineView from '../types/enums/OutlineView.ts'
+import OutlineView from '../../types/enums/OutlineView.ts'
 
 describe('Song Outline Widget Loader', () => {
   it('should render with sections', () => {

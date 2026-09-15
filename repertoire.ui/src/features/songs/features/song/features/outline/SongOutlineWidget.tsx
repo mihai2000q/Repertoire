@@ -14,9 +14,9 @@ import SongOutlineToolbar from './components/SongOutlineToolbar.tsx'
 import { useGetSongSectionsQuery } from '../sections/state/api/songSectionsApi.ts'
 import { useGetSongPartsQuery } from '../parts/state/api/songPartsApi.ts'
 import { useDisclosure } from '@mantine/hooks'
-import SongOutlineWidgetLoader from './components/SongOutlineWidgetLoader.tsx'
-import SongSectionsLoader from './components/SongSectionsLoader.tsx'
-import SongPartsLoader from './components/SongPartsLoader.tsx'
+import SongOutlineWidgetLoader from './components/loader/SongOutlineWidgetLoader.tsx'
+import SongSectionsLoader from './components/loader/SongSectionsLoader.tsx'
+import SongPartsLoader from './components/loader/SongPartsLoader.tsx'
 
 interface SongOutlineWidgetProps {
   isSongFetching?: boolean

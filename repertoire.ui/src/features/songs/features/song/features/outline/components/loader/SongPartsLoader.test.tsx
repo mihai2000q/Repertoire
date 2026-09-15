@@ -1,4 +1,4 @@
-import { mantineRender } from '../../../../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../../../../test-utils.tsx'
 import SongPartsLoader from './SongPartsLoader.tsx'
 
 describe('Song Parts Loader', () => {

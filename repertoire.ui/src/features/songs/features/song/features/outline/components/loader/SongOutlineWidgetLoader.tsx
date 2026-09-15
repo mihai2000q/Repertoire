@@ -1,5 +1,5 @@
 import { Card, Group, Skeleton, Stack } from '@mantine/core'
-import OutlineView from '../types/enums/OutlineView.ts'
+import OutlineView from '../../types/enums/OutlineView.ts'
 import SongSectionsLoader from './SongSectionsLoader.tsx'
 import SongPartsLoader from './SongPartsLoader.tsx'
 
