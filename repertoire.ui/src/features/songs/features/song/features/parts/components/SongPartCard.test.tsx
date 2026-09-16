@@ -77,6 +77,8 @@ describe('Song Part Card', () => {
   })
 
   it('should render and display maximal info', async () => {
+    const user = userEvent.setup()
+
     const bandMember: BandMember = {
       id: '1',
       name: 'Mike',
@@ -112,6 +114,9 @@ describe('Song Part Card', () => {
     expect(screen.getByText(part.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
+
+    await user.hover(screen.getByLabelText('instrument-icon'))
+    expect(await screen.findByRole('tooltip', { name: instrument.name })).toBeInTheDocument()
 
     // when artist is not a band
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }

@@ -2,7 +2,6 @@ import { SongPart as SongPartModel } from '../../../../../../../types/models/Son
 import {
   ActionIcon,
   alpha,
-  Box,
   Center,
   Collapse,
   Group,
@@ -203,11 +202,11 @@ function SongPartCard({
 
             {isArtistBand && part.bandMember && <BandMemberAvatar bandMember={part.bandMember} />}
             {part.instrument && (
-              <Box aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
-                <Tooltip openDelay={200} label={part.instrument?.name} withArrow>
+              <Tooltip openDelay={200} label={part.instrument?.name} withArrow>
+                <Center aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>
                   {getInstrumentIcon(part.instrument)}
-                </Tooltip>
-              </Box>
+                </Center>
+              </Tooltip>
             )}
             <Text fw={500} truncate={'end'}>
               {part.name}
