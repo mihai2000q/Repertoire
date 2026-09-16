@@ -1,4 +1,3 @@
-import { Menu } from '@mantine/core'
 import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -60,6 +59,8 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
         <ContextMenu.Dropdown>
+          <ContextMenu.Label></ContextMenu.Label>
+
           <MenuItemConfirmation
             isLoading={bulkUpdateIsLoading}
             onConfirm={handleAddRehearsals}
@@ -68,9 +69,13 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
             Add Rehearsals
           </MenuItemConfirmation>
 
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
+          </ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
 
