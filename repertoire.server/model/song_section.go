@@ -34,13 +34,15 @@ type songSectionDerivedFields struct {
 }
 
 type SongSectionPart struct {
-	PartID    uuid.UUID `gorm:"primaryKey; type:uuid"`
-	SectionID uuid.UUID `gorm:"primaryKey; type:uuid"`
-	Order     uint      `gorm:"not null"`
-	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
+	PartID       uuid.UUID  `gorm:"primaryKey; type:uuid"`
+	SectionID    uuid.UUID  `gorm:"primaryKey; type:uuid"`
+	Order        uint       `gorm:"not null"`
+	CreatedAt    time.Time  `gorm:"default:current_timestamp; not null; <-:create"`
+	BandMemberID *uuid.UUID `json:"-"`
 
-	Part    SongPart    `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE"`
-	Section SongSection `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE"`
+	BandMember *BandMember `json:"bandMember"`
+	Part       SongPart    `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE"`
+	Section    SongSection `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE"`
 }
 
 func (s *SongSection) AfterFind(*gorm.DB) error {
