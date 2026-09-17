@@ -23,7 +23,11 @@ type SongSectionRepository interface {
 	UpdateAllWithAssociations(sections *[]model.SongSection) error
 	Delete(ids []uuid.UUID) error
 
+	GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error
+	GetAllSectionPartsByPartIDs(sectionParts *[]model.SongSectionPart, partIDs []uuid.UUID) error
+	CountAllSectionPartsBySectionID(count *int64, sectionID uuid.UUID) error
 	CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error
+	UpdateSectionPart(sectionPart *model.SongSectionPart) error
 	UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error
 	DeleteSectionParts(sectionParts *[]model.SongSectionPart) error
 
@@ -146,6 +150,30 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
+func (s songSectionRepository) GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error {
+	return s.client.
+		Where(&model.SongSectionPart{
+			PartID:    partID,
+			SectionID: sectionID,
+		}).
+		Find(sectionPart).
+		Error
+}
+
+func (s songSectionRepository) GetAllSectionPartsByPartIDs(sectionParts *[]model.SongSectionPart, partIDs []uuid.UUID) error {
+	return s.client.
+		Where("part_id IN ?", partIDs).
+		Find(sectionParts).
+		Error
+}
+
+func (s songSectionRepository) CountAllSectionPartsBySectionID(count *int64, sectionID uuid.UUID) error {
+	return s.client.
+		Where("section_id IN ?", sectionID).
+		Count(count).
+		Error
+}
+
 func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, sectionPart := range *sectionParts {
@@ -155,6 +183,10 @@ func (s songSectionRepository) CreateAllSectionParts(sectionParts *[]model.SongS
 		}
 		return nil
 	})
+}
+
+func (s songSectionRepository) UpdateSectionPart(sectionPart *model.SongSectionPart) error {
+	return s.client.Save(sectionPart).Error
 }
 
 func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {

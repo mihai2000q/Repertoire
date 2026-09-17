@@ -119,8 +119,43 @@ func (s *SongSectionRepositoryMock) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
+func (s *SongSectionRepositoryMock) GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error {
+	args := s.Called(sectionPart, sectionID, partID)
+
+	if len(args) > 1 {
+		*sectionPart = *args.Get(1).(*model.SongSectionPart)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) GetAllSectionPartsByPartIDs(sectionParts *[]model.SongSectionPart, partIDs []uuid.UUID) error {
+	args := s.Called(sectionParts, partIDs)
+
+	if len(args) > 1 {
+		*sectionParts = *args.Get(1).(*[]model.SongSectionPart)
+	}
+
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) CountAllSectionPartsBySectionID(count *int64, sectionID uuid.UUID) error {
+	args := s.Called(count, sectionID)
+
+	if len(args) > 1 {
+		*count = *args.Get(1).(*int64)
+	}
+
+	return args.Error(0)
+}
+
 func (s *SongSectionRepositoryMock) CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	args := s.Called(sectionParts)
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) UpdateSectionPart(sectionPart *model.SongSectionPart) error {
+	args := s.Called(sectionPart)
 	return args.Error(0)
 }
 
