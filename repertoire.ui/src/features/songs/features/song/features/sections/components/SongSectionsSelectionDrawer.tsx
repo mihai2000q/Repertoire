@@ -6,9 +6,10 @@ import plural from '../../../../../../../utils/plural.ts'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { toast } from 'react-toastify'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import { SongPart, SongSection } from '../../../../../../../types/models/Song.ts'
-import { useEffect, useRef, useState } from 'react'
+import { SongSection } from '../../../../../../../types/models/Song.ts'
+import { useMemo } from 'react'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
+import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
 
 interface SongSectionsSelectionDrawerProps {
   sections: SongSection[]
@@ -17,17 +18,32 @@ interface SongSectionsSelectionDrawerProps {
 
 function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelectionDrawerProps) {
   const { selectedIds, clearSelection, isClickSelectionActive } = useClickSelect()
-  const selectedSections = useRef<SongSection[]>([])
-  const [selectedSectionParts, setSelectedSectionParts] = useState<SongPart[]>([])
-  useEffect(() => {
-    selectedSections.current = sections.filter((s) => selectedIds.some((sId) => sId === s.id))
-    setSelectedSectionParts(selectedSections.current.flatMap((s) => s.parts))
-  }, [selectedIds])
+
+  const selectedSections = useMemo(
+    () => sections.filter((s) => selectedIds.includes(`section-${s.id}`)),
+    [sections, selectedIds]
+  )
+  const selectedSectionParts = useMemo(
+    () =>
+      sections.flatMap((s) => s.parts.filter((p) => selectedIds.includes(`part-${p.id}:${s.id}`))),
+    [sections, selectedIds]
+  )
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
 
   const [bulkUpdate, { isLoading: bulkUpdateIsLoading }] = useBulkUpdateSongPartsMutation()
+
+  const selectionText = useMemo(() => {
+    const sectionsLabel = `${selectedSections.length} section${plural(selectedSections)}`
+    const partsLabel = `${selectedSectionParts.length} part${plural(selectedSectionParts)}`
+
+    if (selectedSections.length > 0 && selectedSectionParts.length > 0)
+      return `${sectionsLabel} and ${partsLabel} selected`
+    if (selectedSections.length > 0) return `${sectionsLabel} selected`
+    if (selectedSectionParts.length > 0) return `${partsLabel} selected`
+    return '0 selected'
+  }, [selectedSections, selectedSectionParts])
 
   async function handleAddRehearsals() {
     await bulkUpdate({
@@ -39,9 +55,7 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
       songId: songId
     }).unwrap()
     toast.success(
-      `Rehearsals added to
-      ${selectedSectionParts.length} part${plural(selectedSectionParts)}
-      of the selected section${plural(selectedIds)}!`
+      `Rehearsals added to ${selectedSectionParts.length} ` + `part${plural(selectedSectionParts)}!`
     )
     clearSelection()
   }
@@ -52,7 +66,7 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
         aria-label={'song-sections-selection-drawer'}
         opened={isClickSelectionActive}
         onClose={clearSelection}
-        text={`${selectedIds.length} section${plural(selectedIds)} selected`}
+        text={selectionText}
         actionIcons={
           <Tooltip.Group openDelay={200}>
             <Tooltip label={'Add Rehearsals'} openDelay={200}>
@@ -79,13 +93,24 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
         }
       />
 
-      <DeleteSongSectionsModal
-        ids={selectedIds}
-        songId={songId}
-        opened={openedDeleteWarning}
-        onClose={closeDeleteWarning}
-        onDelete={clearSelection}
-      />
+      {selectedSections.length > 0 ? (
+        <DeleteSongSectionsModal
+          sections={selectedSections}
+          sectionParts={selectedSectionParts}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      ) : (
+        <DeleteSongPartsModal
+          ids={selectedSectionParts.map((sp) => sp.id)}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      )}
     </>
   )
 }

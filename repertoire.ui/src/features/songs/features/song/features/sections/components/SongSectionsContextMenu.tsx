@@ -1,14 +1,15 @@
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useMemo } from 'react'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { toast } from 'react-toastify'
 import plural from '../../../../../../../utils/plural.ts'
 import MenuItemConfirmation from '../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import { SongPart, SongSection } from '../../../../../../../types/models/Song.ts'
+import { SongSection } from '../../../../../../../types/models/Song.ts'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
+import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
 
 interface SongSectionsContextMenuProps {
   children: ReactNode
@@ -18,12 +19,15 @@ interface SongSectionsContextMenuProps {
 
 function SongSectionsContextMenu({ children, sections, songId }: SongSectionsContextMenuProps) {
   const { selectedIds, clearSelection } = useClickSelect()
-  const selectedSections = useRef<SongSection[]>([])
-  const [selectedSectionParts, setSelectedSectionParts] = useState<SongPart[]>([])
-  useEffect(() => {
-    selectedSections.current = sections.filter((s) => selectedIds.some((sId) => sId === s.id))
-    setSelectedSectionParts(selectedSections.current.flatMap((s) => s.parts))
-  }, [selectedIds])
+  const selectedSections = useMemo(
+    () => sections.filter((s) => selectedIds.includes(`section-${s.id}`)),
+    [sections, selectedIds]
+  )
+  const selectedSectionParts = useMemo(
+    () =>
+      sections.flatMap((s) => s.parts.filter((p) => selectedIds.includes(`part-${p.id}:${s.id}`))),
+    [sections, selectedIds]
+  )
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 
@@ -46,9 +50,7 @@ function SongSectionsContextMenu({ children, sections, songId }: SongSectionsCon
       songId: songId
     }).unwrap()
     toast.success(
-      `Rehearsals added to
-      ${selectedSectionParts.length} part${plural(selectedSectionParts)}
-      of the selected section${plural(selectedIds)}!`
+      `Rehearsals added to ${selectedSectionParts.length} ` + `part${plural(selectedSectionParts)}!`
     )
     clearSelection()
   }
@@ -84,13 +86,24 @@ function SongSectionsContextMenu({ children, sections, songId }: SongSectionsCon
         </ContextMenu.Dropdown>
       </ContextMenu>
 
-      <DeleteSongSectionsModal
-        ids={selectedIds}
-        songId={songId}
-        opened={openedDeleteWarning}
-        onClose={closeDeleteWarning}
-        onDelete={clearSelection}
-      />
+      {selectedSections.length > 0 ? (
+        <DeleteSongSectionsModal
+          sections={selectedSections}
+          sectionParts={selectedSectionParts}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      ) : (
+        <DeleteSongPartsModal
+          ids={selectedSectionParts.map((sp) => sp.id)}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      )}
     </>
   )
 }

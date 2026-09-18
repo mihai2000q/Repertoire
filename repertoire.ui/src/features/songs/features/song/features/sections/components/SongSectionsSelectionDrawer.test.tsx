@@ -1,11 +1,17 @@
 import { setupServer } from 'msw/node'
-import { reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import {
+  emptySongPart,
+  emptySongSection,
+  reduxRender,
+  withToastify
+} from '../../../../../../../test-utils.tsx'
 import SongSectionsSelectionDrawer from './SongSectionsSelectionDrawer.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { BulkRehearsalsSongSectionsRequest } from '../types/requests/SongSectionRequests.ts'
+import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
 import { http, HttpResponse } from 'msw'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
+import { SongSection } from '../../../../../../../types/models/Song.ts'
 
 // Mock the context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -13,13 +19,18 @@ vi.mock('../../../../../../../context/ClickSelectContext', () => ({
 }))
 
 describe('Song Sections Selection Drawer', () => {
-  const selectedIds = ['1', '2', '3']
+  const selectedSectionIds = ['section-1', 'section-2', 'section-3']
   const clearSelection = vi.fn()
+  const sections: SongSection[] = ['1', '2', '3'].map((id) => ({
+    ...emptySongSection,
+    id,
+    name: `Section ${id}`,
+    parts: [{ ...emptySongPart, id: `part-${id}`, rehearsals: 2, confidence: 50 }]
+  }))
 
   const server = setupServer()
 
-  beforeEach(() => {
-    vi.clearAllMocks()
+  function mockSelectedIds(selectedIds: string[]) {
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: [],
       addSelectable: vi.fn(),
@@ -28,6 +39,11 @@ describe('Song Sections Selection Drawer', () => {
       isClickSelectionActive: true,
       clearSelection: clearSelection
     })
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSelectedIds(selectedSectionIds)
   })
 
   afterEach(() => {
@@ -39,46 +55,112 @@ describe('Song Sections Selection Drawer', () => {
 
   afterAll(() => server.close())
 
-  it('should render', async () => {
-    reduxRender(<SongSectionsSelectionDrawer songId={'1'} />)
+  it('should render the number of selected sections', () => {
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
 
-    expect(screen.getByText(`${selectedIds.length} sections selected`)).toBeInTheDocument()
+    expect(screen.getByText(`${selectedSectionIds.length} sections selected`)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'delete' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeInTheDocument()
   })
 
-  it('should open warning when clicking on delete button', async () => {
+  it('should disable add rehearsals when only sections are selected', () => {
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeDisabled()
+  })
+
+  it('should clear the selection when closing the drawer', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionsSelectionDrawer songId={'1'} />)
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    await user.click(screen.getByRole('button', { name: 'close-drawer' }))
+
+    expect(clearSelection).toHaveBeenCalledOnce()
+  })
+
+  it('should not render when click selection is inactive', () => {
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: selectedSectionIds,
+      isClickSelectionActive: false,
+      clearSelection
+    })
+
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    expect(screen.queryByText('3 sections selected')).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'delete' })).not.toBeInTheDocument()
+  })
+
+  it('should open the section deletion modal when clicking delete with sections selected', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
 
     await user.click(screen.getByRole('button', { name: 'delete' }))
 
-    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /delete song sections/i })).toBeInTheDocument()
   })
 
-  it('should bulk rehearsals by 1 when clicking on add rehearsals button', async () => {
+  it('should open the part deletion modal when clicking delete with only parts selected', async () => {
+    const user = userEvent.setup()
+    const selectedPartIds = sections
+      .slice(0, 2)
+      .map((section) => `part-${section.parts[0].id}:${section.id}`)
+    mockSelectedIds(selectedPartIds)
+
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    await user.click(screen.getByRole('button', { name: 'delete' }))
+
+    expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
+  })
+
+  it('should display both selected sections and parts', () => {
+    const selectedPartIds = sections
+      .slice(0, 2)
+      .map((section) => `part-${section.parts[0].id}:${section.id}`)
+    mockSelectedIds([...selectedSectionIds.slice(0, 2), ...selectedPartIds])
+
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    expect(screen.getByText('2 sections and 2 parts selected')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeEnabled()
+  })
+
+  it('should bulk rehearse selected parts by 1', async () => {
     const user = userEvent.setup()
 
-    let capturedRequest: BulkRehearsalsSongSectionsRequest
+    const selectedPartIds = sections.map((section) => `part-${section.parts[0].id}:${section.id}`)
+    const selectedParts = sections.map((section) => section.parts[0])
+    mockSelectedIds(selectedPartIds)
+
+    let capturedRequest: BulkUpdateSongPartsRequest
     server.use(
-      http.post(`/songs/sections/bulk-rehearsals`, async (req) => {
-        capturedRequest = (await req.request.json()) as BulkRehearsalsSongSectionsRequest
+      http.put(`/songs/parts/bulk-update`, async (req) => {
+        capturedRequest = (await req.request.json()) as BulkUpdateSongPartsRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
     const songId = '1'
 
-    reduxRender(withToastify(<SongSectionsSelectionDrawer songId={songId} />))
+    reduxRender(withToastify(<SongSectionsSelectionDrawer sections={sections} songId={songId} />))
 
     await user.click(screen.getByRole('button', { name: 'add-rehearsals' }))
 
     expect(
-      screen.getByText(`Rehearsals added to ${selectedIds.length} sections!`)
+      screen.getByText(`Rehearsals added to ${selectedParts.length} parts!`)
     ).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({
-      sections: selectedIds.map((id) => ({ id: id, rehearsals: 1 })),
+      requests: selectedParts.map((part) => ({
+        id: part.id,
+        rehearsals: part.rehearsals + 1,
+        confidence: part.confidence
+      })),
       songId: songId
     })
     expect(clearSelection).toHaveBeenCalledOnce()
