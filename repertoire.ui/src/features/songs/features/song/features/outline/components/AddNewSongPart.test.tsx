@@ -1,19 +1,17 @@
 import {
-  emptyArtist,
-  emptySong,
+  emptySongSection,
   emptySongSettings,
   reduxRender,
   withToastify
 } from '../../../../../../../test-utils.tsx'
 import AddNewSongPart from './AddNewSongPart.tsx'
-import { act, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { userEvent } from '@testing-library/user-event'
-import { Instrument } from '../../../../../../../types/models/Song.ts'
+import { Instrument, SongSection } from '../../../../../../../types/models/Song.ts'
 import { CreateSongPartRequest } from '../../parts/types/requests/SongPartRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
-import { setSong } from '../../../state/slice/songSlice.tsx'
 
 describe('Add New Song Part', () => {
   const instruments: Instrument[] = [
@@ -44,9 +42,25 @@ describe('Add New Song Part', () => {
     }
   ]
 
+  const songSections: SongSection[] = [
+    {
+      ...emptySongSection,
+      id: '1',
+      name: 'Chorus'
+    },
+    {
+      ...emptySongSection,
+      id: '2',
+      name: 'Verse'
+    }
+  ]
+
   const handlers = [
     http.get('/songs/instruments', async () => {
       return HttpResponse.json(instruments)
+    }),
+    http.get('/songs/sections', async () => {
+      return HttpResponse.json(songSections)
     })
   ]
 
@@ -59,28 +73,67 @@ describe('Add New Song Part', () => {
   afterAll(() => server.close())
 
   it('should render', async () => {
-    const [_, store] = reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
       song: { songId: '', isArtistBand: false, settings: emptySongSettings }
     })
 
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'song-section' })).toBeInTheDocument()
     expect(screen.getByRole('textbox', { name: /name/i })).toBeInTheDocument()
     expect(await screen.findByRole('textbox', { name: /name/i })).toHaveFocus()
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument()
 
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
+  })
 
-    const newSong = {
-      ...emptySong,
-      artist: { ...emptyArtist, isBand: true, bandMembers: bandMembers }
-    }
-    await act(() => store.dispatch(setSong(newSong)))
+  it('should disable band member select when the artist is not band', () => {
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: false,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
+
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
+  })
+
+  it('should disable band member select when the artist is band, but a song section is not selected', () => {
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
+
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeDisabled()
+  })
+
+  it('should enable band member select when the artist is band and a song section is selected', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<AddNewSongPart opened={true} onClose={() => {}} />, {
+      song: {
+        songId: '',
+        isArtistBand: true,
+        artistBandMembers: bandMembers,
+        settings: emptySongSettings
+      }
+    })
+
+    await user.click(screen.getByRole('combobox', { name: 'song-section' }))
+    await user.click(await screen.findByRole('option', { name: songSections[0].name }))
+
     expect(screen.getByRole('button', { name: 'select-band-member' })).not.toBeDisabled()
   })
 
   it('should have default options based on settings', async () => {
+    const user = userEvent.setup()
+
     const defaultInstrument = instruments[1]
     const defaultBandMember = bandMembers[1]
 
@@ -94,6 +147,9 @@ describe('Add New Song Part', () => {
         settings: songSettings
       }
     })
+
+    await user.click(screen.getByRole('combobox', { name: 'song-section' }))
+    await user.click(await screen.findByRole('option', { name: songSections[0].name }))
 
     expect(screen.getByRole('button', { name: defaultBandMember.name })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: defaultInstrument.name })).toBeInTheDocument()
@@ -130,8 +186,7 @@ describe('Add New Song Part', () => {
 
     expect(capturedRequest).toStrictEqual({
       name: newName,
-      songId: songId,
-      sectionIds: []
+      songId: songId
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -147,6 +202,7 @@ describe('Add New Song Part', () => {
     const songId = 'some id'
 
     const newName = 'Part 1'
+    const newSongSection = songSections[0]
     const newInstrument = instruments[0]
     const newBandMember = bandMembers[0]
 
@@ -168,6 +224,9 @@ describe('Add New Song Part', () => {
     })
 
     // fill fields
+    await user.click(screen.getByRole('combobox', { name: 'song-section' }))
+    await user.click(await screen.findByRole('option', { name: newSongSection.name }))
+
     await user.click(screen.getByRole('button', { name: 'select-band-member' }))
     await user.click(await screen.findByRole('option', { name: newBandMember.name }))
 
@@ -179,11 +238,11 @@ describe('Add New Song Part', () => {
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(capturedRequest).toStrictEqual({
-      bandMemberId: newBandMember.id,
-      instrumentId: newInstrument.id,
       name: newName,
       songId: songId,
-      sectionIds: []
+      instrumentId: newInstrument.id,
+      sectionId: newSongSection.id,
+      bandMemberId: newBandMember.id
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -192,6 +251,7 @@ describe('Add New Song Part', () => {
     // reset fields
     expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'select-instrument' })).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'song-section' })).toHaveValue('')
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
   })
 
@@ -207,6 +267,7 @@ describe('Add New Song Part', () => {
     }
 
     const newName = 'Part 1'
+    const newSongSection = songSections[0]
     const newInstrument = instruments[1]
 
     let capturedRequest: CreateSongPartRequest
@@ -226,6 +287,10 @@ describe('Add New Song Part', () => {
       }
     })
 
+    // fill fields
+    await user.click(screen.getByRole('combobox', { name: 'song-section' }))
+    await user.click(await screen.findByRole('option', { name: newSongSection.name }))
+
     await user.click(screen.getByRole('button', { name: settings.defaultInstrument.name }))
     await user.clear(screen.getByRole('textbox', { name: /search/i }))
     await user.click(await screen.findByRole('option', { name: newInstrument.name }))
@@ -235,23 +300,22 @@ describe('Add New Song Part', () => {
     await user.click(screen.getByRole('button', { name: /add/i }))
 
     expect(capturedRequest).toStrictEqual({
-      bandMemberId: settings.defaultBandMember.id,
-      instrumentId: newInstrument.id,
       name: newName,
       songId: songId,
-      sectionIds: []
+      instrumentId: newInstrument.id,
+      sectionId: newSongSection.id,
+      bandMemberId: settings.defaultBandMember.id
     })
     expect(onClose).toHaveBeenCalledOnce()
 
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
 
     // reset fields
-    expect(
-      screen.getByRole('button', { name: settings.defaultBandMember.name })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'select-band-member' })).toBeInTheDocument() // due to section
     expect(
       screen.getByRole('button', { name: settings.defaultInstrument.name })
     ).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'song-section' })).toHaveValue('')
     expect(screen.getByRole('textbox', { name: /name/i })).toHaveValue('')
   })
 

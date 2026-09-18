@@ -1,5 +1,5 @@
 import { useCreateSongPartMutation } from '../../parts/state/api/songPartsApi.ts'
-import { Button, Collapse, Group, TextInput } from '@mantine/core'
+import { Button, Collapse, ComboboxItem, Group, TextInput } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import { useDidUpdate, useFocusTrap, useInputState } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -8,6 +8,7 @@ import BandMemberCompactSelect from '../../../../../../../components/form/select
 import InstrumentCompactSelect from '../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { Instrument } from '../../../../../../../types/models/Song.ts'
 import { useAppSelector } from '../../../../../../../state/store.ts'
+import SongSectionSelect from '../../../../../../../components/form/select/SongSectionSelect.tsx'
 
 interface AddNewSongPartProps {
   opened: boolean
@@ -32,6 +33,7 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
     setNameError(false)
   }, [opened])
 
+  const [songSection, setSongSection] = useState<ComboboxItem>(null)
   const [bandMember, setBandMember] = useState<BandMember>(settings.defaultBandMember)
   const [instrument, setInstrument] = useState<Instrument>(settings.defaultInstrument)
   useDidUpdate(() => {
@@ -52,9 +54,9 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
     const nameTrimmed = name.trim()
 
     await createSongPartMutation({
-      sectionIds: [],
       name: nameTrimmed,
       songId: songId,
+      sectionId: songSection?.value,
       bandMemberId: bandMember?.id,
       instrumentId: instrument?.id
     }).unwrap()
@@ -64,6 +66,7 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
     onClose()
     setBandMember(settings.defaultBandMember)
     setInstrument(settings.defaultInstrument)
+    setSongSection(null)
     setName('')
   }
 
@@ -72,11 +75,13 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
       <Group gap={'xs'} py={'xs'} px={'md'} aria-label={'add-new-song-part'}>
         <Group gap={8}>
           <BandMemberCompactSelect
-            bandMember={bandMember}
+            bandMember={songSection === null ? null : bandMember}
             setBandMember={setBandMember}
             bandMembers={bandMembers}
             position={'top'}
             transitionProps={{ duration: 160, transition: 'fade-up' }}
+            disabled={songSection === null}
+            tooltipLabel={songSection === null && 'A song section must be selected'}
           />
 
           <InstrumentCompactSelect
@@ -86,6 +91,8 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
             transitionProps={{ duration: 160, transition: 'fade-up' }}
           />
         </Group>
+
+        <SongSectionSelect option={songSection} onOptionChange={setSongSection} songId={songId} />
 
         <TextInput
           ref={nameInputRef}
