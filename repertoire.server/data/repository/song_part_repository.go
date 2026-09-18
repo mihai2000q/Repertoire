@@ -48,10 +48,11 @@ func (s songPartRepository) GetAllByIDs(parts *[]model.SongPart, ids []uuid.UUID
 func (s songPartRepository) GetAllBySong(parts *[]model.SongPart, songID uuid.UUID) error {
 	return s.client.Model(&model.SongPart{}).
 		Joins("Instrument").
-		Joins("BandMember").
-		Preload("BandMember.Roles").
-		Preload("Sections").
-		Preload("Sections.SongSectionType").
+		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("BandMember").
+				Preload("BandMember.Roles").
+				Order("song_section_parts.order")
+		}).
 		Where(model.SongPart{SongID: songID}).
 		Order("song_order").
 		Find(parts).

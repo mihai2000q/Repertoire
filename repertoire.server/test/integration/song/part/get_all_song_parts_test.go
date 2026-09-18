@@ -12,6 +12,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gorm.io/gorm"
 )
 
 func TestGetAllSongParts_WhenSuccessful_ShouldReturnSongParts(t *testing.T) {
@@ -35,15 +36,16 @@ func TestGetAllSongParts_WhenSuccessful_ShouldReturnSongParts(t *testing.T) {
 	var parts []model.SongPart
 	db.Where(&model.SongPart{}).
 		Joins("Instrument").
-		Joins("BandMember").
-		Preload("BandMember.Roles").
-		Preload("Sections").
-		Preload("Sections.SongSectionType").
+		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
+			return db.Joins("BandMember").
+				Preload("BandMember.Roles").
+				Order("song_section_parts.order")
+		}).
 		Where(model.SongPart{SongID: songID}).
 		Order("song_order").
 		Find(&parts)
 
 	for i := range responseSongParts {
-		assertion.ResponseSongPart(t, parts[i], responseSongParts[i], true, true)
+		assertion.ResponseSongPart(t, parts[i], responseSongParts[i], true)
 	}
 }
