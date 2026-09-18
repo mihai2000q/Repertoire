@@ -36,4 +36,5 @@ export interface BulkDeleteSongSectionsRequest {
 export interface DeleteSongSectionRequest {
   id: string
   songId: string
+  withParts?: boolean
 }

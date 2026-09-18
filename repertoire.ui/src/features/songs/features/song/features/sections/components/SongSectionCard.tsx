@@ -19,7 +19,7 @@ import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBad
 import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
 import InstrumentsGroup from './section/InstrumentsGroup.tsx'
 import { useAppSelector } from '../../../../../../../state/store.ts'
-import DeleteSongSectionModal from './DeleteSongSectionModal.tsx'
+import DeleteSongSectionModal from './modal/DeleteSongSectionModal.tsx'
 import { toast } from 'react-toastify'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import plural from '../../../../../../../utils/plural.ts'

@@ -51,7 +51,9 @@ const songSectionsApi = api.injectEndpoints({
     }),
     deleteSongSection: build.mutation<HttpMessageResponse, DeleteSongSectionRequest>({
       query: (arg) => ({
-        url: `songs/sections/${arg.id}/from/${arg.songId}`,
+        url:
+          `songs/sections/${arg.id}/from/${arg.songId}` +
+          `${createQueryParams({ ...arg, id: undefined, songId: undefined })}`,
         method: 'DELETE'
       }),
       invalidatesTags: ['Songs']
