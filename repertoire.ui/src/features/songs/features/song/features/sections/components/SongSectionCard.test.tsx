@@ -1,13 +1,22 @@
-import { emptySongSection, reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import {
+  emptyArtist,
+  emptySong,
+  emptySongPart,
+  emptySongSection,
+  reduxRender,
+  withToastify
+} from '../../../../../../../test-utils.tsx'
 import SongSectionCard from './SongSectionCard.tsx'
 import { Instrument, SongSection } from '../../../../../../../types/models/Song.ts'
-import { screen } from '@testing-library/react'
+import { act, screen, within } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
-import { UpdateSongSectionRequest } from '../types/requests/SongSectionRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
+import { setSong } from '../../../state/slice/songSlice.tsx'
+import OutlineView from '../../outline/types/enums/OutlineView.ts'
+import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
 
 // Mock Context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -63,142 +72,146 @@ describe('Song Section Card', () => {
     server.close()
   })
 
-  it('should render and display minimal info', () => {
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={false}
-        isDragging={false}
-      />
-    )
-
-    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
-    expect(screen.getByText(section.songSectionType.name)).toBeInTheDocument()
-    expect(screen.getByText(section.name)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-  })
-
-  it('should render and display maximal info', async () => {
-    const user = userEvent.setup()
-
-    const bandMember: BandMember = {
-      id: '1',
-      name: 'Mike',
-      roles: [{ id: '1', name: 'Guitarist' }],
-      imageUrl: 'default.png'
-    }
-
-    const instrument: Instrument = {
-      id: '1',
-      name: 'Electric Guitar'
-    }
-
-    // when artist is a band
-    const [{ rerender }] = reduxRender(
-      <SongSectionCard
-        section={{
-          ...section,
-          bandMember: bandMember,
-          instrument: instrument
-        }}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={false}
-        isDragging={false}
-        isArtistBand={true}
-      />
-    )
-
-    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
-    expect(screen.getByLabelText('instrument-icon')).toBeInTheDocument()
-    expect(screen.getByText(section.name)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'more-menu' })).toBeInTheDocument()
-
-    await user.hover(screen.getByRole('img', { name: bandMember.name }))
-    expect(await screen.findByText(bandMember.name)).toBeInTheDocument()
-    expect(screen.getAllByRole('img', { name: bandMember.name })).toHaveLength(2)
-    expect(screen.getByText(bandMember.roles[0].name)).toBeInTheDocument()
-
-    // when artist is not a band
-    rerender(
-      <SongSectionCard
-        section={{
-          ...section,
-          bandMember: bandMember,
-          instrument: instrument
-        }}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={false}
-        isDragging={false}
-        isArtistBand={false}
-      />
-    )
-
-    expect(screen.queryByRole('img', { name: bandMember.name })).not.toBeInTheDocument()
-  })
-
-  it('should show details', async () => {
-    const user = userEvent.setup()
-    const maxSectionProgress = 67
+  it('should render and display info', () => {
+    const maxSectionProgress = 60
 
     reduxRender(
       <SongSectionCard
         section={section}
-        songId={''}
         maxSectionProgress={maxSectionProgress}
-        maxSectionRehearsals={0}
-        showDetails={true}
         isDragging={false}
       />
     )
 
-    expect(screen.getAllByText(section.rehearsals)).toHaveLength(2) // the one visible and the one in the tooltip
-    expect(screen.getByTestId('rehearsals')).toHaveTextContent(section.rehearsals.toString())
+    expect(screen.getByText(section.name)).toBeInTheDocument()
+    expect(screen.getByText(section.songSectionType.name)).toBeInTheDocument()
+    expect(screen.getByText(section.rehearsals)).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toHaveValue(section.confidence)
     expect(screen.getByRole('progressbar', { name: 'progress' })).toBeInTheDocument()
     expect(screen.getByRole('progressbar', { name: 'progress' })).toHaveValue(
       (section.progress / maxSectionProgress) * 100
     )
+  })
 
-    await user.hover(screen.getByTestId('rehearsals'))
+  it('should render and display aggregated band members and instruments', async () => {
+    const user = userEvent.setup()
+    const bandMembers: BandMember[] = [
+      {
+        id: '1',
+        name: 'Mike',
+        roles: [{ id: '1', name: 'Guitarist' }],
+        imageUrl: 'default.png'
+      },
+      {
+        id: '2',
+        name: 'Leonard',
+        roles: [{ id: '2', name: 'Voice' }]
+      }
+    ]
+
+    const instruments: Instrument[] = [
+      {
+        id: '1',
+        name: 'Electric Guitar'
+      },
+      {
+        id: '2',
+        name: 'Voice'
+      }
+    ]
+
+    // when artist is a band
+    const [_, store] = reduxRender(
+      <SongSectionCard
+        section={{
+          ...section,
+          parts: [
+            {
+              ...emptySongPart,
+              id: '1',
+              instrument: instruments[0],
+              bandMembers: [bandMembers[0], bandMembers[1]]
+            },
+            {
+              ...emptySongPart,
+              id: '2',
+              instrument: instruments[1],
+              bandMembers: [bandMembers[1]]
+            },
+            {
+              ...emptySongPart,
+              id: '3',
+              instrument: instruments[0],
+              bandMembers: [bandMembers[1]]
+            },
+            { ...emptySongPart, id: '4', bandMembers: [bandMembers[0]] },
+            { ...emptySongPart, id: '5' }
+          ]
+        }}
+        maxSectionProgress={0}
+        isDragging={false}
+      />,
+      { song: { songId: '', isArtistBand: true } }
+    )
+
+    const instrumentsEl = screen.getByLabelText('instruments')
+    expect(instrumentsEl).toBeInTheDocument()
+    instruments.forEach((instrument) => {
+      expect(within(instrumentsEl).getByLabelText(instrument.name)).toBeInTheDocument()
+    })
+    await user.hover(instrumentsEl)
     expect(
-      screen.getByRole('tooltip', { name: new RegExp(section.rehearsals.toString()) })
+      await screen.findByRole('tooltip', { name: `${instruments[0].name}, ${instruments[1].name}` })
     ).toBeInTheDocument()
 
-    await user.hover(screen.getByRole('progressbar', { name: 'confidence' }))
-    expect(
-      screen.getByRole('tooltip', { name: new RegExp(section.confidence.toString()) })
-    ).toBeInTheDocument()
+    const bandMembersEl = screen.getByLabelText('band-members')
+    expect(bandMembersEl).toBeInTheDocument()
+    bandMembers.forEach((bandMember) => {
+      if (bandMember.imageUrl) {
+        expect(
+          within(bandMembersEl).getByRole('img', { name: bandMember.name })
+        ).toBeInTheDocument()
+      } else {
+        expect(
+          within(bandMembersEl).getByLabelText(`default-icon-${bandMember.name}`)
+        ).toBeInTheDocument()
+      }
+    })
 
-    await user.hover(screen.getByRole('progressbar', { name: 'progress' }))
-    expect(
-      screen.getByRole('tooltip', { name: new RegExp(section.progress.toString()) })
-    ).toBeInTheDocument()
+    // when artist is not a band
+    const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
+    await act(() => store.dispatch(setSong(newSong)))
+
+    expect(screen.queryByLabelText('band-members')).not.toBeInTheDocument()
+  })
+
+  it('should show details when clicking', async () => {
+    const user = userEvent.setup()
+
+    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+
+    await user.click(screen.getByLabelText(`song-section-${section.name}`))
+
+    section.parts.forEach((part) => {
+      expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
+    })
+  })
+
+  it('should show details from redux selector', async () => {
+    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />, {
+      songOutline: { view: OutlineView.Sections, showDetails: true }
+    })
+
+    section.parts.forEach((part) => {
+      expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
+    })
   })
 
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={true}
-        isDragging={false}
-      />
-    )
+    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -206,26 +219,7 @@ describe('Song Section Card', () => {
     })
 
     expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
-    expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
-  })
-
-  it('should display menu by clicking on the dots button', async () => {
-    const user = userEvent.setup()
-
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={true}
-        isDragging={false}
-      />
-    )
-
-    await user.click(screen.getByRole('button', { name: 'more-menu' }))
-
-    expect(screen.getByRole('menuitem', { name: /edit/i })).toBeInTheDocument()
+    expect(screen.getByRole('menuitem', { name: /add rehearsal/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
@@ -233,94 +227,90 @@ describe('Song Section Card', () => {
     it('should open edit song section modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={true}
-          isDragging={false}
-        />
-      )
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
-      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`song-section-${section.name}`)
+      })
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
 
       expect(await screen.findByRole('dialog', { name: /edit song section/i })).toBeInTheDocument()
     })
 
-    it('should display warning modal and delete section, when clicking delete', async () => {
+    it('should open add rehearsals to parts when clicking add rehearsal', async () => {
       const user = userEvent.setup()
 
-      const songId = 'some-song-id'
-
+      let capturedRequest: BulkUpdateSongPartsRequest
       server.use(
-        http.delete(`/songs/sections/${section.id}/from/${songId}`, () => {
+        http.put(`/songs/parts/bulk-update`, async (req) => {
+          capturedRequest = (await req.request.json()) as BulkUpdateSongPartsRequest
           return HttpResponse.json({ message: 'it worked' })
         })
       )
 
+      const songId = '1'
       reduxRender(
         withToastify(
-          <SongSectionCard
-            section={section}
-            songId={songId}
-            maxSectionProgress={0}
-            maxSectionRehearsals={0}
-            showDetails={true}
-            isDragging={false}
-          />
+          <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
+        ),
+        { song: { songId, isArtistBand: false } }
+      )
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`song-section-${section.name}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /add rehearsal/i }))
+      await user.click(screen.getByRole('button', { name: /confirm/i })) // menu item confirmation
+
+      expect(
+        screen.getByText(`Rehearsals added to ${section.name}'s ${section.parts.length} parts!`)
+      ).toBeInTheDocument()
+      expect(capturedRequest).toStrictEqual({
+        requests: section.parts.map((p) => ({
+          id: p.id,
+          rehearsals: p.rehearsals + 1,
+          confidence: p.confidence
+        })),
+        songId: songId
+      })
+    })
+
+    it('should open edit song section modal when clicking edit', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`song-section-${section.name}`)
+      })
+      await user.click(screen.getByRole('menuitem', { name: /edit/i }))
+
+      expect(await screen.findByRole('dialog', { name: /edit song section/i })).toBeInTheDocument()
+    })
+
+    it('should display delete section modal when clicking delete', async () => {
+      const user = userEvent.setup()
+
+      reduxRender(
+        withToastify(
+          <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
         )
       )
 
-      await user.click(screen.getByRole('button', { name: 'more-menu' }))
+      await user.pointer({
+        keys: '[MouseRight>]',
+        target: screen.getByLabelText(`song-section-${section.name}`)
+      })
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
       expect(await screen.findByRole('dialog', { name: /delete section/i })).toBeInTheDocument()
-      expect(screen.getByRole('heading', { name: /delete section/i })).toBeInTheDocument()
-      await user.click(screen.getByRole('button', { name: /yes/i }))
-
-      expect(screen.getByText(`${section.name} deleted!`)).toBeInTheDocument()
     })
   })
 
-  it('should add 1 rehearsal', async () => {
-    const user = userEvent.setup()
-
-    let capturedRequest: UpdateSongSectionRequest
-    server.use(
-      http.put(`/songs/sections`, async (req) => {
-        capturedRequest = (await req.request.json()) as UpdateSongSectionRequest
-        return HttpResponse.json({ message: 'it worked' })
-      })
-    )
-
-    const showToast = vi.fn()
-
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={true}
-        isDragging={false}
-        showRehearsalsToast={showToast}
-      />
-    )
-
-    await user.click(screen.getByRole('button', { name: 'add-rehearsal' }))
-
-    expect(capturedRequest).toStrictEqual({
-      ...section,
-      typeId: section.songSectionType.id,
-      rehearsals: section.rehearsals + 1
-    })
-    expect(showToast).toHaveBeenCalledOnce()
-  })
-
-  it('should disable context menu; drag handle, more menu and rehearsal buttons, when click selection is active', async () => {
+  it('should disable context menu, when click selection is active', async () => {
     const user = userEvent.setup()
 
     vi.mocked(useClickSelect).mockReturnValue({
@@ -332,27 +322,13 @@ describe('Song Section Card', () => {
       clearSelection: vi.fn()
     })
 
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={true}
-        isDragging={false}
-        showRehearsalsToast={vi.fn()}
-      />
-    )
+    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByLabelText(`song-section-${section.name}`)
     })
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
-
-    expect(screen.getByRole('button', { name: 'drag-handle' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: 'more-menu' })).toBeDisabled()
   })
 
   it('should hide the drag handle and display a checkmark, when click selected (part of the selected ids)', () => {
@@ -360,22 +336,12 @@ describe('Song Section Card', () => {
       selectables: [],
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
-      selectedIds: [section.id],
+      selectedIds: ['section-' + section.id],
       isClickSelectionActive: true,
       clearSelection: vi.fn()
     })
 
-    reduxRender(
-      <SongSectionCard
-        section={section}
-        songId={''}
-        maxSectionProgress={0}
-        maxSectionRehearsals={0}
-        showDetails={false}
-        isDragging={false}
-        showRehearsalsToast={vi.fn()}
-      />
-    )
+    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     expect(screen.queryByRole('button', { name: 'drag-handle' })).not.toBeInTheDocument()
     expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
@@ -385,17 +351,7 @@ describe('Song Section Card', () => {
     it('when avatar is hovered', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={false}
-          isDragging={false}
-          showRehearsalsToast={vi.fn()}
-        />
-      )
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.hover(screen.getByLabelText(`song-section-${section.name}`))
 
@@ -408,17 +364,7 @@ describe('Song Section Card', () => {
     it('when context menu is open', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={false}
-          isDragging={false}
-          showRehearsalsToast={vi.fn()}
-        />
-      )
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -431,41 +377,8 @@ describe('Song Section Card', () => {
       )
     })
 
-    it('when more menu is open', async () => {
-      const user = userEvent.setup()
-
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={false}
-          isDragging={false}
-          showRehearsalsToast={vi.fn()}
-        />
-      )
-
-      await user.click(screen.getByRole('button', { name: 'more-menu' }))
-
-      expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
-        'aria-selected',
-        'true'
-      )
-    })
-
     it('when is dragging', async () => {
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={false}
-          isDragging={true}
-          showRehearsalsToast={vi.fn()}
-        />
-      )
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={true} />)
 
       expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
         'aria-selected',
@@ -478,22 +391,12 @@ describe('Song Section Card', () => {
         selectables: [],
         addSelectable: vi.fn(),
         removeSelectable: vi.fn(),
-        selectedIds: [section.id],
+        selectedIds: ['section-' + section.id],
         isClickSelectionActive: true,
         clearSelection: vi.fn()
       })
 
-      reduxRender(
-        <SongSectionCard
-          section={section}
-          songId={''}
-          maxSectionProgress={0}
-          maxSectionRehearsals={0}
-          showDetails={false}
-          isDragging={false}
-          showRehearsalsToast={vi.fn()}
-        />
-      )
+      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
         'aria-selected',
