@@ -6,7 +6,13 @@ export interface CreateSongSectionRequest {
   songId: string
   typeId: string
   name: string
-  partIds: string[]
+  parts: CreateNewSongSectionPartRequest[]
+}
+
+interface CreateNewSongSectionPartRequest {
+  bandMemberId: string
+  partId: string
+  newPart: { name: string; instrumentId: string }
 }
 
 export interface UpdateSongSectionRequest {
