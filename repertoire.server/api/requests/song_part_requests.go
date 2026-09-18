@@ -9,9 +9,9 @@ type GetSongPartsRequest struct {
 type CreateSongPartRequest struct {
 	SongID       uuid.UUID `validate:"required"`
 	Name         string    `validate:"required,max=30"`
-	SectionIDs   []uuid.UUID
-	BandMemberID *uuid.UUID
 	InstrumentID *uuid.UUID
+	SectionID    *uuid.UUID `validate:"required_with=BandMemberID"`
+	BandMemberID *uuid.UUID
 }
 
 type UpdateSongPartRequest struct {
