@@ -1,14 +1,14 @@
-import { Avatar, AvatarGroup } from '@mantine/core'
+import { Avatar, AvatarGroup, AvatarGroupProps } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
-import { BandMember } from '../../../../../../../../types/models/Artist.ts'
+import { BandMember } from '../../types/models/Artist.ts'
 
-interface BandMembersGroupProps {
+interface BandMembersGroupProps extends AvatarGroupProps {
   bandMembers: BandMember[]
 }
 
-function BandMembersGroup({ bandMembers }: BandMembersGroupProps) {
+function BandMembersGroup({ bandMembers, ...props }: BandMembersGroupProps) {
   return (
-    <AvatarGroup>
+    <AvatarGroup {...props}>
       {bandMembers.map((bandMember) => (
         <Avatar
           key={bandMember.id}

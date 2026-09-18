@@ -1,7 +1,7 @@
 import { screen } from '@testing-library/react'
 import BandMembersGroup from './BandMembersGroup.tsx'
-import { BandMember } from '../../../../../../../../types/models/Artist.ts'
-import { mantineRender } from '../../../../../../../../test-utils.tsx'
+import { BandMember } from '../../types/models/Artist.ts'
+import { mantineRender } from '../../test-utils.tsx'
 
 const bandMembers: BandMember[] = [
   {
