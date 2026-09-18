@@ -122,7 +122,7 @@ describe('Song Parts Settings Button', () => {
       }
       const newBandMember = bandMembers[1]
 
-      const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMembers: [bandMembers[0]] }]
 
       reduxRender(<SongOutlineSettingsButton parts={parts} />, {
         song: {
@@ -161,7 +161,7 @@ describe('Song Parts Settings Button', () => {
       const newBandMember = bandMembers[1]
       const songId = 'some-song-id'
 
-      const parts: SongPart[] = [{ ...emptySongPart, bandMember: bandMembers[0] }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMembers: [bandMembers[0]] }]
 
       reduxRender(<SongOutlineSettingsButton parts={parts} />, {
         song: {
@@ -191,7 +191,7 @@ describe('Song Parts Settings Button', () => {
       const newBandMember = bandMembers[1]
       const songId = 'some-song-id'
 
-      const parts: SongPart[] = [{ ...emptySongPart, bandMember: newBandMember }]
+      const parts: SongPart[] = [{ ...emptySongPart, bandMembers: [newBandMember] }]
 
       reduxRender(<SongOutlineSettingsButton parts={parts} />, {
         song: {

@@ -34,7 +34,7 @@ import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.ts
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
 import { useAppSelector } from '../../../../../../../state/store.ts'
 import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
-import BandMemberAvatar from '../../../../../../../components/avatar/BandMemberAvatar.tsx'
+import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
 
 interface SongPartCardProps {
   part: SongPartModel
@@ -91,9 +91,7 @@ function SongPartCard({
 
     await updateSongPartMutation({
       ...part,
-      bandMemberId: part.bandMember?.id,
       instrumentId: part.instrument?.id,
-      sectionIds: part.sections.map((section) => section.id),
       rehearsals: part.rehearsals + 1
     }).unwrap()
     showRehearsalsToast?.(part.name)
@@ -200,7 +198,9 @@ function SongPartCard({
               </Center>
             )}
 
-            {isArtistBand && part.bandMember && <BandMemberAvatar bandMember={part.bandMember} />}
+            {isArtistBand && part.bandMembers.length > 0 && (
+              <BandMembersGroup bandMembers={part.bandMembers} />
+            )}
             {part.instrument && (
               <Tooltip openDelay={200} label={part.instrument?.name} withArrow>
                 <Center aria-label={'instrument-icon'} c={'primary.7'} w={16} h={16}>

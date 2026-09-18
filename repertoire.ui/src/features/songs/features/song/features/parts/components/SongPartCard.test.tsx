@@ -2,7 +2,6 @@ import {
   emptyArtist,
   emptySong,
   emptySongPart,
-  emptySongSection,
   reduxRender,
   withToastify
 } from '../../../../../../../test-utils.tsx'
@@ -30,8 +29,7 @@ describe('Song Part Card', () => {
     name: 'Solo 1',
     rehearsals: 12,
     confidence: 50,
-    progress: 150,
-    sections: [{ ...emptySongSection, id: '1', name: 'Solo' }]
+    progress: 150
   }
 
   const handlers = [
@@ -79,12 +77,19 @@ describe('Song Part Card', () => {
   it('should render and display maximal info', async () => {
     const user = userEvent.setup()
 
-    const bandMember: BandMember = {
-      id: '1',
-      name: 'Mike',
-      roles: [{ id: '1', name: 'Guitarist' }],
-      imageUrl: 'default.png'
-    }
+    const bandMembers: BandMember[] = [
+      {
+        id: '1',
+        name: 'Mike',
+        roles: [{ id: '1', name: 'Guitarist' }],
+        imageUrl: 'default.png'
+      },
+      {
+        id: '2',
+        name: 'Leonard',
+        roles: [{ id: '2', name: 'Voice' }],
+      }
+    ]
 
     const instrument: Instrument = {
       id: '1',
@@ -96,7 +101,7 @@ describe('Song Part Card', () => {
       <SongPartCard
         part={{
           ...part,
-          bandMember: bandMember,
+          bandMembers: bandMembers,
           instrument: instrument
         }}
         maxPartProgress={0}
@@ -108,7 +113,13 @@ describe('Song Part Card', () => {
     )
 
     expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+    bandMembers.forEach((bandMember: BandMember) => {
+      if (bandMember.imageUrl) {
+        expect(screen.getByRole('img', { name: bandMember.name })).toBeInTheDocument()
+      } else {
+        expect(screen.getByLabelText(`default-icon-${bandMember.name}`)).toBeInTheDocument()
+      }
+    })
     expect(screen.getByLabelText('instrument-icon')).toBeInTheDocument()
     expect(screen.getByText(part.name)).toBeInTheDocument()
     expect(screen.getByText(part.rehearsals)).toBeInTheDocument()
@@ -122,7 +133,13 @@ describe('Song Part Card', () => {
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
     await act(() => store.dispatch(setSong(newSong)))
 
-    expect(screen.queryByRole('img', { name: bandMember.name })).not.toBeInTheDocument()
+    bandMembers.forEach((bandMember: BandMember) => {
+      if (bandMember.imageUrl) {
+        expect(screen.queryByRole('img', { name: bandMember.name })).not.toBeInTheDocument()
+      } else {
+        expect(screen.queryByLabelText(`default-icon-${bandMember.name}`)).not.toBeInTheDocument()
+      }
+    })
   })
 
   async function shouldShowDetails(maxPartProgress: number = 0) {
@@ -259,7 +276,6 @@ describe('Song Part Card', () => {
 
     expect(capturedRequest).toStrictEqual({
       ...part,
-      sectionIds: part.sections.map((section) => section.id),
       rehearsals: part.rehearsals + 1
     })
     expect(showToast).toHaveBeenCalledOnce()

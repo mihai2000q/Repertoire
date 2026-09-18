@@ -44,7 +44,7 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
       name: part.name,
       rehearsals: part.rehearsals,
       confidence: part.confidence,
-      bandMemberId: part.bandMember?.id,
+      bandMemberId: part.bandMembers[0]?.id,
       instrumentId: part.instrument?.id
     },
     validateInputOnBlur: true,

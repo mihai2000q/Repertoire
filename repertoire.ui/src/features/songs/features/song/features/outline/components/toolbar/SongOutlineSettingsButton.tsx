@@ -55,7 +55,10 @@ function SongOutlineSettingsButton({ parts }: SongOutlineSettingsButtonProps) {
       defaultInstrumentId: defaultInstrument?.id,
       defaultBandMemberId: newBandMember?.id
     }).unwrap()
-    if (newBandMember && parts.filter((s) => s.bandMember?.id !== newBandMember.id).length > 0) {
+    if (
+      newBandMember &&
+      parts.some((s) => s.bandMembers.some((bm) => bm.id !== newBandMember.id))
+    ) {
       setOpenedUpdatedDefaultBandMemberPopover(true)
     }
   }
