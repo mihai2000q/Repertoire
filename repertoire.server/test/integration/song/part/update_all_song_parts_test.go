@@ -82,16 +82,17 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldUpdateAllSongParts(t *testing.T
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var updatedSong model.Song
 	db := utils.GetDatabase(t)
-	db.Preload("Parts").Find(&updatedSong, request.SongID)
+
+	var updatedSong model.Song
+	db.Preload("Parts").
+		Preload("Parts.SectionParts").
+		Find(&updatedSong, request.SongID)
 
 	for _, part := range updatedSong.Parts {
-		if request.InstrumentID != nil {
-			assert.Equal(t, request.InstrumentID, part.InstrumentID)
-		}
-		if request.BandMemberID != nil {
-			assert.Equal(t, request.BandMemberID, part.BandMemberID)
+		assert.Equal(t, request.InstrumentID, part.InstrumentID)
+		for _, sectionPart := range part.SectionParts {
+			assert.Equal(t, request.BandMemberID, sectionPart.BandMemberID)
 		}
 	}
 }
