@@ -27,9 +27,10 @@ interface EditSongPartModalProps {
   opened: boolean
   onClose: () => void
   part: SongPart
+  sectionId?: string
 }
 
-function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
+function EditSongPartModal({ opened, onClose, part, sectionId }: EditSongPartModalProps) {
   const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
 
   const [updateSongPartMutation, { isLoading }] = useUpdateSongPartMutation()
@@ -44,7 +45,7 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
       name: part.name,
       rehearsals: part.rehearsals,
       confidence: part.confidence,
-      bandMemberId: part.bandMembers[0]?.id,
+      bandMemberId: sectionId ? part.bandMembers[0]?.id : undefined,
       instrumentId: part.instrument?.id
     },
     validateInputOnBlur: true,
@@ -56,7 +57,7 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
         values.name !== part.name ||
           (typeof values.rehearsals === 'number' && values.rehearsals !== part.rehearsals) ||
           values.confidence !== part.confidence ||
-          values.bandMemberId !== part.bandMember?.id ||
+          values.bandMemberId !== part.bandMembers[0]?.id ||
           values.instrumentId !== part.instrument?.id
       )
 
@@ -71,9 +72,11 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
     form.setFieldValue('confidence', part.confidence)
   }, [part])
 
-  const [bandMember, setBandMember] = useState<BandMember>(part.bandMember)
+  const [bandMember, setBandMember] = useState<BandMember>(
+    sectionId ? part.bandMembers[0] : undefined
+  )
   useEffect(() => form.setFieldValue('bandMemberId', bandMember?.id), [bandMember])
-  useDidUpdate(() => setBandMember(part.bandMember), [part.bandMember])
+  useDidUpdate(() => setBandMember(part.bandMembers[0]), [part.bandMembers])
 
   const [instrument, setInstrument] = useState<ComboboxItem>(
     part.instrument
@@ -113,9 +116,9 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
       name: name,
       rehearsals: typeof rehearsals !== 'string' ? rehearsals : part.rehearsals,
       confidence: confidence,
-      sectionIds: [],
-      bandMemberId: bandMemberId,
-      instrumentId: instrumentId
+      instrumentId: instrumentId,
+      sectionId: sectionId,
+      bandMemberId: bandMemberId
     }).unwrap()
 
     onClose()
@@ -151,11 +154,13 @@ function EditSongPartModal({ opened, onClose, part }: EditSongPartModalProps) {
           </Group>
 
           <Group>
-            <BandMemberSelect
-              bandMember={bandMember}
-              setBandMember={setBandMember}
-              bandMembers={bandMembers}
-            />
+            {sectionId && (
+              <BandMemberSelect
+                bandMember={bandMember}
+                setBandMember={setBandMember}
+                bandMembers={bandMembers}
+              />
+            )}
             <InstrumentSelect option={instrument} onOptionChange={setInstrument} flex={1} />
           </Group>
 
