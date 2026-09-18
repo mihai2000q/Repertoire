@@ -1,12 +1,12 @@
-import { alpha, Avatar, AvatarGroup, Tooltip } from '@mantine/core'
+import { alpha, Avatar, AvatarGroup, AvatarGroupProps, Tooltip } from '@mantine/core'
 import { Instrument } from '../../../../../../../../types/models/Song.ts'
 import useInstrumentIcon from '../../../../../../../../hooks/useInstrumentIcon.tsx'
 
-interface InstrumentsGroupProps {
+interface InstrumentsGroupProps extends AvatarGroupProps {
   instruments: Instrument[]
 }
 
-function InstrumentsGroup({ instruments }: InstrumentsGroupProps) {
+function InstrumentsGroup({ instruments, ...props }: InstrumentsGroupProps) {
   const getInstrumentIcon = useInstrumentIcon()
 
   const tooltipLabel = instruments.reduce(
@@ -16,7 +16,7 @@ function InstrumentsGroup({ instruments }: InstrumentsGroupProps) {
 
   return (
     <Tooltip label={tooltipLabel} openDelay={300}>
-      <AvatarGroup>
+      <AvatarGroup {...props}>
         {instruments.map((instrument) => (
           <Avatar
             bg={'transparent'}
