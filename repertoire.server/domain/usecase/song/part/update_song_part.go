@@ -20,8 +20,9 @@ type UpdateSongPart struct {
 	progressProcessor  processor.ProgressProcessor
 	transactionManager transaction.Manager
 
-	txSongRepo     repository.SongRepository
-	txSongPartRepo repository.SongPartRepository
+	txSongRepo        repository.SongRepository
+	txSongPartRepo    repository.SongPartRepository
+	txSongSectionRepo repository.SongSectionRepository
 }
 
 func NewUpdateSongPart(
@@ -52,19 +53,18 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 
 	hasRehearsalsChanged := part.Rehearsals != request.Rehearsals
 	hasConfidenceChanged := part.Confidence != request.Confidence
-	hasBandMemberChanged := part.BandMemberID != nil && request.BandMemberID == nil ||
-		part.BandMemberID == nil && request.BandMemberID != nil ||
-		part.BandMemberID != nil && request.BandMemberID != nil && *part.BandMemberID != *request.BandMemberID
 
-	if hasBandMemberChanged && request.BandMemberID != nil {
-		if errCode := u.validateBandMember(*request.BandMemberID, part.Song); errCode != nil {
+	if request.SectionID != nil {
+		if errCode := u.validateBandMember(request, part); errCode != nil {
 			return errCode
 		}
 	}
 
+	var errCode *httperror.ErrorCode
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		u.txSongRepo = factory.NewSongRepository()
 		u.txSongPartRepo = factory.NewSongPartRepository()
+		u.txSongSectionRepo = factory.NewSongSectionRepository()
 
 		// Store old stats before modifications
 		oldPart := model.SongPart{
@@ -75,23 +75,23 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 
 		// update parts' fields
 		part.Name = request.Name
-		part.BandMemberID = request.BandMemberID
 		part.InstrumentID = request.InstrumentID
 
-		// complex update of rehearsals and/or confidence
+		if errCode = u.updateBandMember(request, part); errCode != nil {
+			return errCode.Error
+		}
+
 		if hasRehearsalsChanged {
 			if err := u.updateRehearsals(&part, request.Rehearsals); err != nil {
 				return err
 			}
 		}
-
 		if hasConfidenceChanged {
 			if err := u.updateConfidence(&part, request.Confidence); err != nil {
 				return err
 			}
 		}
 
-		// compute new progress and update song's stats
 		if hasRehearsalsChanged || hasConfidenceChanged {
 			part.Progress = u.progressProcessor.ComputeProgress(part)
 
@@ -101,30 +101,67 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 		}
 
 		// finally update part
-		if err := u.txSongPartRepo.Update(&part); err != nil {
-			return err
-		}
-
-		return nil
+		return u.txSongPartRepo.Update(&part)
 	})
 	if err != nil {
+		if errCode != nil {
+			return errCode
+		}
 		return httperror.DatabaseError(err)
 	}
 
 	return nil
 }
 
-func (u UpdateSongPart) validateBandMember(id uuid.UUID, song model.Song) *httperror.ErrorCode {
+func (u UpdateSongPart) validateBandMember(
+	request requests.UpdateSongPartRequest,
+	part model.SongPart,
+) *httperror.ErrorCode {
+	if request.BandMemberID == nil {
+		return nil
+	}
+
 	var member model.BandMember
-	if err := u.artistRepository.GetBandMember(&member, id); err != nil {
+	if err := u.artistRepository.GetBandMember(&member, *request.BandMemberID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(member).IsZero() {
 		return httperror.NotFoundError(errors.New("band member not found"))
 	}
-
-	if song.ArtistID == nil || *song.ArtistID != member.ArtistID {
+	if part.Song.ArtistID == nil || *part.Song.ArtistID != member.ArtistID {
 		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
+	}
+
+	return nil
+}
+
+func (u UpdateSongPart) updateBandMember(
+	request requests.UpdateSongPartRequest,
+	part model.SongPart,
+) *httperror.ErrorCode {
+	if request.SectionID == nil {
+		return nil
+	}
+
+	var sectionPart model.SongSectionPart
+	if err := u.txSongSectionRepo.GetSectionPart(&sectionPart, *request.SectionID, part.ID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(sectionPart).IsZero() {
+		return httperror.ConflictError(errors.New("section does not belong to this song part"))
+	}
+
+	hasBandMemberChanged := sectionPart.BandMemberID != nil && request.BandMemberID == nil ||
+		sectionPart.BandMemberID == nil && request.BandMemberID != nil ||
+		sectionPart.BandMemberID != nil && request.BandMemberID != nil && *sectionPart.BandMemberID != *request.BandMemberID
+
+	if !hasBandMemberChanged {
+		return nil
+	}
+
+	sectionPart.BandMemberID = request.BandMemberID
+	if err := u.txSongSectionRepo.UpdateSectionPart(&sectionPart); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
 	return nil
@@ -208,10 +245,5 @@ func (u UpdateSongPart) updateSongStats(oldPart model.SongPart, newPart model.So
 	}
 
 	// update song
-	err := u.txSongRepo.Update(&song)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return u.txSongRepo.Update(&song)
 }

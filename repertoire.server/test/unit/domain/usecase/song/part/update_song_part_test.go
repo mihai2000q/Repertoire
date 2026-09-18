@@ -55,7 +55,7 @@ func TestUpdateSongPart_WhenPartNotFound_ShouldReturnNotFoundError(t *testing.T)
 	}
 
 	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
-		Return(nil). // not found
+		Return(nil).
 		Once()
 
 	// when
@@ -80,10 +80,7 @@ func TestUpdateSongPart_WhenRehearsalsDecreasing_ShouldReturnConflictError(t *te
 		Rehearsals: 10,
 	}
 
-	mockPart := &model.SongPart{
-		ID:         request.ID,
-		Rehearsals: 20, // higher than request
-	}
+	mockPart := &model.SongPart{ID: request.ID, Rehearsals: 20}
 	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
 		Return(nil, mockPart).
 		Once()
@@ -108,19 +105,19 @@ func TestUpdateSongPart_WhenGetBandMemberFails_ShouldReturnInternalServerError(t
 	request := requests.UpdateSongPartRequest{
 		ID:           uuid.New(),
 		Name:         "Some Part",
+		SectionID:    &[]uuid.UUID{uuid.New()}[0],
 		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 	}
 
 	mockPart := &model.SongPart{
-		ID:     request.ID,
-		Name:   "Old",
-		SongID: uuid.New(),
+		ID:   request.ID,
+		Song: model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
 	}
 	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
 		Return(nil, mockPart).
 		Once()
 
-	internalError := errors.New("get error")
+	internalError := errors.New("get band member error")
 	artistRepository.On("GetBandMember", new(model.BandMember), *request.BandMemberID).
 		Return(internalError).
 		Once()
@@ -137,7 +134,7 @@ func TestUpdateSongPart_WhenGetBandMemberFails_ShouldReturnInternalServerError(t
 	artistRepository.AssertExpectations(t)
 }
 
-func TestUpdateSongPart_WhenBandMemberIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestUpdateSongPart_WhenBandMemberNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	songPartRepository := new(repository.SongPartRepositoryMock)
 	artistRepository := new(repository.ArtistRepositoryMock)
@@ -146,13 +143,13 @@ func TestUpdateSongPart_WhenBandMemberIsEmpty_ShouldReturnNotFoundError(t *testi
 	request := requests.UpdateSongPartRequest{
 		ID:           uuid.New(),
 		Name:         "Some Part",
+		SectionID:    &[]uuid.UUID{uuid.New()}[0],
 		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 	}
 
 	mockPart := &model.SongPart{
-		ID:     request.ID,
-		Name:   "Old",
-		SongID: uuid.New(),
+		ID:   request.ID,
+		Song: model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
 	}
 	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
 		Return(nil, mockPart).
@@ -169,6 +166,82 @@ func TestUpdateSongPart_WhenBandMemberIsEmpty_ShouldReturnNotFoundError(t *testi
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "band member not found", errCode.Error.Error())
+
+	songPartRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+}
+
+func TestUpdateSongPart_WhenSongHasNoArtist_ShouldReturnConflictError(t *testing.T) {
+	// given
+	songPartRepository := new(repository.SongPartRepositoryMock)
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := part.NewUpdateSongPart(songPartRepository, artistRepository, nil, nil)
+
+	request := requests.UpdateSongPartRequest{
+		ID:           uuid.New(),
+		Name:         "Some Part",
+		SectionID:    &[]uuid.UUID{uuid.New()}[0],
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	mockPart := &model.SongPart{
+		ID:   request.ID,
+		Song: model.Song{ArtistID: nil},
+	}
+	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
+		Return(nil, mockPart).
+		Once()
+
+	bandMember := &model.BandMember{ID: *request.BandMemberID, ArtistID: uuid.New()}
+	artistRepository.On("GetBandMember", new(model.BandMember), *request.BandMemberID).
+		Return(nil, bandMember).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
+	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
+
+	songPartRepository.AssertExpectations(t)
+	artistRepository.AssertExpectations(t)
+}
+
+func TestUpdateSongPart_WhenBandMemberNotAssociated_ShouldReturnConflictError(t *testing.T) {
+	// given
+	songPartRepository := new(repository.SongPartRepositoryMock)
+	artistRepository := new(repository.ArtistRepositoryMock)
+	_uut := part.NewUpdateSongPart(songPartRepository, artistRepository, nil, nil)
+
+	request := requests.UpdateSongPartRequest{
+		ID:           uuid.New(),
+		Name:         "Some Part",
+		SectionID:    &[]uuid.UUID{uuid.New()}[0],
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	mockPart := &model.SongPart{
+		ID:   request.ID,
+		Song: model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+	}
+	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
+		Return(nil, mockPart).
+		Once()
+
+	bandMember := &model.BandMember{ID: *request.BandMemberID, ArtistID: uuid.New()}
+	artistRepository.On("GetBandMember", new(model.BandMember), *request.BandMemberID).
+		Return(nil, bandMember).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
+	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
 
 	songPartRepository.AssertExpectations(t)
 	artistRepository.AssertExpectations(t)
@@ -236,9 +309,11 @@ func TestUpdateSongPart_WhenCreateHistoryFails_ShouldReturnInternalServerError(t
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
 	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("create history error")
@@ -259,6 +334,7 @@ func TestUpdateSongPart_WhenCreateHistoryFails_ShouldReturnInternalServerError(t
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
 }
 
 func TestUpdateSongPart_WhenGetHistoryFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -287,9 +363,11 @@ func TestUpdateSongPart_WhenGetHistoryFails_ShouldReturnInternalServerError(t *t
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
 	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	txSongPartRepo.On("CreateHistory", mock.IsType(new(model.SongPartHistory))).
@@ -297,7 +375,7 @@ func TestUpdateSongPart_WhenGetHistoryFails_ShouldReturnInternalServerError(t *t
 		Once()
 
 	internalError := errors.New("get history error")
-	txSongPartRepo.On("GetHistory", mock.IsType(new([]model.SongPartHistory)), mockPart.ID, model.ConfidenceProperty).
+	txSongPartRepo.On("GetHistory", new([]model.SongPartHistory), mockPart.ID, model.ConfidenceProperty).
 		Return(internalError).
 		Once()
 
@@ -314,9 +392,10 @@ func TestUpdateSongPart_WhenGetHistoryFails_ShouldReturnInternalServerError(t *t
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
 }
 
-func TestUpdateSongPart_WhenCountAllBySongFailsInsideUpdateSongStats_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateSongPart_WhenCountAllBySongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songPartRepository := new(repository.SongPartRepositoryMock)
 	progressProcessor := new(processor.ProgressProcessorMock)
@@ -343,9 +422,11 @@ func TestUpdateSongPart_WhenCountAllBySongFailsInsideUpdateSongStats_ShouldRetur
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
 	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	// updateConfidence mocks
@@ -353,11 +434,10 @@ func TestUpdateSongPart_WhenCountAllBySongFailsInsideUpdateSongStats_ShouldRetur
 		Return(nil).
 		Once()
 	var history []model.SongPartHistory
-	txSongPartRepo.On("GetHistory", mock.IsType(new([]model.SongPartHistory)), mockPart.ID, model.ConfidenceProperty).
+	txSongPartRepo.On("GetHistory", new([]model.SongPartHistory), mockPart.ID, model.ConfidenceProperty).
 		Return(nil, &history).
 		Once()
 	progressProcessor.On("ComputeConfidenceScore", history).Return(uint(88)).Once()
-
 	progressProcessor.On("ComputeProgress", mock.IsType(*mockPart)).Return(uint64(8)).Once()
 
 	internalError := errors.New("count error")
@@ -379,9 +459,10 @@ func TestUpdateSongPart_WhenCountAllBySongFailsInsideUpdateSongStats_ShouldRetur
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
 }
 
-func TestUpdateSongPart_WhenUpdateSongFailsInsideUpdateSongStats_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateSongPart_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songPartRepository := new(repository.SongPartRepositoryMock)
 	progressProcessor := new(processor.ProgressProcessorMock)
@@ -408,9 +489,11 @@ func TestUpdateSongPart_WhenUpdateSongFailsInsideUpdateSongStats_ShouldReturnInt
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
 	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	// updateConfidence mocks
@@ -418,11 +501,10 @@ func TestUpdateSongPart_WhenUpdateSongFailsInsideUpdateSongStats_ShouldReturnInt
 		Return(nil).
 		Once()
 	var history []model.SongPartHistory
-	txSongPartRepo.On("GetHistory", mock.IsType(new([]model.SongPartHistory)), mockPart.ID, model.ConfidenceProperty).
+	txSongPartRepo.On("GetHistory", new([]model.SongPartHistory), mockPart.ID, model.ConfidenceProperty).
 		Return(nil, &history).
 		Once()
 	progressProcessor.On("ComputeConfidenceScore", history).Return(uint(88)).Once()
-
 	progressProcessor.On("ComputeProgress", mock.IsType(*mockPart)).Return(uint64(8)).Once()
 
 	// updateSongStats mocks
@@ -450,14 +532,178 @@ func TestUpdateSongPart_WhenUpdateSongFailsInsideUpdateSongStats_ShouldReturnInt
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+}
+
+func TestUpdateSongPart_WhenGetSectionPartFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songPartRepository := new(repository.SongPartRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewUpdateSongPart(songPartRepository, nil, nil, transactionManager)
+
+	request := requests.UpdateSongPartRequest{
+		ID:        uuid.New(),
+		Name:      "Some Part",
+		SectionID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	mockPart := &model.SongPart{
+		ID:     request.ID,
+		SongID: uuid.New(),
+		Song:   model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+	}
+	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
+		Return(nil, mockPart).
+		Once()
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	internalError := errors.New("get section part error")
+	txSongSectionRepo.On("GetSectionPart", new(model.SongSectionPart), *request.SectionID, request.ID).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songPartRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+}
+
+func TestUpdateSongPart_WhenSectionPartNotFound_ShouldReturnConflictError(t *testing.T) {
+	// given
+	songPartRepository := new(repository.SongPartRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewUpdateSongPart(songPartRepository, nil, nil, transactionManager)
+
+	request := requests.UpdateSongPartRequest{
+		ID:        uuid.New(),
+		Name:      "Some Part",
+		SectionID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	mockPart := &model.SongPart{
+		ID:     request.ID,
+		SongID: uuid.New(),
+		Song:   model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+	}
+	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
+		Return(nil, mockPart).
+		Once()
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	txSongSectionRepo.On("GetSectionPart", new(model.SongSectionPart), *request.SectionID, request.ID).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusConflict, errCode.Code)
+	assert.Equal(t, "section does not belong to this song part", errCode.Error.Error())
+
+	songPartRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+}
+
+func TestUpdateSongPart_WhenUpdateSectionPartFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	songPartRepository := new(repository.SongPartRepositoryMock)
+	transactionManager := new(transaction.ManagerMock)
+	_uut := part.NewUpdateSongPart(songPartRepository, nil, nil, transactionManager)
+
+	request := requests.UpdateSongPartRequest{
+		ID:        uuid.New(),
+		Name:      "Some Part",
+		SectionID: &[]uuid.UUID{uuid.New()}[0],
+	}
+
+	mockPart := &model.SongPart{
+		ID:     request.ID,
+		SongID: uuid.New(),
+		Song:   model.Song{ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+	}
+	songPartRepository.On("GetWithSong", new(model.SongPart), request.ID).
+		Return(nil, mockPart).
+		Once()
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	sectionPart := &model.SongSectionPart{
+		PartID:       request.ID,
+		SectionID:    *request.SectionID,
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+	}
+	txSongSectionRepo.On("GetSectionPart", new(model.SongSectionPart), *request.SectionID, request.ID).
+		Return(nil, sectionPart).
+		Once()
+
+	internalError := errors.New("update section part error")
+	txSongSectionRepo.On("UpdateSectionPart", mock.IsType(new(model.SongSectionPart))).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	songPartRepository.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	repositoryFactory.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
 }
 
 func TestUpdateSongPart_WhenUpdatePartFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songPartRepository := new(repository.SongPartRepositoryMock)
-	progressProcessor := new(processor.ProgressProcessorMock)
 	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewUpdateSongPart(songPartRepository, nil, progressProcessor, transactionManager)
+	_uut := part.NewUpdateSongPart(songPartRepository, nil, nil, transactionManager)
 
 	request := requests.UpdateSongPartRequest{
 		ID:   uuid.New(),
@@ -477,9 +723,11 @@ func TestUpdateSongPart_WhenUpdatePartFails_ShouldReturnInternalServerError(t *t
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
 	txSongPartRepo := new(repository.SongPartRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("update part error")
@@ -496,16 +744,17 @@ func TestUpdateSongPart_WhenUpdatePartFails_ShouldReturnInternalServerError(t *t
 	assert.Equal(t, internalError, errCode.Error)
 
 	songPartRepository.AssertExpectations(t)
-	progressProcessor.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongPartRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
 }
 
 func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	id := uuid.New()
 	songID := uuid.New()
+	bandMemberID := uuid.New()
 
 	tests := []struct {
 		name                   string
@@ -530,13 +779,6 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 				ID:   id,
 				Name: "New Name",
 			},
-			partsCount:             0,
-			expectedSongConfidence: 0,
-			expectedSongRehearsals: 0,
-			expectedSongProgress:   0,
-			progress:               0,
-			confidenceScore:        0,
-			rehearsalsScore:        0,
 		},
 		{
 			name: "Only confidence change",
@@ -623,31 +865,62 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			rehearsalsScore:        125,
 		},
 		{
-			name: "with band member and instrument change",
+			name: "With instrument change",
 			part: &model.SongPart{
-				ID:         id,
-				Name:       "Old",
-				SongID:     songID,
-				Confidence: 0,
-				Rehearsals: 0,
-				Progress:   0,
-				Song: model.Song{
-					ID:         songID,
-					Confidence: 0,
-					Rehearsals: 0,
-					Progress:   0,
-					ArtistID:   &[]uuid.UUID{uuid.New()}[0],
-				},
+				ID:     id,
+				Name:   "Old",
+				SongID: songID,
 			},
 			request: requests.UpdateSongPartRequest{
 				ID:           id,
 				Name:         "New",
-				Confidence:   0,
-				Rehearsals:   0,
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
 			},
-			partsCount: 1,
+		},
+		{
+			name: "With section and unchanged band member",
+			part: &model.SongPart{
+				ID:     id,
+				Name:   "Old",
+				SongID: songID,
+				Song:   model.Song{ID: songID, ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+			},
+			request: requests.UpdateSongPartRequest{
+				ID:           id,
+				Name:         "New",
+				SectionID:    &[]uuid.UUID{uuid.New()}[0],
+				BandMemberID: &bandMemberID,
+			},
+		},
+		{
+			name: "Assign band member to a section part",
+			part: &model.SongPart{
+				ID:     id,
+				Name:   "Old",
+				SongID: songID,
+				Song:   model.Song{ID: songID, ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+			},
+			request: requests.UpdateSongPartRequest{
+				ID:           id,
+				Name:         "New",
+				SectionID:    &[]uuid.UUID{uuid.New()}[0],
+				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+			},
+		},
+		{
+			name: "Unassign band member from a section part",
+			part: &model.SongPart{
+				ID:     id,
+				Name:   "Old",
+				SongID: songID,
+				Song:   model.Song{ID: songID, ArtistID: &[]uuid.UUID{uuid.New()}[0]},
+			},
+			request: requests.UpdateSongPartRequest{
+				ID:           id,
+				Name:         "New",
+				SectionID:    &[]uuid.UUID{uuid.New()}[0],
+				BandMemberID: nil,
+			},
 		},
 	}
 
@@ -658,19 +931,20 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			artistRepository := new(repository.ArtistRepositoryMock)
 			progressProcessor := new(processor.ProgressProcessorMock)
 			transactionManager := new(transaction.ManagerMock)
-			_uut := part.NewUpdateSongPart(songPartRepository, artistRepository, progressProcessor, transactionManager)
+			_uut := part.NewUpdateSongPart(
+				songPartRepository,
+				artistRepository,
+				progressProcessor,
+				transactionManager,
+			)
 
 			// given - mocking
 			songPartRepository.On("GetWithSong", new(model.SongPart), tt.request.ID).
 				Return(nil, tt.part).
 				Once()
 
-			hasBandMemberChanged := tt.part.BandMemberID != nil && tt.request.BandMemberID == nil ||
-				tt.part.BandMemberID == nil && tt.request.BandMemberID != nil ||
-				tt.part.BandMemberID != nil && tt.request.BandMemberID != nil &&
-					*tt.part.BandMemberID != *tt.request.BandMemberID
-
-			if hasBandMemberChanged && tt.request.BandMemberID != nil {
+			// validateBandMember
+			if tt.request.SectionID != nil && tt.request.BandMemberID != nil {
 				bandMember := &model.BandMember{ArtistID: *tt.part.Song.ArtistID}
 				artistRepository.On("GetBandMember", new(model.BandMember), *tt.request.BandMemberID).
 					Return(nil, bandMember).
@@ -680,14 +954,43 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			repositoryFactory := new(transaction.RepositoryFactoryMock)
 			txSongRepo := new(repository.SongRepositoryMock)
 			txSongPartRepo := new(repository.SongPartRepositoryMock)
+			txSongSectionRepo := new(repository.SongSectionRepositoryMock)
 
 			repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 			repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
+			repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
 			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+			// updateBandMember
+			if tt.request.SectionID != nil {
+				sectionPart := &model.SongSectionPart{
+					PartID:       tt.part.ID,
+					SectionID:    *tt.request.SectionID,
+					BandMemberID: &bandMemberID,
+				}
+				txSongSectionRepo.On("GetSectionPart", new(model.SongSectionPart), *tt.request.SectionID, tt.part.ID).
+					Return(nil, sectionPart).
+					Once()
+
+				hasBandMemberChanged := sectionPart.BandMemberID != nil && tt.request.BandMemberID == nil ||
+					sectionPart.BandMemberID == nil && tt.request.BandMemberID != nil ||
+					sectionPart.BandMemberID != nil && tt.request.BandMemberID != nil && *sectionPart.BandMemberID != *tt.request.BandMemberID
+
+				if hasBandMemberChanged {
+					txSongSectionRepo.On("UpdateSectionPart", mock.IsType(new(model.SongSectionPart))).
+						Run(func(args mock.Arguments) {
+							sp := args.Get(0).(*model.SongSectionPart)
+							assert.Equal(t, tt.request.BandMemberID, sp.BandMemberID)
+						}).
+						Return(nil).
+						Once()
+				}
+			}
 
 			hasRehearsalsChanged := tt.part.Rehearsals != tt.request.Rehearsals
 			hasConfidenceChanged := tt.part.Confidence != tt.request.Confidence
 
+			// update rehearsals and/or confidence
 			if hasRehearsalsChanged || hasConfidenceChanged {
 				var history []model.SongPartHistory
 				historyTimes := 0
@@ -775,6 +1078,7 @@ func TestUpdateSongPart_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 			repositoryFactory.AssertExpectations(t)
 			txSongRepo.AssertExpectations(t)
 			txSongPartRepo.AssertExpectations(t)
+			txSongSectionRepo.AssertExpectations(t)
 		})
 	}
 }
@@ -790,7 +1094,6 @@ func assertUpdatedSongPart(
 	assert.Equal(t, request.Name, part.Name)
 	assert.Equal(t, request.Confidence, part.Confidence)
 	assert.Equal(t, request.Rehearsals, part.Rehearsals)
-	assert.Equal(t, request.BandMemberID, part.BandMemberID)
 	assert.Equal(t, request.InstrumentID, part.InstrumentID)
 	assert.Equal(t, confidenceScore, part.ConfidenceScore)
 	assert.Equal(t, rehearsalsScore, part.RehearsalsScore)

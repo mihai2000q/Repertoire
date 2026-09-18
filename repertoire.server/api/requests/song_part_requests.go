@@ -19,8 +19,9 @@ type UpdateSongPartRequest struct {
 	Name         string    `validate:"required,max=30"`
 	Confidence   uint      `validate:"max=100"`
 	Rehearsals   uint
-	BandMemberID *uuid.UUID
 	InstrumentID *uuid.UUID
+	SectionID    *uuid.UUID `validate:"required_with=BandMemberID"`
+	BandMemberID *uuid.UUID
 }
 
 type UpdateAllSongPartsRequest struct {
