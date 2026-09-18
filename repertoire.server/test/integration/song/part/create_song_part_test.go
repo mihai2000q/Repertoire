@@ -68,7 +68,7 @@ func TestCreateSongPart_WhenSectionIsNotFound_ShouldReturnNotFoundError(t *testi
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCreateSongPart_WhenSectionDoesNotBelongToSong_ShouldReturnNotFoundError(t *testing.T) {
+func TestCreateSongPart_WhenSectionDoesNotBelongToSong_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
@@ -105,7 +105,26 @@ func TestCreateSongPart_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *te
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
-func TestCreateSongPart_WhenRequestHasBandMemberIDButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
+func TestCreateSongPart_WhenWithBandMemberButSongHasNoArtist_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.CreateSongPartRequest{
+		SongID:       songData.Songs[4].ID,
+		Name:         "Chorus 1-New",
+		SectionID:    &songData.SongSections[4].ID,
+		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/songs/parts", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
+func TestCreateSongPart_WhenWithBandMemberButItIsNotAssociated_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
