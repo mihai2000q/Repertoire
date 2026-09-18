@@ -168,8 +168,8 @@ func (s songSectionRepository) GetAllSectionPartsByPartIDs(sectionParts *[]model
 }
 
 func (s songSectionRepository) CountAllSectionPartsBySectionID(count *int64, sectionID uuid.UUID) error {
-	return s.client.
-		Where("section_id IN ?", sectionID).
+	return s.client.Model(&model.SongSectionPart{}).
+		Where("section_id = ?", sectionID).
 		Count(count).
 		Error
 }
