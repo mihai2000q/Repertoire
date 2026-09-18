@@ -271,7 +271,6 @@ var SongParts = []model.SongPart{
 	{
 		ID:              uuid.New(),
 		Name:            "Verse 1 Riff - used on update",
-		BandMemberID:    &Artists[0].BandMembers[0].ID,
 		InstrumentID:    &Users[0].Instruments[1].ID,
 		SongOrder:       0,
 		Confidence:      10,
@@ -304,7 +303,6 @@ var SongParts = []model.SongPart{
 	{
 		ID:              uuid.New(),
 		Name:            "Chorus 1 Riff - used on delete",
-		BandMemberID:    &Artists[0].BandMembers[1].ID,
 		SongOrder:       1,
 		Confidence:      25,
 		Rehearsals:      50,
@@ -412,14 +410,16 @@ var SongSections = []model.SongSection{
 
 var SongSectionParts = []model.SongSectionPart{
 	{
-		SectionID: SongSections[0].ID,
-		PartID:    SongParts[0].ID,
-		Order:     0,
+		SectionID:    SongSections[0].ID,
+		PartID:       SongParts[0].ID,
+		BandMemberID: &Artists[0].BandMembers[0].ID,
+		Order:        0,
 	},
 	{
-		SectionID: SongSections[0].ID,
-		PartID:    SongParts[1].ID,
-		Order:     1,
+		SectionID:    SongSections[0].ID,
+		PartID:       SongParts[1].ID,
+		BandMemberID: &Artists[0].BandMembers[1].ID,
+		Order:        1,
 	},
 
 	{
