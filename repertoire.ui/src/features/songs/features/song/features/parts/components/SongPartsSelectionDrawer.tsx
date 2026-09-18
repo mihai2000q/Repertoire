@@ -1,7 +1,7 @@
 import { ActionIcon, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../../../../../../../components/drawer/SelectionDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
+import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../../../utils/plural.ts'
 import DeleteSongPartsModal from './modal/DeleteSongPartsModal.tsx'
 import { useBulkUpdateSongPartsMutation } from '../state/api/songPartsApi.ts'
@@ -56,7 +56,7 @@ function SongPartsSelectionDrawer({ songId, parts }: SongPartsSelectionDrawerPro
                 loading={bulkUpdateIsLoading}
                 onClick={handleAddRehearsals}
               >
-                <IconLocationPlus size={15} />
+                <IconRefresh size={15} />
               </ActionIcon>
             </Tooltip>
             <Tooltip label={'Delete parts'}>

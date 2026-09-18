@@ -1,4 +1,4 @@
-import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
+import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
 import { ReactNode, useEffect, useRef } from 'react'
@@ -64,7 +64,7 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
           <MenuItemConfirmation
             isLoading={bulkUpdateIsLoading}
             onConfirm={handleAddRehearsals}
-            leftSection={<IconLocationPlus size={14} />}
+            leftSection={<IconRefresh size={14} />}
           >
             Add Rehearsals
           </MenuItemConfirmation>

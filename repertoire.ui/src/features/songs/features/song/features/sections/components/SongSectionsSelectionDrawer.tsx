@@ -1,7 +1,7 @@
 import { ActionIcon, Tooltip } from '@mantine/core'
 import SelectionDrawer from '../../../../../../../components/drawer/SelectionDrawer.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { IconLocationPlus, IconTrash } from '@tabler/icons-react'
+import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../../../utils/plural.ts'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { toast } from 'react-toastify'
@@ -63,7 +63,7 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
                 disabled={selectedSectionParts.length === 0}
                 onClick={handleAddRehearsals}
               >
-                <IconLocationPlus size={15} />
+                <IconRefresh size={15} />
               </ActionIcon>
             </Tooltip>
             <Tooltip label={'Delete sections'}>
