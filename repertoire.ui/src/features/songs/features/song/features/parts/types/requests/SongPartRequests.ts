@@ -5,8 +5,8 @@ export interface GetSongPartsRequest {
 export interface CreateSongPartRequest {
   songId: string
   name: string
-  sectionIds: string[]
   instrumentId?: string
+  sectionId?: string
   bandMemberId?: string
 }
 
@@ -20,9 +20,9 @@ export interface UpdateSongPartRequest {
   name: string
   rehearsals: number
   confidence: number
-  sectionIds: string[]
-  bandMemberId?: string
   instrumentId?: string
+  sectionId?: string
+  bandMemberId?: string
 }
 
 export interface UpdateAllSongPartsRequest {
