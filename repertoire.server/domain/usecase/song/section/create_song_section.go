@@ -26,9 +26,17 @@ func NewCreateSongSection(
 }
 
 func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *httperror.ErrorCode {
-	if len(request.PartIDs) > 0 {
-		errCode := c.ensurePartsBelongToSameSong(request, request.SongID)
-		if errCode != nil {
+	partIDs := make([]uuid.UUID, 0, len(request.Parts))
+	hasNewParts := false
+	for _, p := range request.Parts {
+		if p.PartID != nil {
+			partIDs = append(partIDs, *p.PartID)
+		} else {
+			hasNewParts = true
+		}
+	}
+	if len(partIDs) > 0 {
+		if errCode := c.ensurePartsBelongToSameSong(partIDs, request.SongID); errCode != nil {
 			return errCode
 		}
 	}
@@ -38,13 +46,20 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *ht
 		return httperror.DatabaseError(err)
 	}
 
+	var partsCount int64
+	if hasNewParts {
+		if err := c.songPartRepository.CountAllBySong(&partsCount, request.SongID); err != nil {
+			return httperror.DatabaseError(err)
+		}
+	}
+
 	section := model.SongSection{
 		ID:                uuid.New(),
 		Name:              request.Name,
 		SongSectionTypeID: request.TypeID,
 		Order:             uint(sectionsCount),
 		SongID:            request.SongID,
-		SectionParts:      c.createSectionParts(request.PartIDs),
+		SectionParts:      c.createSectionParts(request.Parts, request.SongID, uint(partsCount)),
 	}
 	if err := c.songSectionRepository.Create(&section); err != nil {
 		return httperror.DatabaseError(err)
@@ -54,14 +69,14 @@ func (c CreateSongSection) Handle(request requests.CreateSongSectionRequest) *ht
 }
 
 func (c CreateSongSection) ensurePartsBelongToSameSong(
-	request requests.CreateSongSectionRequest,
+	partIDs []uuid.UUID,
 	songID uuid.UUID,
 ) *httperror.ErrorCode {
 	var parts []model.SongPart
-	if err := c.songPartRepository.GetAllByIDs(&parts, request.PartIDs); err != nil {
+	if err := c.songPartRepository.GetAllByIDs(&parts, partIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(parts) != len(request.PartIDs) {
+	if len(parts) != len(partIDs) {
 		return httperror.NotFoundError(errors.New("parts not found"))
 	}
 	for _, p := range parts {
@@ -72,14 +87,37 @@ func (c CreateSongSection) ensurePartsBelongToSameSong(
 	return nil
 }
 
-func (c CreateSongSection) createSectionParts(partIDs []uuid.UUID) []model.SongSectionPart {
-	var sectionParts []model.SongSectionPart
-	for i, id := range partIDs {
+func (c CreateSongSection) createSectionParts(
+	parts []requests.CreateSongSectionPartRequest,
+	songID uuid.UUID,
+	existingPartsCount uint,
+) []model.SongSectionPart {
+	sectionParts := make([]model.SongSectionPart, len(parts))
+	nextSongOrder := existingPartsCount
+
+	for i, p := range parts {
 		sectionPart := model.SongSectionPart{
-			PartID: id,
-			Order:  uint(i),
+			Order:        uint(i),
+			BandMemberID: p.BandMemberID,
 		}
-		sectionParts = append(sectionParts, sectionPart)
+
+		if p.PartID != nil {
+			sectionPart.PartID = *p.PartID
+		} else {
+			partID := uuid.New()
+			sectionPart.PartID = partID
+			sectionPart.Part = model.SongPart{
+				ID:           partID,
+				Name:         p.NewPart.Name,
+				SongOrder:    nextSongOrder,
+				SongID:       songID,
+				InstrumentID: p.NewPart.InstrumentID,
+			}
+			nextSongOrder++
+		}
+
+		sectionParts[i] = sectionPart
 	}
+
 	return sectionParts
 }

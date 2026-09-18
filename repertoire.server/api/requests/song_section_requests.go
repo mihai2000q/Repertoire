@@ -7,10 +7,10 @@ type GetSongSectionsRequest struct {
 }
 
 type CreateSongSectionRequest struct {
-	SongID  uuid.UUID `validate:"required"`
-	Name    string    `validate:"required,max=30"`
-	TypeID  uuid.UUID `validate:"required"`
-	PartIDs []uuid.UUID
+	SongID uuid.UUID                      `validate:"required"`
+	Name   string                         `validate:"required,max=30"`
+	TypeID uuid.UUID                      `validate:"required"`
+	Parts  []CreateSongSectionPartRequest `validate:"dive"`
 }
 
 type UpdateSongSectionRequest struct {
@@ -30,4 +30,15 @@ type BulkDeleteSongSectionsRequest struct {
 	IDs       []uuid.UUID `validate:"min=1"`
 	SongID    uuid.UUID   `validate:"required"`
 	WithParts bool
+}
+
+type CreateSongSectionPartRequest struct {
+	PartID       *uuid.UUID                `validate:"excluded_with=NewPart"`
+	NewPart      *CreateNewSongPartRequest `validate:"excluded_with=PartID"`
+	BandMemberID *uuid.UUID                `validate:"excluded_without_all=PartID NewPart"`
+}
+
+type CreateNewSongPartRequest struct {
+	Name         string `validate:"required,max=30"`
+	InstrumentID *uuid.UUID
 }
