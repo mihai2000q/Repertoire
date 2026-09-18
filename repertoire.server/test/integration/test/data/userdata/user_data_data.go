@@ -138,14 +138,12 @@ var Songs = []model.Song{
 			{
 				ID:           uuid.New(),
 				Name:         "Verse 1 Riff",
-				BandMemberID: &Artists[0].BandMembers[0].ID,
 				InstrumentID: &Users[0].Instruments[1].ID,
 				SongOrder:    0,
 			},
 			{
 				ID:           uuid.New(),
 				Name:         "Chorus 1 Riff",
-				BandMemberID: &Artists[0].BandMembers[1].ID,
 				InstrumentID: &Users[0].Instruments[0].ID,
 				SongOrder:    1,
 			},
