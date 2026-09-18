@@ -77,7 +77,7 @@ describe('Add New Song Section', () => {
       typeId: newSectionType.id,
       name: newName,
       songId: songId,
-      partIds: []
+      parts: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 
@@ -119,7 +119,7 @@ describe('Add New Song Section', () => {
       typeId: newSectionType.id,
       name: newName,
       songId: songId,
-      partIds: []
+      parts: []
     })
     expect(onClose).toHaveBeenCalledOnce()
 

@@ -47,7 +47,7 @@ function AddNewSongSection({ songId, opened, onClose, scrollIntoView }: AddNewSo
       typeId: type.value,
       name: nameTrimmed,
       songId: songId,
-      partIds: []
+      parts: []
     }).unwrap()
 
     toast.success(nameTrimmed + ' added!')
