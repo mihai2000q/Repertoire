@@ -1,7 +1,7 @@
 import { Center, ComboboxItem, Group, Select, SelectProps, Text } from '@mantine/core'
-import { useGetInstrumentsQuery } from '../../../state/api/songsApi.ts'
+import { useGetInstrumentsQuery } from '../../../../../../../../state/api/songsApi.ts'
 import { IconCheck } from '@tabler/icons-react'
-import useInstrumentIcon from '../../../hooks/useInstrumentIcon.tsx'
+import useInstrumentIcon from '../../../../../../../../hooks/useInstrumentIcon.tsx'
 
 interface InstrumentSelectProps extends SelectProps {
   option: ComboboxItem | null

@@ -1,5 +1,5 @@
 import { IconRefresh } from '@tabler/icons-react'
-import { Group, Text } from '@mantine/core'
+import { Group, NumberFormatter, Text } from '@mantine/core'
 
 interface RehearsalsBadgeProps {
   rehearsals: number
@@ -11,15 +11,15 @@ function RehearsalsBadge({ rehearsals }: RehearsalsBadgeProps) {
       bg={'gray.1'}
       c={'gray.6'}
       gap={'xxs'}
-      px={'4px'}
-      py={'1px'}
+      px={'5px'}
+      py={'2px'}
       style={(theme) => ({
         borderRadius: theme.radius.md
       })}
     >
       <IconRefresh size={13} />
       <Text fw={500} fz={'xs'} c={'gray.6'} inline>
-        {rehearsals}
+        <NumberFormatter value={rehearsals} />
       </Text>
     </Group>
   )

@@ -1,5 +1,5 @@
 import { ComboboxItem, Select, SelectProps } from '@mantine/core'
-import { useGetSongSectionsQuery } from '../../../features/songs/features/song/features/sections/state/api/songSectionsApi.ts'
+import { useGetSongSectionsQuery } from '../../../sections/state/api/songSectionsApi.ts'
 
 interface SongSectionSelectProps extends SelectProps {
   option: ComboboxItem | null
@@ -28,7 +28,10 @@ function SongSectionSelect({
       value={option?.value ?? null}
       onChange={(_, option) => onOptionChange(option)}
       maxDropdownHeight={150}
-      clearable
+      comboboxProps={{
+        width: 'max-content',
+        position: 'bottom-start'
+      }}
       searchable
       aria-label={typeof label === 'string' ? label : 'song-section'}
       {...props}

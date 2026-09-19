@@ -10,7 +10,7 @@ import {
   Tooltip,
   useCombobox
 } from '@mantine/core'
-import { BandMember } from '../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import { IconUser } from '@tabler/icons-react'
 import { useEffect, useState } from 'react'
 

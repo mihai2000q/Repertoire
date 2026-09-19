@@ -19,8 +19,8 @@ import { EditSongPartForm, editSongPartSchema } from '../../../../validation/son
 import { useDidUpdate } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
-import BandMemberSelect from '../../../../../../../../components/form/select/BandMemberSelect.tsx'
-import InstrumentSelect from '../../../../../../../../components/form/select/InstrumentSelect.tsx'
+import BandMemberSelect from '../../../outline/components/select/BandMemberSelect.tsx'
+import InstrumentSelect from '../../../outline/components/select/InstrumentSelect.tsx'
 import { useSongContext } from '../../../../context/SongContext.tsx'
 
 interface EditSongPartModalProps {

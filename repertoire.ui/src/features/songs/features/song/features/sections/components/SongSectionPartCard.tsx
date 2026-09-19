@@ -24,7 +24,7 @@ import {
 } from '../../parts/state/api/songPartsApi.ts'
 import EditSongPartModal from '../../parts/components/modal/EditSongPartModal.tsx'
 import BandMemberAvatar from '../../../../../../../components/avatar/BandMemberAvatar.tsx'
-import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
+import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
 import SongOutlineProgressBar from '../../../../../../../components/bar/SongOutlineProgressBar.tsx'
 import SongOutlineConfidenceBar from '../../../../../../../components/bar/SongOutlineConfidenceBar.tsx'
 import { MouseEvent, useState } from 'react'

@@ -1,9 +1,9 @@
-import { reduxRender } from '../../../test-utils.tsx'
+import { reduxRender } from '../../../../../../../../test-utils.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { Instrument } from '../../../types/models/Song.ts'
+import { Instrument } from '../../../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import InstrumentSelect from './InstrumentSelect.tsx'
 

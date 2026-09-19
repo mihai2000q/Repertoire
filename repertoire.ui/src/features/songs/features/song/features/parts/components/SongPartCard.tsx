@@ -33,7 +33,7 @@ import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
 import { useSongContext } from '../../../context/SongContext.tsx'
-import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
+import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
 import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
 import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
 

@@ -1,4 +1,4 @@
-import { mantineRender } from '../../test-utils.tsx'
+import { mantineRender } from '../../../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import RehearsalsBadge from './RehearsalsBadge.tsx'
 

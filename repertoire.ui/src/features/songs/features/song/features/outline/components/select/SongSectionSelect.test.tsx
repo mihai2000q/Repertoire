@@ -1,9 +1,9 @@
-import { emptySongSection, reduxRender } from '../../../test-utils.tsx'
+import { emptySongSection, reduxRender } from '../../../../../../../../test-utils.tsx'
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
-import { SongSection } from '../../../types/models/Song.ts'
+import { SongSection } from '../../../../../../../../types/models/Song.ts'
 import { setupServer } from 'msw/node'
 import SongSectionSelect from './SongSectionSelect.tsx'
 
