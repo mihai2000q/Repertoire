@@ -1,8 +1,8 @@
-import { mantineRender } from '../../../../../../../test-utils.tsx'
+import { mantineRender } from '../../../../../../../../test-utils.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import BandMemberAvatar from './BandMemberAvatar.tsx'
-import { BandMember } from '../../../../../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 
 const bandMember: BandMember = {
   id: '1',

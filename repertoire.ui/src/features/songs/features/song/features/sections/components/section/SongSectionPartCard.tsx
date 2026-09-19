@@ -1,4 +1,4 @@
-import { SongPart as SongPartModel } from '../../../../../../../types/models/Song.ts'
+import { SongPart as SongPartModel } from '../../../../../../../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
@@ -14,21 +14,21 @@ import { IconEdit, IconRefresh, IconTrash } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import WarningModal from '../../../../../../../components/modal/WarningModal.tsx'
-import useInstrumentIcon from '../../../../../../../hooks/useInstrumentIcon.tsx'
-import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
-import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
+import WarningModal from '../../../../../../../../components/modal/WarningModal.tsx'
+import useInstrumentIcon from '../../../../../../../../hooks/useInstrumentIcon.tsx'
+import { ContextMenu } from '../../../../../../../../components/menu/ContextMenu.tsx'
+import useClickSelectSelectable from '../../../../../../../../hooks/useClickSelectSelectable.ts'
 import {
   useDeleteSongPartMutation,
   useUpdateSongPartMutation
-} from '../../parts/state/api/songPartsApi.ts'
-import EditSongPartModal from '../../parts/components/modal/EditSongPartModal.tsx'
+} from '../../../parts/state/api/songPartsApi.ts'
+import EditSongPartModal from '../../../parts/components/modal/EditSongPartModal.tsx'
 import BandMemberAvatar from './BandMemberAvatar.tsx'
-import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
-import SongOutlineProgressBar from '../../outline/components/SongOutlineProgressBar.tsx'
-import SongOutlineConfidenceBar from '../../outline/components/SongOutlineConfidenceBar.tsx'
+import RehearsalsBadge from '../../../outline/components/RehearsalsBadge.tsx'
+import SongOutlineProgressBar from '../../../outline/components/SongOutlineProgressBar.tsx'
+import SongOutlineConfidenceBar from '../../../outline/components/SongOutlineConfidenceBar.tsx'
 import { MouseEvent, useState } from 'react'
-import { useSongContext } from '../../../context/SongContext.tsx'
+import { useSongContext } from '../../../../context/SongContext.tsx'
 
 interface SongSectionPartCardProps {
   part: SongPartModel

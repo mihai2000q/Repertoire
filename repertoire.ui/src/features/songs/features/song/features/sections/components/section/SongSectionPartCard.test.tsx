@@ -4,18 +4,18 @@ import {
   emptySongPart,
   reduxRender,
   withToastify
-} from '../../../../../../../test-utils.tsx'
+} from '../../../../../../../../test-utils.tsx'
 import SongSectionPartCard from './SongSectionPartCard.tsx'
-import { Instrument, SongPart } from '../../../../../../../types/models/Song.ts'
+import { Instrument, SongPart } from '../../../../../../../../types/models/Song.ts'
 import { screen, within } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
-import { UpdateSongPartRequest } from '../../parts/types/requests/SongPartRequests.ts'
-import { BandMember } from '../../../../../../../types/models/Artist.ts'
-import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import { SongProvider } from '../../../context/SongContext.tsx'
-import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
+import { UpdateSongPartRequest } from '../../../parts/types/requests/SongPartRequests.ts'
+import { BandMember } from '../../../../../../../../types/models/Artist.ts'
+import { useClickSelect } from '../../../../../../../../context/ClickSelectContext.tsx'
+import { SongProvider } from '../../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
 
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
