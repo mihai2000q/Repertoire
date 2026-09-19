@@ -5,15 +5,49 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/api/requests"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	playlistData "repertoire/server/test/integration/test/data/playlist"
 	"repertoire/server/test/integration/test/utils"
 	"testing"
 
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+// TODO: fail-safe, but, the returned error is wrong, it should be Not Found
+func TestShufflePlaylistSongs_WhenPlaylistIsNotFound_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.ShufflePlaylistSongsRequest{
+		ID: uuid.New(),
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/songs/shuffle", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
+func TestShufflePlaylistSongs_WhenPlaylistHasNoSongs_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.ShufflePlaylistSongsRequest{
+		ID: playlistData.Playlists[3].ID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/songs/shuffle", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
 
 func TestShufflePlaylistSongs_WhenSuccessful_ShouldShuffleSongsOnPlaylist(t *testing.T) {
 	// given
@@ -31,7 +65,7 @@ func TestShufflePlaylistSongs_WhenSuccessful_ShouldShuffleSongsOnPlaylist(t *tes
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response wrapper.WithTotalCount[model.Song]
+	var response pagination.WithTotalCount[model.Song]
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	var playlistSongs []model.PlaylistSong

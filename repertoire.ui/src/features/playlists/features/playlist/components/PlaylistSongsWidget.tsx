@@ -20,7 +20,7 @@ import LocalStorageKeys from '../../../../../types/enums/keys/LocalStorageKeys.t
 import useOrderBy from '../../../../../hooks/api/useOrderBy.ts'
 import { memo, useEffect, useRef } from 'react'
 import { useAppDispatch } from '../../../../../state/store.ts'
-import { setSongsTotalCount } from '../../../../../state/slice/playlistSlice.ts'
+import { setSongsTotalCount } from '../../../state/slice/playlistSlice.ts'
 import Order from '../../../../../types/Order.ts'
 import { MoveSongFromPlaylistRequest } from '../types/requests/PlaylistRequests.ts'
 import LoadingOverlayDebounced from '../../../../../components/loader/LoadingOverlayDebounced.tsx'

@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBulkUpdateSongArrangements_WhenGetFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -30,7 +31,7 @@ func TestBulkUpdateSongArrangements_WhenGetFails_ShouldReturnInternalServerError
 
 	internalError := errors.New("internal error")
 	songArrangementRepository.
-		On("GetAllBySongWithSectionOccurrences",
+		On("GetAllBySongWithPartOccurrences",
 			new([]model.SongArrangement),
 			getIds(request),
 			request.SongID,
@@ -42,7 +43,7 @@ func TestBulkUpdateSongArrangements_WhenGetFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestBulkUpdateSongArrangements_WhenSongArrangementIsEmpty_ShouldReturnNotFo
 	}
 
 	songArrangementRepository.
-		On("GetAllBySongWithSectionOccurrences",
+		On("GetAllBySongWithPartOccurrences",
 			new([]model.SongArrangement),
 			getIds(request),
 			request.SongID,
@@ -76,7 +77,7 @@ func TestBulkUpdateSongArrangements_WhenSongArrangementIsEmpty_ShouldReturnNotFo
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song arrangements not found", errCode.Error.Error())
 
@@ -101,7 +102,7 @@ func TestBulkUpdateSongArrangements_WhenUpdateFails_ShouldReturnInternalServerEr
 		{ID: request.Requests[0].ID},
 	}
 	songArrangementRepository.
-		On("GetAllBySongWithSectionOccurrences",
+		On("GetAllBySongWithPartOccurrences",
 			new([]model.SongArrangement),
 			getIds(request),
 			request.SongID,
@@ -118,7 +119,7 @@ func TestBulkUpdateSongArrangements_WhenUpdateFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -136,19 +137,19 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldNotReturnAnyError(t *te
 			{
 				ID:   uuid.New(),
 				Name: "Some Arrangement 1",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
-					{SectionID: uuid.New(), Occurrences: 5},
-					{SectionID: uuid.New(), Occurrences: 0},
-					{SectionID: uuid.New(), Occurrences: 1},
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+					{PartID: uuid.New(), Occurrences: 5},
+					{PartID: uuid.New(), Occurrences: 0},
+					{PartID: uuid.New(), Occurrences: 1},
 				},
 			},
 			{
 				ID:   uuid.New(),
 				Name: "Some Arrangement 2",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
-					{SectionID: uuid.New(), Occurrences: 2},
-					{SectionID: uuid.New(), Occurrences: 1},
-					{SectionID: uuid.New(), Occurrences: 3},
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+					{PartID: uuid.New(), Occurrences: 2},
+					{PartID: uuid.New(), Occurrences: 1},
+					{PartID: uuid.New(), Occurrences: 3},
 				},
 			},
 		},
@@ -157,23 +158,23 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldNotReturnAnyError(t *te
 	mockArrangements := []model.SongArrangement{
 		{
 			ID: request.Requests[0].ID,
-			SectionOccurrences: []model.SongSectionOccurrences{
-				{SectionID: request.Requests[0].Occurrences[1].SectionID},
-				{SectionID: request.Requests[0].Occurrences[0].SectionID},
-				{SectionID: request.Requests[0].Occurrences[2].SectionID},
+			PartOccurrences: []model.SongPartOccurrences{
+				{PartID: request.Requests[0].Occurrences[1].PartID},
+				{PartID: request.Requests[0].Occurrences[0].PartID},
+				{PartID: request.Requests[0].Occurrences[2].PartID},
 			},
 		},
 		{
 			ID: request.Requests[1].ID,
-			SectionOccurrences: []model.SongSectionOccurrences{
-				{SectionID: request.Requests[1].Occurrences[0].SectionID},
-				{SectionID: request.Requests[1].Occurrences[1].SectionID},
-				{SectionID: request.Requests[1].Occurrences[2].SectionID},
+			PartOccurrences: []model.SongPartOccurrences{
+				{PartID: request.Requests[1].Occurrences[0].PartID},
+				{PartID: request.Requests[1].Occurrences[1].PartID},
+				{PartID: request.Requests[1].Occurrences[2].PartID},
 			},
 		},
 	}
 	songArrangementRepository.
-		On("GetAllBySongWithSectionOccurrences",
+		On("GetAllBySongWithPartOccurrences",
 			new([]model.SongArrangement),
 			getIds(request),
 			request.SongID,
@@ -216,12 +217,12 @@ func assertUpdatedSongArrangement(
 ) {
 	assert.Equal(t, request.Name, arrangement.Name)
 
-	sectionsOccurrencesMap := make(map[uuid.UUID]uint)
-	for _, s := range request.Occurrences {
-		sectionsOccurrencesMap[s.SectionID] = s.Occurrences
+	partsOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, o := range request.Occurrences {
+		partsOccurrencesMap[o.PartID] = o.Occurrences
 	}
-	for i := range arrangement.SectionOccurrences {
-		occurrences := sectionsOccurrencesMap[arrangement.SectionOccurrences[i].SectionID]
-		assert.Equal(t, arrangement.SectionOccurrences[i].Occurrences, occurrences)
+	for _, po := range arrangement.PartOccurrences {
+		occurrences := partsOccurrencesMap[po.PartID]
+		assert.Equal(t, po.Occurrences, occurrences)
 	}
 }

@@ -1,4 +1,3 @@
-import { Menu } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
@@ -37,11 +36,15 @@ function PlaylistsContextMenu({ children }: { children: ReactNode }) {
             onSuccess={clearSelection}
             type={'playlists'}
           />
-          <Menu.Divider />
+          <ContextMenu.Divider />
 
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
+          </ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
 

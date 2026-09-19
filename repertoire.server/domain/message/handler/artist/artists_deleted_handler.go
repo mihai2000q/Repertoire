@@ -38,13 +38,11 @@ func NewArtistsDeletedHandler(
 
 func (a ArtistsDeletedHandler) Handle(msg *watermillMessage.Message) error {
 	var artists []model.Artist
-	err := json.Unmarshal(msg.Payload, &artists)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &artists); err != nil {
 		return err
 	}
 
-	err = a.syncWithSearchEngine(artists)
-	if err != nil {
+	if err := a.syncWithSearchEngine(artists); err != nil {
 		return err
 	}
 

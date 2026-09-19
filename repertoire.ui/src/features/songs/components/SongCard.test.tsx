@@ -177,20 +177,20 @@ describe('Song Card', () => {
     expect(await screen.findByText(/2 solos/i)).toBeInTheDocument()
   })
 
-  it('should render and display riffs icon when the song has Riff sections', async () => {
+  it('should render and display sections icon when the song has more than 4 sections', async () => {
     const user = userEvent.setup()
 
     const localSong: Song = {
       ...song,
-      riffsCount: 2
+      sectionsCount: 5
     }
 
     reduxRouterRender(<SongCard song={localSong} />)
 
-    expect(screen.getByLabelText('riffs-icon')).toBeInTheDocument()
+    expect(screen.getByLabelText('sections-icon')).toBeInTheDocument()
 
-    await user.hover(screen.getByLabelText('riffs-icon'))
-    expect(await screen.findByText(/2 riffs/i)).toBeInTheDocument()
+    await user.hover(screen.getByLabelText('sections-icon'))
+    expect(await screen.findByText(/5 sections/i)).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {

@@ -1,0 +1,155 @@
+import { ActionIcon, Group, Popover, Tooltip } from '@mantine/core'
+import PopoverConfirmation from '../../../../../../../../components/popover/PopoverConfirmation.tsx'
+import BandMemberCompactSelect from '../../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
+import InstrumentCompactSelect from '../../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
+import { useState } from 'react'
+import { Instrument, SongPart } from '../../../../../../../../types/models/Song.ts'
+import { BandMember } from '../../../../../../../../types/models/Artist.ts'
+import { useUpdateAllSongPartsMutation } from '../../../parts/state/api/songPartsApi.ts'
+import { useUpdateSongSettingsMutation } from '../../../../../../../../state/api/songsApi.ts'
+import { IconSettings } from '@tabler/icons-react'
+import { useDidUpdate } from '@mantine/hooks'
+import { useSongContext } from '../../../../context/SongContext.tsx'
+
+interface SongOutlineSettingsButtonProps {
+  parts: SongPart[]
+}
+
+function SongOutlineSettingsButton({ parts }: SongOutlineSettingsButtonProps) {
+  const { songId, settings, artistBandMembers: bandMembers } = useSongContext()
+
+  const [updateSettings] = useUpdateSongSettingsMutation()
+  const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongPartsMutation()
+
+  const [defaultInstrument, setDefaultInstrument] = useState(settings.defaultInstrument)
+  const [defaultBandMember, setDefaultBandMember] = useState(settings.defaultBandMember)
+  useDidUpdate(() => {
+    setDefaultInstrument(settings.defaultInstrument)
+    setDefaultBandMember(settings.defaultBandMember)
+  }, [settings])
+
+  const [openedSettingsPopover, setOpenedSettingsPopover] = useState(false)
+  const [openedUpdatedDefaultInstrumentPopover, setOpenedUpdatedDefaultInstrumentPopover] =
+    useState(false)
+  const [openedUpdatedDefaultBandMemberPopover, setOpenedUpdatedDefaultBandMemberPopover] =
+    useState(false)
+
+  async function handleDefaultInstrumentChange(newInstrument: Instrument | null) {
+    setDefaultInstrument(newInstrument)
+    await updateSettings({
+      settingsId: settings.id,
+      defaultInstrumentId: newInstrument?.id,
+      defaultBandMemberId: defaultBandMember?.id
+    }).unwrap()
+    if (newInstrument && parts.filter((s) => s.instrument?.id !== newInstrument.id).length > 0) {
+      setOpenedUpdatedDefaultInstrumentPopover(true)
+    }
+  }
+
+  async function handleDefaultBandMemberChange(newBandMember: BandMember | null) {
+    setDefaultBandMember(newBandMember)
+    await updateSettings({
+      settingsId: settings.id,
+      defaultInstrumentId: defaultInstrument?.id,
+      defaultBandMemberId: newBandMember?.id
+    }).unwrap()
+    if (
+      newBandMember &&
+      parts.some((s) => s.bandMembers.some((bm) => bm.id !== newBandMember.id))
+    ) {
+      setOpenedUpdatedDefaultBandMemberPopover(true)
+    }
+  }
+
+  async function handleUpdateAllPartsInstruments() {
+    await updateAll({
+      songId: songId,
+      instrumentId: defaultInstrument?.id
+    }).unwrap()
+    setOpenedUpdatedDefaultInstrumentPopover(false)
+  }
+
+  async function handleUpdateAllPartsBandMembers() {
+    await updateAll({
+      songId: songId,
+      bandMemberId: defaultBandMember?.id
+    }).unwrap()
+    setOpenedUpdatedDefaultBandMemberPopover(false)
+  }
+
+  return (
+    <Popover
+      opened={openedSettingsPopover}
+      onChange={setOpenedSettingsPopover}
+      transitionProps={{ transition: 'fade-up' }}
+      position={'top'}
+      shadow={'sm'}
+      withArrow
+      closeOnClickOutside={
+        !(openedUpdatedDefaultInstrumentPopover || openedUpdatedDefaultBandMemberPopover)
+      }
+    >
+      <Popover.Target>
+        <Tooltip label={'Edit settings'} disabled={openedSettingsPopover}>
+          <ActionIcon
+            aria-label={'settings'}
+            variant={'grey'}
+            size={'sm'}
+            onClick={() => setOpenedSettingsPopover(!openedSettingsPopover)}
+          >
+            <IconSettings size={16} />
+          </ActionIcon>
+        </Tooltip>
+      </Popover.Target>
+
+      <Popover.Dropdown>
+        <Group gap={'xs'}>
+          <PopoverConfirmation
+            label={"Would you like to update all parts' band members?"}
+            popoverProps={{
+              opened: openedUpdatedDefaultBandMemberPopover,
+              onChange: setOpenedUpdatedDefaultBandMemberPopover,
+              transitionProps: { transition: 'skew-down' },
+              closeOnClickOutside: !isUpdateAllLoading,
+              withinPortal: false
+            }}
+            isLoading={isUpdateAllLoading}
+            onCancel={() => setOpenedUpdatedDefaultBandMemberPopover(false)}
+            onConfirm={handleUpdateAllPartsBandMembers}
+          >
+            <BandMemberCompactSelect
+              bandMember={defaultBandMember}
+              setBandMember={handleDefaultBandMemberChange}
+              bandMembers={bandMembers}
+              withinPortal={false}
+              tooltipLabel={'Choose a default band member'}
+            />
+          </PopoverConfirmation>
+
+          <PopoverConfirmation
+            label={"Would you like to update all parts' instruments?"}
+            popoverProps={{
+              opened: openedUpdatedDefaultInstrumentPopover,
+              onChange: setOpenedUpdatedDefaultInstrumentPopover,
+              transitionProps: { transition: 'skew-down' },
+              closeOnClickOutside: !isUpdateAllLoading,
+              withinPortal: false
+            }}
+            isLoading={isUpdateAllLoading}
+            onCancel={() => setOpenedUpdatedDefaultInstrumentPopover(false)}
+            onConfirm={handleUpdateAllPartsInstruments}
+          >
+            <InstrumentCompactSelect
+              instrument={defaultInstrument}
+              setInstrument={handleDefaultInstrumentChange}
+              withinPortal={false}
+              tooltipLabel={'Choose a default instrument'}
+            />
+          </PopoverConfirmation>
+        </Group>
+      </Popover.Dropdown>
+    </Popover>
+  )
+}
+
+export default SongOutlineSettingsButton

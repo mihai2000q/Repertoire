@@ -62,18 +62,18 @@ func TestCreateSongArrangement_WhenSuccessful_ShouldCreateArrangement(t *testing
 
 	var arrangement model.SongArrangement
 	db.
-		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+		Preload("PartOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("LEFT JOIN song_sections ON song_sections.id = song_section_occurrences.section_id").
-				Order("song_sections.order")
+				Joins("LEFT JOIN song_parts ON song_parts.id = song_part_occurrences.part_id").
+				Order("song_parts.song_order")
 		}).
 		Order("\"order\"").
 		Find(&arrangement, response.ID)
 
-	var songSections []model.SongSection
-	db.Where(&model.SongSection{SongID: song.ID}).Order("\"order\"").Find(&songSections)
+	var songParts []model.SongPart
+	db.Where(&model.SongPart{SongID: song.ID}).Order("song_order").Find(&songParts)
 
-	assertCreatedSongArrangement(t, arrangement, request, arrangementsCount, songSections)
+	assertCreatedSongArrangement(t, arrangement, request, arrangementsCount, songParts)
 }
 
 func assertCreatedSongArrangement(
@@ -81,16 +81,16 @@ func assertCreatedSongArrangement(
 	songArrangement model.SongArrangement,
 	request requests.CreateSongArrangementRequest,
 	order int64,
-	songSections []model.SongSection,
+	songParts []model.SongPart,
 ) {
 	assert.NotEmpty(t, songArrangement.ID)
 	assert.Equal(t, request.SongID, songArrangement.SongID)
 	assert.Equal(t, request.Name, songArrangement.Name)
 	assert.Equal(t, uint(order), songArrangement.Order)
-	assert.Len(t, songArrangement.SectionOccurrences, len(songSections))
-	for i, section := range songSections {
-		assert.Equal(t, section.ID, songArrangement.SectionOccurrences[i].SectionID)
-		assert.Equal(t, songArrangement.ID, songArrangement.SectionOccurrences[i].ArrangementID)
-		assert.Zero(t, songArrangement.SectionOccurrences[i].Occurrences)
+	assert.Len(t, songArrangement.PartOccurrences, len(songParts))
+	for i, part := range songParts {
+		assert.Equal(t, part.ID, songArrangement.PartOccurrences[i].PartID)
+		assert.Equal(t, songArrangement.ID, songArrangement.PartOccurrences[i].ArrangementID)
+		assert.Zero(t, songArrangement.PartOccurrences[i].Occurrences)
 	}
 }

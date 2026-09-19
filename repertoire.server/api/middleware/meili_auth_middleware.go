@@ -3,16 +3,16 @@ package middleware
 import (
 	"errors"
 	"net/http"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 
 	"github.com/gin-gonic/gin"
 )
 
 type MeiliAuthMiddleware struct {
-	env internal.Env
+	env env.Env
 }
 
-func NewMeiliAuthMiddleware(env internal.Env) MeiliAuthMiddleware {
+func NewMeiliAuthMiddleware(env env.Env) MeiliAuthMiddleware {
 	return MeiliAuthMiddleware{env: env}
 }
 

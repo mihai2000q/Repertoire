@@ -6,6 +6,7 @@ import (
 	"repertoire/server/test/integration/test/assertion"
 	albumData "repertoire/server/test/integration/test/data/album"
 	"repertoire/server/test/integration/test/utils"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -39,18 +40,31 @@ func TestAlbumsUpdated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 		Preload("Songs.Album").
 		Find(&albums, ids)
 
+	// maps for lookup
+	albumsMap := make(map[string]model.Album)
+	songsMap := make(map[string]model.Song)
+	for _, album := range albums {
+		albumsMap[album.ID.String()] = album
+		for _, song := range album.Songs {
+			songsMap[song.ID.String()] = song
+		}
+	}
+
 	assertion.AssertMessage(t, messages, func(documents []map[string]any) {
-		documentsLength := 0
-		for _, album := range albums {
-			albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[documentsLength])
-			assertion.AlbumSearch(t, albumSearch, album)
-			documentsLength++
-			for _, song := range album.Songs {
-				songSearch := utils.UnmarshalDocument[model.SongSearch](documents[documentsLength])
+		assert.Len(t, documents, len(albumsMap)+len(songsMap))
+		for _, doc := range documents {
+			id := doc["id"].(string)
+			if strings.HasPrefix(id, "album-") {
+				albumSearch := utils.UnmarshalDocument[model.AlbumSearch](doc)
+				album := albumsMap[strings.Replace(albumSearch.ID, "album-", "", 1)]
+				assertion.AlbumSearch(t, albumSearch, album)
+			} else if strings.HasPrefix(id, "song-") {
+				songSearch := utils.UnmarshalDocument[model.SongSearch](doc)
+				song := songsMap[strings.Replace(songSearch.ID, "song-", "", 1)]
 				assertion.SongSearch(t, songSearch, song)
-				documentsLength++
+			} else {
+				assert.Fail(t, "Document was not found in songs or albums")
 			}
 		}
-		assert.Len(t, documents, documentsLength)
 	})
 }

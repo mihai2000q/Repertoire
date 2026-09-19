@@ -1,4 +1,3 @@
-import { Menu } from '@mantine/core'
 import { IconCircleMinus, IconTrash } from '@tabler/icons-react'
 import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
@@ -57,16 +56,23 @@ function ArtistAlbumsContextMenu({
             onSuccess={clearSelection}
             type={'albums'}
           />
-          <Menu.Divider />
+          <ContextMenu.Divider />
 
           {!isUnknownArtist && (
-            <Menu.Item leftSection={<IconCircleMinus size={14} />} onClick={openRemoveWarning}>
+            <ContextMenu.Item
+              leftSection={<IconCircleMinus size={14} />}
+              onClick={openRemoveWarning}
+            >
               Remove from Artist
-            </Menu.Item>
+            </ContextMenu.Item>
           )}
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
+          </ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
 

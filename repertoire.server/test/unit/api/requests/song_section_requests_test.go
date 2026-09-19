@@ -9,7 +9,58 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func TestValidateGetSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
+	// given
+	_uut := validation.NewValidator(nil)
+
+	request := requests.GetSongSectionsRequest{
+		SongID: uuid.New(),
+	}
+
+	// when
+	errCode := _uut.Validate(request)
+
+	// then
+	assert.Nil(t, errCode)
+}
+
+func TestValidateGetSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	tests := []struct {
+		name                 string
+		request              requests.GetSongSectionsRequest
+		expectedInvalidField string
+		expectedFailedTag    string
+	}{
+		// Song ID Test Cases
+		{
+			"Song ID is invalid because it's required",
+			requests.GetSongSectionsRequest{
+				SongID: uuid.Nil,
+			},
+			"SongID",
+			"required",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// given
+			_uut := validation.NewValidator(nil)
+
+			// when
+			errCode := _uut.Validate(tt.request)
+
+			// then
+			require.NotNil(t, errCode)
+			assert.Len(t, errCode.Error, 1)
+			assert.Contains(t, errCode.Error.Error(), "GetSongSectionsRequest."+tt.expectedInvalidField)
+			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+		})
+	}
+}
 
 var validSectionName = "James Solo"
 
@@ -29,11 +80,24 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 		{
 			"Maximal",
 			requests.CreateSongSectionRequest{
-				SongID:       uuid.New(),
-				Name:         validSectionName,
-				TypeID:       uuid.New(),
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
-				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{PartID: &[]uuid.UUID{uuid.New()}[0]},
+					{PartID: &[]uuid.UUID{uuid.New()}[0], BandMemberID: &[]uuid.UUID{uuid.New()}[0]},
+					{NewPart: &requests.CreateNewSongPartRequest{Name: "Chorus-1"}},
+					{
+						NewPart: &requests.CreateNewSongPartRequest{
+							Name:         "Chorus-1",
+							InstrumentID: &[]uuid.UUID{uuid.New()}[0],
+						},
+					},
+					{
+						NewPart:      &requests.CreateNewSongPartRequest{Name: "Chorus-1"},
+						BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+					},
+				},
 			},
 		},
 	}
@@ -54,10 +118,10 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	tests := []struct {
-		name                 string
-		request              requests.CreateSongSectionRequest
-		expectedInvalidField string
-		expectedFailedTag    string
+		name                  string
+		request               requests.CreateSongSectionRequest
+		expectedInvalidFields []string
+		expectedFailedTags    []string
 	}{
 		// Song ID Test Cases
 		{
@@ -67,8 +131,8 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				Name:   validSectionName,
 				TypeID: uuid.New(),
 			},
-			"SongID",
-			"required",
+			[]string{"SongID"},
+			[]string{"required"},
 		},
 		// Name Test Cases
 		{
@@ -78,8 +142,8 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				Name:   "",
 				TypeID: uuid.New(),
 			},
-			"Name",
-			"required",
+			[]string{"Name"},
+			[]string{"required"},
 		},
 		{
 			"Name is invalid because it has too many characters",
@@ -88,8 +152,8 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				Name:   strings.Repeat("a", 31),
 				TypeID: uuid.New(),
 			},
-			"Name",
-			"max",
+			[]string{"Name"},
+			[]string{"max"},
 		},
 		// Type ID Test Cases
 		{
@@ -99,8 +163,56 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				Name:   validSectionName,
 				TypeID: uuid.Nil,
 			},
-			"TypeID",
-			"required",
+			[]string{"TypeID"},
+			[]string{"required"},
+		},
+		// Parts Test Cases - Part ID and New Part
+		{
+			"Parts is invalid because Part ID and New Part cannot be both set at the same time",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{
+						PartID:  &[]uuid.UUID{uuid.New()}[0],
+						NewPart: &requests.CreateNewSongPartRequest{Name: "Chorus-1"},
+					},
+				},
+			},
+			[]string{"Parts[0].PartID", "Parts[0].NewPart"},
+			[]string{"excluded_with", "excluded_with"},
+		},
+		// Parts Test Cases - Part ID and New Part
+		{
+			"Parts is invalid because Part ID and New Part cannot be both set at the same time",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{
+						PartID:  &[]uuid.UUID{uuid.New()}[0],
+						NewPart: &requests.CreateNewSongPartRequest{Name: "Chorus-1"},
+					},
+				},
+			},
+			[]string{"Parts[0].PartID", "Parts[0].NewPart"},
+			[]string{"excluded_with", "excluded_with"},
+		},
+		// Parts Test Cases - Band Member ID
+		{
+			"Parts is invalid because Band Member ID requires either Part ID or New Part to be set",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{BandMemberID: &[]uuid.UUID{uuid.New()}[0]},
+				},
+			},
+			[]string{"Parts[0].BandMemberID"},
+			[]string{"excluded_without_all"},
 		},
 	}
 	for _, tt := range tests {
@@ -112,10 +224,15 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
-			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "CreateSongSectionRequest."+tt.expectedInvalidField)
-			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
+			require.NotNil(t, errCode)
+			assert.Len(t, tt.expectedFailedTags, len(tt.expectedInvalidFields))
+			assert.Len(t, errCode.Error, len(tt.expectedFailedTags))
+			for _, expectedInvalidField := range tt.expectedInvalidFields {
+				assert.Contains(t, errCode.Error.Error(), "CreateSongSectionRequest."+expectedInvalidField)
+			}
+			for _, expectedFailedTag := range tt.expectedFailedTags {
+				assert.Contains(t, errCode.Error.Error(), "'"+expectedFailedTag+"' tag")
+			}
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
 	}
@@ -129,23 +246,18 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 		{
 			"Minimal",
 			requests.UpdateSongSectionRequest{
-				ID:         uuid.New(),
-				Name:       validSectionName,
-				Confidence: 100,
-				Rehearsals: 23,
-				TypeID:     uuid.New(),
+				ID:     uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
 			},
 		},
 		{
 			"Maximal",
 			requests.UpdateSongSectionRequest{
-				ID:           uuid.New(),
-				Name:         validSectionName,
-				Confidence:   100,
-				Rehearsals:   23,
-				TypeID:       uuid.New(),
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
-				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
+				ID:      uuid.New(),
+				Name:    validSectionName,
+				TypeID:  uuid.New(),
+				PartIDs: []uuid.UUID{uuid.New()},
 			},
 		},
 	}
@@ -203,18 +315,6 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			"Name",
 			"max",
 		},
-		// Confidence Test Cases
-		{
-			"Confidence is invalid because it is greater than 100",
-			requests.UpdateSongSectionRequest{
-				ID:         uuid.New(),
-				Name:       validSectionName,
-				Confidence: 101,
-				TypeID:     uuid.New(),
-			},
-			"Confidence",
-			"max",
-		},
 		// Type ID Test Cases
 		{
 			"Type ID is invalid because it's required",
@@ -236,76 +336,9 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateSongSectionRequest."+tt.expectedInvalidField)
-			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, http.StatusBadRequest, errCode.Code)
-		})
-	}
-}
-
-func TestValidateUpdateAllSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	tests := []struct {
-		name    string
-		request requests.UpdateAllSongSectionsRequest
-	}{
-		{
-			"Non Optional",
-			requests.UpdateAllSongSectionsRequest{
-				SongID: uuid.New(),
-			},
-		},
-		{
-			"All Filled",
-			requests.UpdateAllSongSectionsRequest{
-				SongID:       uuid.New(),
-				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := validation.NewValidator(nil)
-
-			// when
-			errCode := _uut.Validate(tt.request)
-
-			// then
-			assert.Nil(t, errCode)
-		})
-	}
-}
-
-func TestValidateUpdateAllSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
-	tests := []struct {
-		name                 string
-		request              requests.UpdateAllSongSectionsRequest
-		expectedInvalidField string
-		expectedFailedTag    string
-	}{
-		// Song ID Test Cases
-		{
-			"Song ID is invalid because it's required",
-			requests.UpdateAllSongSectionsRequest{SongID: uuid.Nil},
-			"SongID",
-			"required",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			// given
-			_uut := validation.NewValidator(nil)
-
-			// when
-			errCode := _uut.Validate(tt.request)
-
-			// then
-			assert.NotNil(t, errCode)
-			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "UpdateAllSongSectionsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
 			assert.Equal(t, http.StatusBadRequest, errCode.Code)
 		})
@@ -367,7 +400,7 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongSectionRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -376,60 +409,28 @@ func TestValidateMoveSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 	}
 }
 
-func TestValidateBulkRehearsalsSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.BulkRehearsalsSongSectionsRequest{
-		Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsals: 0}},
-		SongID:   uuid.New(),
-	}
-
-	// when
-	errCode := _uut.Validate(request)
-
-	// then
-	assert.Nil(t, errCode)
-}
-
-func TestValidateBulkRehearsalsSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
 	tests := []struct {
-		name                 string
-		request              requests.BulkRehearsalsSongSectionsRequest
-		expectedInvalidField string
-		expectedFailedTag    string
+		name    string
+		request requests.BulkDeleteSongSectionsRequest
 	}{
-		// Sections Test Cases
 		{
-			"Sections is invalid because it requires at least 1 section",
-			requests.BulkRehearsalsSongSectionsRequest{
-				Sections: []requests.BulkRehearsalsSongSectionRequest{},
-				SongID:   uuid.New(),
+			"Minimal",
+			requests.BulkDeleteSongSectionsRequest{
+				IDs:    []uuid.UUID{uuid.New()},
+				SongID: uuid.New(),
 			},
-			"Sections",
-			"min",
 		},
-		// Sections Test Cases
 		{
-			"Sections is invalid because it requires at least 1 section",
-			requests.BulkRehearsalsSongSectionsRequest{
-				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.Nil, Rehearsals: 0}},
-				SongID:   uuid.New(),
+			"Maximal",
+			requests.BulkDeleteSongSectionsRequest{
+				IDs:       []uuid.UUID{uuid.New()},
+				SongID:    uuid.New(),
+				WithParts: true,
 			},
-			"Sections[0].ID",
-			"required",
-		},
-		// Song ID Test Cases
-		{
-			"Song ID is invalid because it's required",
-			requests.BulkRehearsalsSongSectionsRequest{
-				Sections: []requests.BulkRehearsalsSongSectionRequest{{ID: uuid.New(), Rehearsals: 0}},
-				SongID:   uuid.Nil,
-			},
-			"SongID",
-			"required",
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
@@ -439,29 +440,9 @@ func TestValidateBulkRehearsalsSongSectionsRequest_WhenSingleFieldIsInvalid_Shou
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
-			assert.Len(t, errCode.Error, 1)
-			assert.Contains(t, errCode.Error.Error(), "BulkRehearsalsSongSectionsRequest."+tt.expectedInvalidField)
-			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
-			assert.Equal(t, http.StatusBadRequest, errCode.Code)
+			assert.Nil(t, errCode)
 		})
 	}
-}
-
-func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
-	// given
-	_uut := validation.NewValidator(nil)
-
-	request := requests.BulkDeleteSongSectionsRequest{
-		IDs:    []uuid.UUID{uuid.New()},
-		SongID: uuid.New(),
-	}
-
-	// when
-	errCode := _uut.Validate(request)
-
-	// then
-	assert.Nil(t, errCode)
 }
 
 func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
@@ -495,7 +476,7 @@ func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteSongSectionsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

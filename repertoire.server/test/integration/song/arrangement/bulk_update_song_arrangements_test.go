@@ -14,6 +14,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBulkUpdateSongArrangements_SongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.BulkUpdateSongArrangementsRequest{
+		SongID: uuid.New(),
+		Requests: []requests.UpdateSongArrangementRequest{
+			{
+				ID:   uuid.New(),
+				Name: "New Chorus Name",
+			},
+		},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/arrangements/bulk", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestBulkUpdateSongArrangements_WhenArrangementsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -50,17 +72,17 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 			{
 				ID:   songData.SongArrangements[1].ID,
 				Name: "New Chorus Name",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						SectionID:   songData.SongSections[5].ID,
+						PartID:      songData.SongParts[5].ID,
 						Occurrences: 1,
 					},
 					{
-						SectionID:   songData.SongSections[4].ID,
+						PartID:      songData.SongParts[4].ID,
 						Occurrences: 7,
 					},
 					{
-						SectionID:   songData.SongSections[6].ID,
+						PartID:      songData.SongParts[6].ID,
 						Occurrences: 2,
 					},
 				},
@@ -68,17 +90,17 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 			{
 				ID:   songData.SongArrangements[2].ID,
 				Name: "New Chorus Name",
-				Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
+				Occurrences: []requests.UpdateSongPartOccurrencesRequest{
 					{
-						SectionID:   songData.SongSections[5].ID,
+						PartID:      songData.SongParts[5].ID,
 						Occurrences: 5,
 					},
 					{
-						SectionID:   songData.SongSections[4].ID,
+						PartID:      songData.SongParts[4].ID,
 						Occurrences: 0,
 					},
 					{
-						SectionID:   songData.SongSections[6].ID,
+						PartID:      songData.SongParts[6].ID,
 						Occurrences: 1,
 					},
 				},
@@ -103,7 +125,7 @@ func TestBulkUpdateSongArrangements_WhenSuccessful_ShouldUpdateArrangements(t *t
 	db := utils.GetDatabase(t)
 
 	var arrangements []model.SongArrangement
-	db.Preload("SectionOccurrences").Find(&arrangements, ids)
+	db.Preload("PartOccurrences").Find(&arrangements, ids)
 
 	for _, a := range arrangements {
 		assertUpdatedSongArrangement(t, a, requestsMap[a.ID])
@@ -117,12 +139,12 @@ func assertUpdatedSongArrangement(
 ) {
 	assert.Equal(t, request.Name, songArrangement.Name)
 
-	sectionsOccurrencesMap := make(map[uuid.UUID]uint)
-	for _, s := range request.Occurrences {
-		sectionsOccurrencesMap[s.SectionID] = s.Occurrences
+	partsOccurrencesMap := make(map[uuid.UUID]uint)
+	for _, o := range request.Occurrences {
+		partsOccurrencesMap[o.PartID] = o.Occurrences
 	}
-	for i := range songArrangement.SectionOccurrences {
-		occurrences := sectionsOccurrencesMap[songArrangement.SectionOccurrences[i].SectionID]
-		assert.Equal(t, songArrangement.SectionOccurrences[i].Occurrences, occurrences)
+	for _, po := range songArrangement.PartOccurrences {
+		occurrences := partsOccurrencesMap[po.PartID]
+		assert.Equal(t, po.Occurrences, occurrences)
 	}
 }

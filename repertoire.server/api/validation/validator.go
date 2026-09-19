@@ -2,7 +2,7 @@ package validation
 
 import (
 	"context"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 
 	"go.uber.org/fx"
 
@@ -35,10 +35,10 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 	}
 }
 
-func (v *Validator) Validate(request any) *wrapper.ErrorCode {
+func (v *Validator) Validate(request any) *httperror.ErrorCode {
 	err := v.validate.Struct(request)
 	if err != nil {
-		return wrapper.BadRequestError(err)
+		return httperror.BadRequestError(err)
 	}
 	return nil
 }

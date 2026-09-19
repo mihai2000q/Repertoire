@@ -34,8 +34,7 @@ func NewAddToSearchEngineHandler(
 
 func (a AddToSearchEngineHandler) Handle(msg *message.Message) error {
 	var documents []map[string]any // the documents can also be of type []any, because they will be unmarshalled
-	err := json.Unmarshal(msg.Payload, &documents)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &documents); err != nil {
 		return err
 	}
 

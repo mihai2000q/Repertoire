@@ -3,7 +3,7 @@ package server
 import (
 	"net/http"
 	"repertoire/server/api/validation"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -19,10 +19,10 @@ func (*BaseHandler) GetTokenFromContext(c *gin.Context) string {
 	return t[1]
 }
 
-func (h *BaseHandler) BindAndValidate(c *gin.Context, request any) *wrapper.ErrorCode {
+func (h *BaseHandler) BindAndValidate(c *gin.Context, request any) *httperror.ErrorCode {
 	err := c.Bind(&request)
 	if err != nil {
-		return wrapper.BadRequestError(err)
+		return httperror.BadRequestError(err)
 	}
 
 	errCode := h.Validator.Validate(request)

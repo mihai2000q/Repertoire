@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"repertoire/server/domain/usecase/song"
 	"repertoire/server/internal"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
 	"repertoire/server/test/unit/data/service"
@@ -15,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteImageFromSong_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -32,7 +33,7 @@ func TestDeleteImageFromSong_WhenGetSongFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -53,14 +54,14 @@ func TestDeleteImageFromSong_WhenSongIsEmpty_ShouldReturnNotFoundError(t *testin
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
 	songRepository.AssertExpectations(t)
 }
 
-func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *testing.T) {
+func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnNoError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
 	_uut := song.NewDeleteImageFromSong(songRepository, nil, nil)
@@ -75,9 +76,7 @@ func TestDeleteImageFromSong_WhenSongHasNoImage_ShouldReturnConflictError(t *tes
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "song does not have an image", errCode.Error.Error())
+	require.Nil(t, errCode)
 
 	songRepository.AssertExpectations(t)
 }
@@ -94,14 +93,14 @@ func TestDeleteImageFromSong_WhenDeleteImageFails_ShouldReturnInternalServerErro
 	mockSong := &model.Song{ID: id, ImageURL: &[]internal.FilePath{"This is some url"}[0]}
 	songRepository.On("Get", new(model.Song), id).Return(nil, mockSong).Once()
 
-	internalError := wrapper.InternalServerError(errors.New("internal error"))
+	internalError := httperror.InternalServerError(errors.New("internal error"))
 	storageService.On("DeleteFile", *mockSong.ImageURL).Return(internalError).Once()
 
 	// when
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, internalError, errCode)
 
 	songRepository.AssertExpectations(t)
@@ -131,7 +130,7 @@ func TestDeleteImageFromSong_WhenUpdateSongFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -167,7 +166,7 @@ func TestDeleteImageFromSong_WhenPublishFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(id)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

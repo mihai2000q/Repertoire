@@ -34,13 +34,11 @@ func NewUserDeletedHandler(
 
 func (u UserDeletedHandler) Handle(msg *message.Message) error {
 	var userID uuid.UUID
-	err := json.Unmarshal(msg.Payload, &userID)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &userID); err != nil {
 		return err
 	}
 
-	err = u.syncWithSearchEngine(userID)
-	if err != nil {
+	if err := u.syncWithSearchEngine(userID); err != nil {
 		return err
 	}
 

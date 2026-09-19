@@ -6,47 +6,47 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type AddPerfectRehearsalsToAlbums struct {
-	repository         repository.AlbumRepository
+	albumRepository    repository.AlbumRepository
 	songProcessor      processor.SongProcessor
 	transactionManager transaction.Manager
 }
 
 func NewAddPerfectRehearsalsToAlbums(
-	repository repository.AlbumRepository,
+	albumRepository repository.AlbumRepository,
 	songProcessor processor.SongProcessor,
 	transactionManager transaction.Manager,
 ) AddPerfectRehearsalsToAlbums {
 	return AddPerfectRehearsalsToAlbums{
-		repository:         repository,
+		albumRepository:    albumRepository,
 		songProcessor:      songProcessor,
 		transactionManager: transactionManager,
 	}
 }
 
-func (a AddPerfectRehearsalsToAlbums) Handle(request requests.AddPerfectRehearsalsToAlbumsRequest) *wrapper.ErrorCode {
+func (a AddPerfectRehearsalsToAlbums) Handle(request requests.AddPerfectRehearsalsToAlbumsRequest) *httperror.ErrorCode {
 	var albums []model.Album
-	err := a.repository.GetAllByIDsWithSongSectionsAndDefaultOccurrences(&albums, request.IDs)
+	err := a.albumRepository.GetAllByIDsWithSongPartsAndDefaultOccurrences(&albums, request.IDs)
 	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 	if len(albums) != len(request.IDs) {
-		return wrapper.NotFoundError(errors.New("albums not found"))
+		return httperror.NotFoundError(errors.New("albums not found"))
 	}
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	err = a.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
-		transactionSongSectionRepository := factory.NewSongSectionRepository()
-		transactionSongRepository := factory.NewSongRepository()
+		txSongPartRepo := factory.NewSongPartRepository()
+		txSongRepo := factory.NewSongRepository()
 
 		var newSongs []model.Song
 		for _, album := range albums {
 			for _, song := range album.Songs {
-				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, transactionSongSectionRepository)
+				errC, isUpdated := a.songProcessor.AddPerfectRehearsal(&song, txSongPartRepo)
 				if errC != nil {
 					errCode = errC
 					return errCode.Error
@@ -58,9 +58,7 @@ func (a AddPerfectRehearsalsToAlbums) Handle(request requests.AddPerfectRehearsa
 		}
 
 		if len(newSongs) > 0 {
-			err = transactionSongRepository.UpdateAllWithAssociations(&newSongs)
-			if err != nil {
-				errCode = wrapper.InternalServerError(err)
+			if err = txSongRepo.UpdateAllWithAssociations(&newSongs); err != nil {
 				return err
 			}
 		}
@@ -70,7 +68,7 @@ func (a AddPerfectRehearsalsToAlbums) Handle(request requests.AddPerfectRehearsa
 		if errCode != nil {
 			return errCode
 		}
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

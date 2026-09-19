@@ -1,34 +1,42 @@
-import { reduxRender, withToastify } from '../../../../../../../test-utils.tsx'
+import { reduxRender, emptySongPart, emptySongSection, withToastify } from '../../../../../../../test-utils.tsx'
 import SongSectionsContextMenu from './SongSectionsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
-import { BulkRehearsalsSongSectionsRequest } from '../types/requests/SongSectionRequests.ts'
+import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
+import { SongSection } from '../../../../../../../types/models/Song.ts'
 
-// Mock the context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
 describe('Song Sections Context Menu', () => {
   const dataTestId = 'dataTestId'
-  const selectedIds = ['1', '2', '3']
   const clearSelection = vi.fn()
-
+  const sections: SongSection[] = ['1', '2', '3'].map((id) => ({
+    ...emptySongSection,
+    id,
+    name: `Section ${id}`,
+    parts: [{ ...emptySongPart, id: `part-${id}`, rehearsals: 2, confidence: 50 }]
+  }))
   const server = setupServer()
 
-  beforeEach(() => {
-    vi.clearAllMocks()
+  function mockSelectedIds(selectedIds: string[], isClickSelectionActive = true) {
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: [],
       addSelectable: vi.fn(),
       removeSelectable: vi.fn(),
-      selectedIds: selectedIds,
-      isClickSelectionActive: true,
-      clearSelection: clearSelection
+      selectedIds,
+      isClickSelectionActive,
+      clearSelection
     })
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    mockSelectedIds(['section-1', 'section-2', 'section-3'])
   })
 
   afterEach(() => {
@@ -43,123 +51,117 @@ describe('Song Sections Context Menu', () => {
   const render = (songId = '1') =>
     reduxRender(
       withToastify(
-        <SongSectionsContextMenu songId={songId}>
+        <SongSectionsContextMenu sections={sections} songId={songId}>
           <div data-testid={dataTestId} />
         </SongSectionsContextMenu>
       )
     )
 
-  it('should render', async () => {
+  async function openMenu(songId = '1') {
+    render(songId)
     const user = userEvent.setup()
-
-    render()
-
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByTestId(dataTestId)
     })
+    return user
+  }
+
+  it('should open the menu for an active section selection', async () => {
+    await openMenu()
 
     expect(await screen.findByRole('menu')).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /add rehearsals/i })).toBeInTheDocument()
     expect(screen.getByRole('menuitem', { name: /delete/i })).toBeInTheDocument()
   })
 
-  it('should be disabled when the selection is inactive', async () => {
-    const user = userEvent.setup()
+  it('should not open when there is no active selection', async () => {
+    mockSelectedIds([], false)
 
-    vi.mocked(useClickSelect).mockReturnValue({
-      selectables: [],
-      addSelectable: vi.fn(),
-      removeSelectable: vi.fn(),
-      selectedIds: [],
-      isClickSelectionActive: false,
-      clearSelection: vi.fn()
-    })
-
-    render()
-
-    await user.pointer({
-      keys: '[MouseRight>]',
-      target: screen.getByTestId(dataTestId)
-    })
+    await openMenu()
 
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should close menu when the selection becomes inactive', async () => {
-    const user = userEvent.setup()
-
-    // render and open menu
+  it('should close when the selection becomes empty', async () => {
     const [{ rerender }] = render()
-
+    const user = userEvent.setup()
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByTestId(dataTestId)
     })
-    expect(screen.queryByRole('menu')).toBeInTheDocument()
 
-    // close the activity of the selection and rerender the closed menu
-    vi.mocked(useClickSelect).mockReturnValue({
-      selectables: [],
-      addSelectable: vi.fn(),
-      removeSelectable: vi.fn(),
-      selectedIds: [],
-      isClickSelectionActive: false,
-      clearSelection: vi.fn()
-    })
+    expect(screen.getByRole('menu')).toBeInTheDocument()
 
+    mockSelectedIds([], false)
     rerender(
-      <SongSectionsContextMenu songId={'1'}>
+      <SongSectionsContextMenu sections={sections} songId={'1'}>
         <div data-testid={dataTestId} />
       </SongSectionsContextMenu>
     )
-
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should bulk rehearsals by 1 on add rehearsals menu item', async () => {
-    const user = userEvent.setup()
+  it('should disable add rehearsals when only sections are selected', async () => {
+    await openMenu()
 
-    let capturedRequest: BulkRehearsalsSongSectionsRequest
+    expect(screen.getByRole('menuitem', { name: /add rehearsals/i })).toHaveAttribute(
+      'data-disabled'
+    )
+  })
+
+  it('should open the section deletion modal when clicking delete', async () => {
+    const user = await openMenu()
+
+    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+    expect(await screen.findByRole('dialog', { name: /delete song sections/i })).toBeInTheDocument()
+  })
+
+  it('should open the part deletion modal when clicking delete with only parts selected', async () => {
+    const selectedPartIds = sections
+      .slice(0, 2)
+      .map((section) => `part-${section.parts[0].id}:${section.id}`)
+    mockSelectedIds(selectedPartIds)
+
+    const user = await openMenu()
+
+    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+    expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
+  })
+
+  it('should bulk rehearse selected parts by 1', async () => {
+    const user = userEvent.setup()
+    const selectedPartIds = sections.map((section) => `part-${section.parts[0].id}:${section.id}`)
+    const selectedParts = sections.map((section) => section.parts[0])
+    mockSelectedIds(selectedPartIds)
+
+    let capturedRequest: BulkUpdateSongPartsRequest
     server.use(
-      http.post(`/songs/sections/bulk-rehearsals`, async (req) => {
-        capturedRequest = (await req.request.json()) as BulkRehearsalsSongSectionsRequest
+      http.put(`/songs/parts/bulk-update`, async (req) => {
+        capturedRequest = (await req.request.json()) as BulkUpdateSongPartsRequest
         return HttpResponse.json({ message: 'it worked' })
       })
     )
 
-    const songId = '1'
-
-    render(songId)
-
+    render('song-1')
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByTestId(dataTestId)
     })
     await user.click(screen.getByRole('menuitem', { name: /add rehearsals/i }))
-    await user.click(screen.getByRole('button', { name: /confirm/i })) // menu item confirmation
+    await user.click(screen.getByRole('button', { name: /confirm/i }))
 
-    expect(
-      screen.getByText(`Rehearsals added to ${selectedIds.length} sections!`)
-    ).toBeInTheDocument()
+    expect(screen.getByText('Rehearsals added to 3 parts!')).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({
-      sections: selectedIds.map((id) => ({ id: id, rehearsals: 1 })),
-      songId: songId
+      requests: selectedParts.map((part) => ({
+        id: part.id,
+        rehearsals: part.rehearsals + 1,
+        confidence: part.confidence
+      })),
+      songId: 'song-1'
     })
     expect(clearSelection).toHaveBeenCalledOnce()
-  })
-
-  it('should open warning when clicking on delete menu item', async () => {
-    const user = userEvent.setup()
-
-    render()
-
-    await user.pointer({
-      keys: '[MouseRight>]',
-      target: screen.getByTestId(dataTestId)
-    })
-    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
-
-    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
   })
 })

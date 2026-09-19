@@ -2,8 +2,9 @@ package processor
 
 import (
 	"errors"
+	"reflect"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 	"time"
@@ -14,13 +15,18 @@ import (
 type SongProcessor interface {
 	AddCustomRehearsal(
 		song *model.Song,
-		songSectionRepository repository.SongSectionRepository,
+		songPartRepository repository.SongPartRepository,
 		arrangementID *uuid.UUID,
-	) (errCode *wrapper.ErrorCode, updatedSong bool)
+	) (errCode *httperror.ErrorCode, updatedSong bool)
 	AddPerfectRehearsal(
 		song *model.Song,
-		songSectionRepository repository.SongSectionRepository,
-	) (errCode *wrapper.ErrorCode, updatedSong bool)
+		songPartRepository repository.SongPartRepository,
+	) (errCode *httperror.ErrorCode, updatedSong bool)
+	UpdateSongAfterPartsDeletion(
+		songRepository repository.SongRepository,
+		songID uuid.UUID,
+		partIDs []uuid.UUID,
+	) *httperror.ErrorCode
 }
 
 type songProcessor struct {
@@ -33,97 +39,159 @@ func NewSongProcessor(progressProcessor ProgressProcessor) SongProcessor {
 
 func (s *songProcessor) AddCustomRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
+	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
-) (*wrapper.ErrorCode, bool) {
-	if len(song.Sections) == 0 || (arrangementID == nil && len(song.Sections[0].ArrangementOccurrences) == 0) {
+) (*httperror.ErrorCode, bool) {
+	if len(song.Parts) == 0 || (arrangementID == nil && len(song.Parts[0].ArrangementOccurrences) == 0) {
 		return nil, false
 	}
 	if arrangementID != nil {
-		index := slices.IndexFunc(song.Sections[0].ArrangementOccurrences, func(o model.SongSectionOccurrences) bool {
+		index := slices.IndexFunc(song.Parts[0].ArrangementOccurrences, func(o model.SongPartOccurrences) bool {
 			return o.ArrangementID == *arrangementID
 		})
 		if index == -1 {
-			return wrapper.NotFoundError(errors.New("song arrangement not found")), false
+			return httperror.NotFoundError(errors.New("song arrangement not found")), false
 		}
 	}
 
-	return s.addRehearsal(song, songSectionRepository, arrangementID)
+	return s.addRehearsal(song, songPartRepository, arrangementID)
 }
 
 func (s *songProcessor) AddPerfectRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
-) (*wrapper.ErrorCode, bool) {
+	songPartRepository repository.SongPartRepository,
+) (*httperror.ErrorCode, bool) {
 	if song.DefaultArrangementID == nil {
 		return nil, false
 	}
-	return s.addRehearsal(song, songSectionRepository, nil)
+	return s.addRehearsal(song, songPartRepository, nil)
 }
 
 func (s *songProcessor) addRehearsal(
 	song *model.Song,
-	songSectionRepository repository.SongSectionRepository,
+	songPartRepository repository.SongPartRepository,
 	arrangementID *uuid.UUID,
-) (*wrapper.ErrorCode, bool) {
+) (*httperror.ErrorCode, bool) {
 	var totalRehearsals float64 = 0
 	var totalProgress float64 = 0
-	for i, section := range song.Sections {
-		var arrangementOccurrence model.SongSectionOccurrences
+	for i, part := range song.Parts {
+		var arrangementOccurrence model.SongPartOccurrences
 		if arrangementID != nil {
-			index := slices.IndexFunc(section.ArrangementOccurrences, func(o model.SongSectionOccurrences) bool {
+			index := slices.IndexFunc(part.ArrangementOccurrences, func(o model.SongPartOccurrences) bool {
 				return o.ArrangementID == *arrangementID
 			})
-			arrangementOccurrence = section.ArrangementOccurrences[index]
+			arrangementOccurrence = part.ArrangementOccurrences[index]
 		} else {
-			arrangementOccurrence = section.ArrangementOccurrences[0]
+			arrangementOccurrence = part.ArrangementOccurrences[0]
 		}
 
 		if arrangementOccurrence.Occurrences == 0 {
 			continue
 		}
 
-		newRehearsals := section.Rehearsals + arrangementOccurrence.Occurrences
+		newRehearsals := part.Rehearsals + arrangementOccurrence.Occurrences
 		// add history of the rehearsals change
-		newHistory := model.SongSectionHistory{
-			ID:            uuid.New(),
-			Property:      model.RehearsalsProperty,
-			From:          section.Rehearsals,
-			To:            newRehearsals,
-			SongSectionID: section.ID,
-			CreatedAt:     time.Now().UTC(),
+		newHistory := model.SongPartHistory{
+			ID:        uuid.New(),
+			Property:  model.RehearsalsProperty,
+			From:      part.Rehearsals,
+			To:        newRehearsals,
+			PartID:    part.ID,
+			CreatedAt: time.Now().UTC(),
 		}
-		err := songSectionRepository.CreateHistory(&newHistory)
-		if err != nil {
-			return wrapper.InternalServerError(err), false
-		}
-
-		// update section's rehearsals score based on the history changes and update the rehearsals and progress too
-		var history []model.SongSectionHistory
-		err = songSectionRepository.GetHistory(&history, section.ID, model.RehearsalsProperty)
-		if err != nil {
-			return wrapper.InternalServerError(err), false
+		if err := songPartRepository.CreateHistory(&newHistory); err != nil {
+			return httperror.DatabaseError(err), false
 		}
 
-		song.Sections[i].Rehearsals = newRehearsals
-		song.Sections[i].RehearsalsScore = s.progressProcessor.ComputeRehearsalsScore(history)
-		song.Sections[i].Progress = s.progressProcessor.ComputeProgress(song.Sections[i])
+		// update part's rehearsals score based on the history changes and update the rehearsals and progress too
+		var history []model.SongPartHistory
+		if err := songPartRepository.GetHistory(&history, part.ID, model.RehearsalsProperty); err != nil {
+			return httperror.DatabaseError(err), false
+		}
+
+		song.Parts[i].Rehearsals = newRehearsals
+		song.Parts[i].RehearsalsScore = s.progressProcessor.ComputeRehearsalsScore(history)
+		song.Parts[i].Progress = s.progressProcessor.ComputeProgress(song.Parts[i])
 
 		// add to the total for the median
-		totalProgress += float64(song.Sections[i].Progress)
-		totalRehearsals += float64(song.Sections[i].Rehearsals)
+		totalProgress += float64(song.Parts[i].Progress)
+		totalRehearsals += float64(song.Parts[i].Rehearsals)
 	}
 
-	// means that no section got updated (because if it did, the total would be at least 1 from an occurrence)
+	// means that no part got updated (because if it did, the total would be at least 1 from an occurrence)
 	if totalRehearsals == 0 {
 		return nil, false
 	}
 
 	// update song media progress and rehearsals + update last time played
-	sectionsCount := len(song.Sections)
-	song.Rehearsals = totalRehearsals / float64(sectionsCount)
-	song.Progress = totalProgress / float64(sectionsCount)
+	partsCount := len(song.Parts)
+	song.Rehearsals = totalRehearsals / float64(partsCount)
+	song.Progress = totalProgress / float64(partsCount)
 	song.LastTimePlayed = &[]time.Time{time.Now().UTC()}[0]
 
 	return nil, true
+}
+
+func (s *songProcessor) UpdateSongAfterPartsDeletion(
+	songRepository repository.SongRepository,
+	songID uuid.UUID,
+	partIDs []uuid.UUID,
+) *httperror.ErrorCode {
+	// Fetch the song with its parts
+	var song model.Song
+	if err := songRepository.GetWithParts(&song, songID); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if reflect.ValueOf(song).IsZero() {
+		return httperror.NotFoundError(errors.New("song not found"))
+	}
+
+	// map for easy lookup
+	partIDsMap := make(map[uuid.UUID]bool)
+	for _, iD := range partIDs {
+		partIDsMap[iD] = true
+	}
+
+	// Reorder remaining parts and accumulate deleted stats
+	var totalConfidence, totalRehearsals uint
+	var totalProgress uint64
+	partsToDeleteCount := 0
+	remainingPartsCount := 0
+
+	for i, part := range song.Parts {
+		if partIDsMap[part.ID] {
+			partsToDeleteCount++
+			totalConfidence += part.Confidence
+			totalRehearsals += part.Rehearsals
+			totalProgress += part.Progress
+			continue
+		}
+		// Shift SongOrder down by the number of deleted parts before it
+		song.Parts[i].SongOrder -= uint(partsToDeleteCount)
+		remainingPartsCount++
+	}
+
+	// Validate that all unique part IDs were found
+	if partsToDeleteCount != len(partIDsMap) {
+		return httperror.NotFoundError(errors.New("song parts not found"))
+	}
+
+	// Recalculate song stats
+	if remainingPartsCount == 0 {
+		song.Confidence = 0
+		song.Rehearsals = 0
+		song.Progress = 0
+	} else {
+		oldPartsLen := remainingPartsCount + partsToDeleteCount
+		newPartsLen := float64(remainingPartsCount)
+		song.Confidence = (song.Confidence*float64(oldPartsLen) - float64(totalConfidence)) / newPartsLen
+		song.Rehearsals = (song.Rehearsals*float64(oldPartsLen) - float64(totalRehearsals)) / newPartsLen
+		song.Progress = (song.Progress*float64(oldPartsLen) - float64(totalProgress)) / newPartsLen
+	}
+
+	if err := songRepository.UpdateWithAssociations(&song); err != nil {
+		return httperror.DatabaseError(err)
+	}
+
+	return nil
 }

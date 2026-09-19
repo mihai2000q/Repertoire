@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -35,9 +36,34 @@ func TestRemoveAlbumsFromArtist_WhenGetAlbumFails_ShouldReturnInternalServerErro
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	albumRepository.AssertExpectations(t)
+}
+
+func TestRemoveAlbumsFromArtist_WhenAlbumsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	_uut := artist.NewRemoveAlbumsFromArtist(albumRepository, nil)
+
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	albumRepository.On("GetAllByIDsWithSongs", mock.Anything, request.AlbumIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "albums not found", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 }
@@ -61,7 +87,7 @@ func TestRemoveAlbumsFromArtist_WhenOneAlbumArtistDoesNotMatch_ShouldReturnConfl
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "album "+request.AlbumIDs[0].String()+" is not owned by this artist", errCode.Error.Error())
 
@@ -97,7 +123,7 @@ func TestRemoveAlbumsFromArtist_WhenUpdateAllAlbumsFails_ShouldReturnInternalSer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -138,7 +164,7 @@ func TestRemoveAlbumsFromArtist_WhenPublishFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

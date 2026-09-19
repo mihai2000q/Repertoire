@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/assertion"
 	"repertoire/server/test/integration/test/core"
@@ -28,7 +28,7 @@ func TestGetPlaylistSongs_WhenSuccessful_ShouldReturnPlaylistWithSongsOrderedByT
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response wrapper.WithTotalCount[model.Song]
+	var response pagination.WithTotalCount[model.Song]
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	var playlistSongs []model.PlaylistSong
@@ -58,7 +58,7 @@ func TestGetPlaylist_WhenRequestHasSongsOrderBy_ShouldReturnPlaylistAndSongsOrde
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response wrapper.WithTotalCount[model.Song]
+	var response pagination.WithTotalCount[model.Song]
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	var playlistSongs []model.PlaylistSong

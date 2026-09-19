@@ -59,7 +59,7 @@ func TestDeleteSongArrangement_WhenSuccessful_ShouldDeleteArrangement(t *testing
 	db := utils.GetDatabase(t)
 
 	var newSong model.Song
-	db.Preload("Arrangements", func(db gorm.DB) *gorm.DB {
+	db.Preload("Arrangements", func(db *gorm.DB) *gorm.DB {
 		return db.Order("\"order\"")
 	}).Find(&newSong, songID)
 

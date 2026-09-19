@@ -1,30 +1,25 @@
+export interface GetSongSectionsRequest {
+  songId: string
+}
+
 export interface CreateSongSectionRequest {
   songId: string
   typeId: string
   name: string
-  instrumentId?: string
-  bandMemberId?: string
+  parts: CreateNewSongSectionPartRequest[]
 }
 
-export interface BulkRehearsalsSongSectionsRequest {
-  sections: { id: string; rehearsals: number }[]
-  songId: string
+interface CreateNewSongSectionPartRequest {
+  bandMemberId: string
+  partId: string
+  newPart: { name: string; instrumentId: string }
 }
 
 export interface UpdateSongSectionRequest {
   id: string
   typeId: string
   name: string
-  rehearsals: number
-  confidence: number
-  bandMemberId?: string
-  instrumentId?: string
-}
-
-export interface UpdateAllSongSectionsRequest {
-  songId: string
-  bandMemberId?: string
-  instrumentId?: string
+  partIds: string[]
 }
 
 export interface MoveSongSectionRequest {
@@ -41,4 +36,5 @@ export interface BulkDeleteSongSectionsRequest {
 export interface DeleteSongSectionRequest {
   id: string
   songId: string
+  withParts?: boolean
 }

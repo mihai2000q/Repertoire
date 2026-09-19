@@ -40,6 +40,9 @@ describe('Song', () => {
     http.get(`/songs/arrangements`, () => {
       return HttpResponse.json([])
     }),
+    http.get(`/songs/sections`, () => {
+      return HttpResponse.json([])
+    }),
     http.get('/search', async () => {
       const response: WithTotalCountResponse<SearchBase> = { models: [], totalCount: 0 }
       return HttpResponse.json(response)
@@ -66,7 +69,7 @@ describe('Song', () => {
     expect(screen.getByLabelText('overall-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('links-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('description-widget')).toBeInTheDocument()
-    expect(screen.getByLabelText('sections-widget')).toBeInTheDocument()
+    expect(screen.getByLabelText('outline-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
   })
 })

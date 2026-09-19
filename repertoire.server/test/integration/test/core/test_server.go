@@ -14,6 +14,7 @@ import (
 	"repertoire/server/data/message"
 	"repertoire/server/domain"
 	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"time"
 
 	"github.com/meilisearch/meilisearch-go"
@@ -146,7 +147,7 @@ func (ts *TestServer) Start() {
 	}
 	_ = os.Setenv("INTEGRATION_TESTING_ENVIRONMENT_FILE_PATH", relativePath+".env")
 
-	env := internal.NewEnv()
+	env := env.NewEnv()
 
 	ts.setupPostgresContainer(env, relativePath)
 	if ts.WithMeili {
@@ -206,7 +207,7 @@ func (ts *TestServer) Stop() {
 	}
 }
 
-func (ts *TestServer) setupPostgresContainer(env internal.Env, relativePath string) {
+func (ts *TestServer) setupPostgresContainer(env env.Env, relativePath string) {
 	// Setup Container
 	container, err := postgresTest.Run(context.Background(),
 		"postgres:17",
@@ -284,7 +285,7 @@ func (ts *TestServer) setupCentrifugoContainer() {
 	_ = os.Setenv("CENTRIFUGO_URL", newUrl)
 }
 
-func (ts *TestServer) setupMeiliContainer(env internal.Env) {
+func (ts *TestServer) setupMeiliContainer(env env.Env) {
 	// Setup Container
 	container, err := meilisearchTest.Run(
 		context.Background(),

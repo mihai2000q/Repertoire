@@ -16,6 +16,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRemoveAlbumsFromArtist_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/remove-albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestRemoveAlbumsFromArtist_WhenAlbumsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.RemoveAlbumsFromArtistRequest{
+		ID:       artistData.Artists[0].ID,
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/remove-albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestRemoveAlbumsFromArtist_WhenAlbumArtistIsDifferent_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)

@@ -1,5 +1,5 @@
 import Artist from '../../../types/models/Artist.ts'
-import { Center, Menu, Stack, Text } from '@mantine/core'
+import { Center, Stack, Text } from '@mantine/core'
 import { useNavigate } from 'react-router-dom'
 import { IconLayoutSidebarLeftExpand, IconTrash } from '@tabler/icons-react'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
@@ -92,13 +92,13 @@ function ArtistCard({ artist }: ArtistCardProps) {
         </ContextMenu.Target>
 
         <ContextMenu.Dropdown>
-          <Menu.Item
+          <ContextMenu.Item
             leftSection={<IconLayoutSidebarLeftExpand size={14} />}
             onClick={handleOpenDrawer}
           >
             Open Drawer
-          </Menu.Item>
-          <Menu.Divider />
+          </ContextMenu.Item>
+          <ContextMenu.Divider />
 
           <AddToPlaylistMenuItem
             ids={[artist.id]}
@@ -107,11 +107,15 @@ function ArtistCard({ artist }: ArtistCardProps) {
             disabled={artist.songsCount === 0}
           />
           <PerfectRehearsalMenuItem id={artist.id} closeMenu={closeMenu} type={'artist'} />
-          <Menu.Divider />
+          <ContextMenu.Divider />
 
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
+          </ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
       <Text px={'xs'} fw={600} ta={'center'} lineClamp={2}>

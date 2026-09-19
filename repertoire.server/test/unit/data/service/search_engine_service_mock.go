@@ -2,7 +2,8 @@ package service
 
 import (
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
@@ -20,15 +21,15 @@ func (s *SearchEngineServiceMock) Search(
 	userID uuid.UUID,
 	filter []string,
 	sort []string,
-) (wrapper.WithTotalCount[map[string]any], *wrapper.ErrorCode) {
+) (pagination.WithTotalCount[map[string]any], *httperror.ErrorCode) {
 	args := s.Called(query, currentPage, pageSize, searchType, userID, filter, sort)
 
-	var errCode *wrapper.ErrorCode
+	var errCode *httperror.ErrorCode
 	if a := args.Get(1); a != nil {
-		errCode = a.(*wrapper.ErrorCode)
+		errCode = a.(*httperror.ErrorCode)
 	}
 
-	return args.Get(0).(wrapper.WithTotalCount[map[string]any]), errCode
+	return args.Get(0).(pagination.WithTotalCount[map[string]any]), errCode
 }
 
 func (s *SearchEngineServiceMock) GetDocument(id string) (map[string]any, error) {
