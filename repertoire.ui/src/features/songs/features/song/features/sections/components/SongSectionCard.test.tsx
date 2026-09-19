@@ -211,6 +211,7 @@ describe('Song Section Card', () => {
     section.parts.forEach((part) => {
       expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
     })
+    expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
   })
 
   it('should show details from redux selector', async () => {
@@ -223,6 +224,9 @@ describe('Song Section Card', () => {
     section.parts.forEach((part) => {
       expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
     })
+    expect(
+      screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)
+    ).toBeInTheDocument()
   })
 
   it('should display menu on right click', async () => {

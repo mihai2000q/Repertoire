@@ -25,19 +25,22 @@ import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsA
 import plural from '../../../../../../../utils/plural.ts'
 import MenuItemConfirmation from '../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
 import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
+import AddNewSongSectionPart from './section/AddNewSongSectionPart.tsx'
 
 interface SongSectionCardProps {
   section: SongSectionModel
-  isDragging: boolean
   maxSectionProgress: number
+  isDragging: boolean
   draggableProvided?: DraggableProvided
+  scrollIntoView?: () => void
 }
 
 function SongSectionCard({
   section,
-  isDragging,
   maxSectionProgress,
-  draggableProvided
+  isDragging,
+  draggableProvided,
+  scrollIntoView
 }: SongSectionCardProps) {
   const {
     ref: selectableRef,
@@ -297,6 +300,7 @@ function SongSectionCard({
           </Box>
         </Collapse>
       </Stack>
+            <AddNewSongSectionPart section={section} />
     </Stack>
   )
 }
