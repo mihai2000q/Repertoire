@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  ActionIconProps,
   alpha,
   Box,
   Center,
@@ -11,12 +12,12 @@ import {
   Tooltip,
   useCombobox
 } from '@mantine/core'
-import { useGetInstrumentsQuery } from '../../../../state/api/songsApi.ts'
+import { useGetInstrumentsQuery } from '../../../../../../../../../state/api/songsApi.ts'
 import { IconCheck, IconSearch } from '@tabler/icons-react'
-import useInstrumentIcon from '../../../../hooks/useInstrumentIcon.tsx'
+import useInstrumentIcon from '../../../../../../../../../hooks/useInstrumentIcon.tsx'
 import { RefObject, useEffect, useState } from 'react'
-import CustomIconTriangleMusic from '../../../icons/CustomIconTriangleMusic.tsx'
-import { Instrument } from '../../../../types/models/Song.ts'
+import CustomIconTriangleMusic from '../../../../../../../../../components/icons/CustomIconTriangleMusic.tsx'
+import { Instrument } from '../../../../../../../../../types/models/Song.ts'
 import { useInputState } from '@mantine/hooks'
 
 interface InstrumentCompactSelectProps extends ComboboxProps {
@@ -24,6 +25,8 @@ interface InstrumentCompactSelectProps extends ComboboxProps {
   setInstrument: (instrument: Instrument | null) => void
   ref?: RefObject<HTMLButtonElement>
   tooltipLabel?: string
+  buttonProps?: ActionIconProps
+  iconSize?: number
 }
 
 function InstrumentCompactSelect({
@@ -31,6 +34,8 @@ function InstrumentCompactSelect({
   setInstrument,
   ref,
   tooltipLabel,
+  buttonProps,
+  iconSize = 15,
   ...others
 }: InstrumentCompactSelectProps) {
   const { data: instruments, isLoading } = useGetInstrumentsQuery()
@@ -136,8 +141,9 @@ function InstrumentCompactSelect({
               })}
               onClick={() => combobox.toggleDropdown()}
               disabled={isLoading}
+              {...buttonProps}
             >
-              <CustomIconTriangleMusic size={14} />
+              <CustomIconTriangleMusic size={iconSize - 1} />
             </ActionIcon>
           </Tooltip>
         ) : (
@@ -156,8 +162,9 @@ function InstrumentCompactSelect({
               radius={'50%'}
               c={'primary.7'}
               onClick={() => combobox.toggleDropdown()}
+              {...buttonProps}
             >
-              <Box w={15} h={15}>
+              <Box w={iconSize} h={iconSize}>
                 {getInstrumentIcon(instrument.name)}
               </Box>
             </ActionIcon>

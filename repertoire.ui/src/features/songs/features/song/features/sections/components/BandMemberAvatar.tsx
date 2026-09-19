@@ -1,6 +1,6 @@
 import { Avatar, AvatarProps, Group, HoverCard, Stack, Text } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
-import { BandMember } from '../../types/models/Artist.ts'
+import { BandMember } from '../../../../../../../types/models/Artist.ts'
 
 interface BandMemberAvatarProps extends AvatarProps {
   bandMember: BandMember

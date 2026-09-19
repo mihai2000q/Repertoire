@@ -1,4 +1,4 @@
-import { MantineStyleProps, Progress, Tooltip } from '@mantine/core'
+import { MantineStyleProps, NumberFormatter, Progress, Tooltip } from '@mantine/core'
 
 interface SongOutlineConfidenceBarProps extends MantineStyleProps {
   confidence: number
@@ -11,7 +11,14 @@ function SongOutlineConfidenceBar({
   ...props
 }: SongOutlineConfidenceBarProps) {
   return (
-    <Tooltip.Floating role={'tooltip'} label={`Confidence: ${confidence}%`}>
+    <Tooltip.Floating
+      role={'tooltip'}
+      label={
+        <>
+          <NumberFormatter value={confidence} />%
+        </>
+      }
+    >
       <Progress aria-label={'confidence'} {...props} size={size} value={confidence} />
     </Tooltip.Floating>
   )

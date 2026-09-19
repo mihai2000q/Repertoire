@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  ActionIconProps,
   alpha,
   Avatar,
   Combobox,
@@ -12,7 +13,7 @@ import {
   UnstyledButton,
   useCombobox
 } from '@mantine/core'
-import { BandMember } from '../../../../types/models/Artist.ts'
+import { BandMember } from '../../../../../../../../../types/models/Artist.ts'
 import { IconSearch, IconUser } from '@tabler/icons-react'
 import { RefObject, useEffect, useState } from 'react'
 import { useInputState } from '@mantine/hooks'
@@ -21,16 +22,22 @@ interface BandMemberCompactSelectProps extends ComboboxProps {
   bandMember: BandMember | null
   setBandMember: (bandMember: BandMember | null) => void
   bandMembers: BandMember[] | undefined
+  disabled?: boolean
   ref?: RefObject<HTMLButtonElement>
   tooltipLabel?: string
+  buttonProps?: ActionIconProps
+  iconSize?: number
 }
 
 function BandMemberCompactSelect({
   bandMember,
   setBandMember,
   bandMembers,
+  disabled,
   ref,
   tooltipLabel,
+  buttonProps,
+  iconSize = 15,
   ...others
 }: BandMemberCompactSelectProps) {
   const [value, setValue] = useState<string>(bandMember?.name ?? '')
@@ -95,6 +102,7 @@ function BandMemberCompactSelect({
       store={combobox}
       withArrow
       onEnterTransitionEnd={combobox.focusSearchInput}
+      disabled={disabled}
       {...others}
     >
       <Combobox.Target withAriaAttributes={false}>
@@ -115,6 +123,7 @@ function BandMemberCompactSelect({
               aria-label={bandMember.name}
               onClick={() => combobox.toggleDropdown()}
               style={{ borderRadius: '50%' }}
+              {...buttonProps}
             >
               <Avatar
                 size={28}
@@ -122,7 +131,7 @@ function BandMemberCompactSelect({
                 src={bandMember.imageUrl}
                 sx={{ transition: '0.25s', '&:hover': { filter: 'brightness(0.7)' } }}
               >
-                <IconUser size={15} />
+                <IconUser size={iconSize} />
               </Avatar>
             </UnstyledButton>
           </Tooltip>
@@ -162,9 +171,10 @@ function BandMemberCompactSelect({
                 }
               })}
               onClick={() => combobox.toggleDropdown()}
-              disabled={bandMembers === undefined}
+              disabled={disabled || bandMembers === undefined}
+              {...buttonProps}
             >
-              <IconUser size={15} />
+              <IconUser size={iconSize} />
             </ActionIcon>
           </Tooltip>
         )}

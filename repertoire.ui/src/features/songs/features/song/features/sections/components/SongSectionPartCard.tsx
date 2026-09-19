@@ -23,10 +23,10 @@ import {
   useUpdateSongPartMutation
 } from '../../parts/state/api/songPartsApi.ts'
 import EditSongPartModal from '../../parts/components/modal/EditSongPartModal.tsx'
-import BandMemberAvatar from '../../../../../../../components/avatar/BandMemberAvatar.tsx'
+import BandMemberAvatar from './BandMemberAvatar.tsx'
 import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
-import SongOutlineProgressBar from '../../../../../../../components/bar/SongOutlineProgressBar.tsx'
-import SongOutlineConfidenceBar from '../../../../../../../components/bar/SongOutlineConfidenceBar.tsx'
+import SongOutlineProgressBar from '../../outline/components/SongOutlineProgressBar.tsx'
+import SongOutlineConfidenceBar from '../../outline/components/SongOutlineConfidenceBar.tsx'
 import { MouseEvent, useState } from 'react'
 import { useSongContext } from '../../../context/SongContext.tsx'
 

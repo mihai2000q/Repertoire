@@ -34,7 +34,7 @@ import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.ts
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
 import { useSongContext } from '../../../context/SongContext.tsx'
 import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
-import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
+import BandMembersGroup from '../../outline/components/BandMembersGroup.tsx'
 import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
 
 interface SongPartCardProps {
