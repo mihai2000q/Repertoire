@@ -4,6 +4,7 @@ import WarningModal from '../../../../../../../../components/modal/WarningModal.
 import { SongSection } from '../../../../../../../../types/models/Song.ts'
 import { toast } from 'react-toastify'
 import { useDeleteSongSectionMutation } from '../../state/api/songSectionsApi.ts'
+import plural from '../../../../../../../../utils/plural.ts'
 
 interface DeleteSongSectionModalProps {
   opened: boolean
@@ -22,7 +23,7 @@ function DeleteSongSectionModal({ opened, onClose, section, songId }: DeleteSong
       songId: songId,
       withParts: deleteWithParts
     }).unwrap()
-    toast.success(`${section.name} deleted!`)
+    toast.success(`${section.name} deleted${deleteWithParts ? ' with its parts' : ''}!`)
   }
 
   return (
@@ -40,9 +41,10 @@ function DeleteSongSectionModal({ opened, onClose, section, songId }: DeleteSong
           <Checkbox
             checked={deleteWithParts}
             onChange={(event) => setDeleteWithParts(event.currentTarget.checked)}
-            label={'Delete all associated parts'}
+            label={`Delete all associated parts (${section.parts.length} part${plural(section.parts)})`}
             c={'dimmed'}
             styles={{ label: { paddingLeft: 8 } }}
+            disabled={section.parts.length === 0}
           />
         </Stack>
       }

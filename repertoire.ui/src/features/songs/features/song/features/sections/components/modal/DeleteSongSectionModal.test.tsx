@@ -1,5 +1,10 @@
 import { http, HttpResponse } from 'msw'
-import { emptySongSection, reduxRender, withToastify } from '../../../../../../../../test-utils.tsx'
+import {
+  emptySongPart,
+  emptySongSection,
+  reduxRender,
+  withToastify
+} from '../../../../../../../../test-utils.tsx'
 import { setupServer } from 'msw/node'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -12,6 +17,10 @@ describe('Delete Song Section Modal', () => {
     id: '1',
     name: 'Solo 1'
   }
+  const sectionWithParts: SongSection = {
+    ...section,
+    parts: [{ ...emptySongPart, id: 'part-1' }]
+  }
 
   const server = setupServer()
 
@@ -23,18 +32,32 @@ describe('Delete Song Section Modal', () => {
 
   it('should render', () => {
     reduxRender(
-      <DeleteSongSectionModal opened={true} onClose={vi.fn()} section={section} songId={'song-1'} />
+      <DeleteSongSectionModal
+        opened={true}
+        onClose={vi.fn()}
+        section={sectionWithParts}
+        songId={'song-1'}
+      />
     )
 
     expect(screen.getByRole('dialog', { name: /delete section/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /delete section/i })).toBeInTheDocument()
     expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
-    expect(screen.getByText(section.name)).toBeInTheDocument()
     expect(
-      screen.getByRole('checkbox', { name: /delete all associated parts/i })
-    ).toBeInTheDocument()
+      screen.getByRole('checkbox', { name: /delete all associated parts \(1 part\)/i })
+    ).toBeEnabled()
     expect(screen.getByRole('button', { name: /yes/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
+  })
+
+  it('should disable deleting associated parts when no parts exist', () => {
+    reduxRender(
+      <DeleteSongSectionModal opened={true} onClose={vi.fn()} section={section} songId={'song-1'} />
+    )
+
+    expect(
+      screen.getByRole('checkbox', { name: /delete all associated parts \(0 parts\)/i })
+    ).toBeDisabled()
   })
 
   it('should delete only the section by default', async () => {
@@ -79,7 +102,12 @@ describe('Delete Song Section Modal', () => {
 
     reduxRender(
       withToastify(
-        <DeleteSongSectionModal opened={true} onClose={vi.fn()} section={section} songId={songId} />
+        <DeleteSongSectionModal
+          opened={true}
+          onClose={vi.fn()}
+          section={sectionWithParts}
+          songId={songId}
+        />
       )
     )
 
@@ -87,5 +115,6 @@ describe('Delete Song Section Modal', () => {
     await user.click(screen.getByRole('button', { name: /yes/i }))
 
     expect(searchParams.get('withParts')).toBe('true')
+    expect(await screen.findByText(`${section.name} deleted with its parts!`)).toBeInTheDocument()
   })
 })
