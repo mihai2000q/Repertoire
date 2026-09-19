@@ -102,7 +102,7 @@ describe('Song Sections Selection Drawer', () => {
 
     await user.click(screen.getByRole('button', { name: 'delete' }))
 
-    expect(await screen.findByRole('dialog', { name: /delete song sections/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
   })
 
   it('should open the part deletion modal when clicking delete with only parts selected', async () => {
@@ -119,6 +119,23 @@ describe('Song Sections Selection Drawer', () => {
     expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
   })
 
+  it('should open the sections and parts deletion modal when clicking delete with both selected', async () => {
+    const user = userEvent.setup()
+    const selectedPartIds = sections
+      .slice(0, 2)
+      .map((section) => `part-${section.parts[0].id}:${section.id}`)
+    mockSelectedIds([...selectedSectionIds.slice(0, 2), ...selectedPartIds])
+
+    reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
+
+    await user.click(screen.getByRole('button', { name: 'delete' }))
+
+    expect(
+      await screen.findByRole('dialog', { name: /delete song sections with parts/i })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /delete parts/i })).not.toBeInTheDocument()
+  })
+
   it('should display both selected sections and parts', () => {
     const selectedPartIds = sections
       .slice(0, 2)
@@ -127,7 +144,9 @@ describe('Song Sections Selection Drawer', () => {
 
     reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
 
-    expect(screen.getByText('2 sections and 2 parts selected')).toBeInTheDocument()
+    expect(
+      screen.getByText(`${sections} sections and ${selectedPartIds} parts selected`)
+    ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeEnabled()
   })
 

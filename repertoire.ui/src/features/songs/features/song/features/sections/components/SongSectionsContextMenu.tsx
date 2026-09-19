@@ -11,6 +11,7 @@ import { SongSection } from '../../../../../../../types/models/Song.ts'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
 import useSelectedSectionParts from '../hooks/useSelectedSectionParts.ts'
+import DeleteSongSectionsAndPartsModal from './modal/DeleteSongSectionsAndPartsModal.tsx'
 
 interface SongSectionsContextMenuProps {
   children: ReactNode
@@ -79,10 +80,18 @@ function SongSectionsContextMenu({ children, sections, songId }: SongSectionsCon
         </ContextMenu.Dropdown>
       </ContextMenu>
 
-      {selectedSections.length > 0 ? (
-        <DeleteSongSectionsModal
+      {selectedSections.length > 0 && selectedSectionParts.length > 0 ? (
+        <DeleteSongSectionsAndPartsModal
           sections={selectedSections}
           sectionParts={selectedSectionParts}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      ) : selectedSections.length > 0 ? (
+        <DeleteSongSectionsModal
+          sections={selectedSections}
           songId={songId}
           opened={openedDeleteWarning}
           onClose={closeDeleteWarning}

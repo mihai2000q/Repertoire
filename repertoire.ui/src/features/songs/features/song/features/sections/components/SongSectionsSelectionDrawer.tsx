@@ -3,7 +3,6 @@ import SelectionDrawer from '../../../../../../../components/drawer/SelectionDra
 import { useDisclosure } from '@mantine/hooks'
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import plural from '../../../../../../../utils/plural.ts'
-import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { toast } from 'react-toastify'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
 import { SongSection } from '../../../../../../../types/models/Song.ts'
@@ -11,6 +10,8 @@ import { useMemo } from 'react'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
 import useSelectedSectionParts from '../hooks/useSelectedSectionParts.ts'
+import DeleteSongSectionsAndPartsModal from './modal/DeleteSongSectionsAndPartsModal.tsx'
+import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 
 interface SongSectionsSelectionDrawerProps {
   sections: SongSection[]
@@ -85,10 +86,18 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
         }
       />
 
-      {selectedSections.length > 0 ? (
-        <DeleteSongSectionsModal
+      {selectedSections.length > 0 && selectedSectionParts.length > 0 ? (
+        <DeleteSongSectionsAndPartsModal
           sections={selectedSections}
           sectionParts={selectedSectionParts}
+          songId={songId}
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          onDelete={clearSelection}
+        />
+      ) : selectedSections.length > 0 ? (
+        <DeleteSongSectionsModal
+          sections={selectedSections}
           songId={songId}
           opened={openedDeleteWarning}
           onClose={closeDeleteWarning}

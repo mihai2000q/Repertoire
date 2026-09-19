@@ -120,7 +120,7 @@ describe('Song Sections Context Menu', () => {
 
     await user.click(screen.getByRole('menuitem', { name: /delete/i }))
 
-    expect(await screen.findByRole('dialog', { name: /delete song sections/i })).toBeInTheDocument()
+    expect(await screen.findByRole('dialog', { name: /delete sections/i })).toBeInTheDocument()
   })
 
   it('should open the part deletion modal when clicking delete with only parts selected', async () => {
@@ -136,7 +136,26 @@ describe('Song Sections Context Menu', () => {
     expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
   })
 
-  it("should bulk rehearsal's selected parts by 1", async () => {
+  it('should open the sections and parts deletion modal when clicking delete with both selected', async () => {
+    const selectedPartIds = sections
+      .slice(0, 2)
+      .map((section) => `part-${section.parts[0].id}:${section.id}`)
+    mockSelectedIds([
+      ...sections.slice(0, 2).map((section) => `section-${section.id}`),
+      ...selectedPartIds
+    ])
+
+    const user = await openMenu()
+
+    await user.click(screen.getByRole('menuitem', { name: /delete/i }))
+
+    expect(
+      await screen.findByRole('dialog', { name: /delete song sections with parts/i })
+    ).toBeInTheDocument()
+    expect(screen.queryByRole('dialog', { name: /delete parts/i })).not.toBeInTheDocument()
+  })
+
+  it("should bulk rehearsals' selected parts by 1", async () => {
     const user = userEvent.setup()
     const selectedPartIds = sections.map((section) => `part-${section.parts[0].id}:${section.id}`)
     const selectedParts = sections.map((section) => section.parts[0])
@@ -150,7 +169,9 @@ describe('Song Sections Context Menu', () => {
       })
     )
 
-    render('song-1')
+    const songId = 'song-1'
+
+    render(songId)
     await user.pointer({
       keys: '[MouseRight>]',
       target: screen.getByTestId(dataTestId)
@@ -158,14 +179,16 @@ describe('Song Sections Context Menu', () => {
     await user.click(screen.getByRole('menuitem', { name: /add rehearsals/i }))
     await user.click(screen.getByRole('button', { name: /confirm/i }))
 
-    expect(screen.getByText('Rehearsals added to 3 parts!')).toBeInTheDocument()
+    expect(
+      screen.getByText(`Rehearsals added to ${selectedPartIds.length} parts!`)
+    ).toBeInTheDocument()
     expect(capturedRequest).toStrictEqual({
       requests: selectedParts.map((part) => ({
         id: part.id,
         rehearsals: part.rehearsals + 1,
         confidence: part.confidence
       })),
-      songId: 'song-1'
+      songId: songId
     })
     expect(clearSelection).toHaveBeenCalledOnce()
   })
