@@ -17,13 +17,14 @@ import { useDisclosure } from '@mantine/hooks'
 import SongOutlineWidgetLoader from './components/loader/SongOutlineWidgetLoader.tsx'
 import SongSectionsLoader from './components/loader/SongSectionsLoader.tsx'
 import SongPartsLoader from './components/loader/SongPartsLoader.tsx'
+import { useSongContext } from '../../context/SongContext.tsx'
 
 interface SongOutlineWidgetProps {
   isSongFetching?: boolean
 }
 
 function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
-  const songId = useAppSelector((state) => state.song.songId)
+  const { songId } = useSongContext()
 
   const outlineView = useAppSelector((state) => state.songOutline.view)
   const showDetails = useAppSelector((state) => state.songOutline.showDetails)

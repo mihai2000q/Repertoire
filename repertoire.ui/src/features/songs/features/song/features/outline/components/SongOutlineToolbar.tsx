@@ -13,6 +13,7 @@ import OutlineView from '../types/enums/OutlineView.ts'
 import SongArrangementsModal from '../../arrangements/SongArrangementsModal.tsx'
 import { SongPart } from '../../../../../../../types/models/Song.ts'
 import { setShowDetails } from '../state/slice/songOutlineSlice.ts'
+import { useSongContext } from '../../../context/SongContext.tsx'
 
 interface SongOutlineToolbarProps {
   toggleAdd: () => void
@@ -29,8 +30,7 @@ function SongOutlineToolbar({
 }: SongOutlineToolbarProps) {
   const dispatch = useAppDispatch()
 
-  const songId = useAppSelector((state) => state.song.songId)
-  const defaultSongArrangementId = useAppSelector((state) => state.song.defaultArrangementId)
+  const { songId, defaultArrangementId: defaultSongArrangementId } = useSongContext()
   const outlineView = useAppSelector((state) => state.songOutline.view)
   const showDetails = useAppSelector((state) => state.songOutline.showDetails)
   useEffect(() => {

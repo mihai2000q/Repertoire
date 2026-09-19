@@ -28,7 +28,7 @@ import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBad
 import SongOutlineProgressBar from '../../../../../../../components/bar/SongOutlineProgressBar.tsx'
 import SongOutlineConfidenceBar from '../../../../../../../components/bar/SongOutlineConfidenceBar.tsx'
 import { MouseEvent, useState } from 'react'
-import { useAppSelector } from '../../../../../../../state/store.ts'
+import { useSongContext } from '../../../context/SongContext.tsx'
 
 interface SongSectionPartCardProps {
   part: SongPartModel
@@ -56,8 +56,7 @@ function SongSectionPartCard({
   } = useClickSelectSelectable('part-' + part.id + ':' + sectionId)
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
-  const songId = useAppSelector((state) => state.song.songId)
-  const isArtistBand = useAppSelector((state) => state.song.isArtistBand)
+  const { songId, isArtistBand } = useSongContext()
 
   const [updateSongPartMutation, { isLoading: isUpdateLoading }] = useUpdateSongPartMutation()
   const [deleteSongPartMutation, { isLoading: isDeleteLoading }] = useDeleteSongPartMutation()

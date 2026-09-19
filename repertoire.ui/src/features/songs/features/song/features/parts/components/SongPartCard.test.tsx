@@ -6,8 +6,8 @@ import {
   withToastify
 } from '../../../../../../../test-utils.tsx'
 import SongPartCard from './SongPartCard.tsx'
-import { Instrument, SongPart } from '../../../../../../../types/models/Song.ts'
-import { act, screen } from '@testing-library/react'
+import Song, { Instrument, SongPart } from '../../../../../../../types/models/Song.ts'
+import { screen } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
@@ -15,7 +15,9 @@ import { UpdateSongPartRequest } from '../types/requests/SongPartRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
 import OutlineView from '../../outline/types/enums/OutlineView.ts'
-import { setSong } from '../../../state/slice/songSlice.tsx'
+import { SongProvider } from '../../../context/SongContext.tsx'
+import { ReactNode } from 'react'
+import { RootState } from '../../../../../../../state/store.ts'
 
 // Mock Context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -64,8 +66,21 @@ describe('Song Part Card', () => {
     server.close()
   })
 
+  function render(
+    ui: ReactNode,
+    song: Song = emptySong,
+    preloadedState?: Partial<RootState>
+  ) {
+    return reduxRender(
+      <SongProvider song={song}>
+        {ui}
+      </SongProvider>,
+      preloadedState
+    )
+  }
+
   it('should render and display minimal info', () => {
-    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
+    render(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
     expect(screen.getByText(part.name)).toBeInTheDocument()
@@ -97,7 +112,7 @@ describe('Song Part Card', () => {
     }
 
     // when artist is a band
-    const [_, store] = reduxRender(
+    const [{ rerender }] = render(
       <SongPartCard
         part={{
           ...part,
@@ -107,9 +122,7 @@ describe('Song Part Card', () => {
         maxPartProgress={0}
         isDragging={false}
       />,
-      {
-        song: { songId: '', isArtistBand: true }
-      }
+      { ...emptySong, artist: { ...emptyArtist, isBand: true, bandMembers } }
     )
 
     expect(screen.getByRole('button', { name: 'drag-handle' })).toBeInTheDocument()
@@ -131,7 +144,15 @@ describe('Song Part Card', () => {
 
     // when artist is not a band
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
-    await act(() => store.dispatch(setSong(newSong)))
+    rerender(
+      <SongProvider song={newSong}>
+        <SongPartCard
+          part={{ ...part, bandMembers, instrument }}
+          maxPartProgress={0}
+          isDragging={false}
+        />
+      </SongProvider>
+    )
 
     bandMembers.forEach((bandMember: BandMember) => {
       if (bandMember.imageUrl) {
@@ -168,7 +189,7 @@ describe('Song Part Card', () => {
     const user = userEvent.setup()
     const maxPartProgress = 67
 
-    reduxRender(<SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />)
+    render(<SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />)
 
     await user.click(screen.getByLabelText(`song-part-${part.name}`))
 
@@ -178,10 +199,11 @@ describe('Song Part Card', () => {
   it('should show details from redux selector', async () => {
     const maxPartProgress = 67
 
-    reduxRender(<SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />, {
-      song: { songId: '', isArtistBand: false },
-      songOutline: { view: OutlineView.Parts, showDetails: true }
-    })
+    render(
+      <SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />,
+      { ...emptySong, artist: { ...emptyArtist, isBand: false } },
+      { songOutline: { view: OutlineView.Parts, showDetails: true } }
+    )
 
     await shouldShowDetails(maxPartProgress)
   })
@@ -189,7 +211,7 @@ describe('Song Part Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
+    render(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -203,7 +225,7 @@ describe('Song Part Card', () => {
   it('should display menu by clicking on the dots button', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
+    render(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
     await user.click(screen.getByRole('button', { name: 'more-menu' }))
 
@@ -215,7 +237,7 @@ describe('Song Part Card', () => {
     it('should open edit song part modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
+      render(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />)
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /edit/i }))
@@ -234,9 +256,9 @@ describe('Song Part Card', () => {
         })
       )
 
-      reduxRender(
+      render(
         withToastify(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />),
-        { song: { songId: songId, isArtistBand: false } }
+        { ...emptySong, id: songId, artist: { ...emptyArtist, isBand: false } }
       )
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
@@ -263,7 +285,7 @@ describe('Song Part Card', () => {
 
     const showToast = vi.fn()
 
-    reduxRender(
+    render(
       <SongPartCard
         part={part}
         maxPartProgress={0}
@@ -293,7 +315,7 @@ describe('Song Part Card', () => {
       clearSelection: vi.fn()
     })
 
-    reduxRender(
+    render(
       <SongPartCard
         part={part}
         maxPartProgress={0}
@@ -323,7 +345,7 @@ describe('Song Part Card', () => {
       clearSelection: vi.fn()
     })
 
-    reduxRender(
+    render(
       <SongPartCard
         part={part}
         maxPartProgress={0}
@@ -340,7 +362,7 @@ describe('Song Part Card', () => {
     it('when avatar is hovered', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      render(
         <SongPartCard
           part={part}
           maxPartProgress={0}
@@ -360,7 +382,7 @@ describe('Song Part Card', () => {
     it('when context menu is open', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      render(
         <SongPartCard
           part={part}
           maxPartProgress={0}
@@ -383,7 +405,7 @@ describe('Song Part Card', () => {
     it('when more menu is open', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      render(
         <SongPartCard
           part={part}
           maxPartProgress={0}
@@ -401,7 +423,7 @@ describe('Song Part Card', () => {
     })
 
     it('when is dragging', async () => {
-      reduxRender(
+      render(
         <SongPartCard
           part={part}
           maxPartProgress={0}
@@ -426,7 +448,7 @@ describe('Song Part Card', () => {
         clearSelection: vi.fn()
       })
 
-      reduxRender(
+      render(
         <SongPartCard
           part={part}
           maxPartProgress={0}

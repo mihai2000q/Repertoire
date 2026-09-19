@@ -10,6 +10,7 @@ import SongHeader from './components/SongHeader.tsx'
 import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.ts'
 import { useEffect } from 'react'
 import SongOutlineWidget from './features/outline/SongOutlineWidget.tsx'
+import { SongProvider } from './context/SongContext.tsx'
 
 function Song() {
   const params = useParams()
@@ -25,31 +26,33 @@ function Song() {
   if (isLoading || !song) return <SongLoader />
 
   return (
-    <Stack px={'xl'}>
-      <SongHeader song={song} />
+    <SongProvider song={song}>
+      <Stack px={'xl'}>
+        <SongHeader song={song} />
 
-      <Divider />
+        <Divider />
 
-      <Grid align="start" mb={'lg'}>
-        <Grid.Col span={{ sm: 12, md: 4.5 }}>
-          <Stack>
-            <SongInformationWidget song={song} />
+        <Grid align="start" mb={'lg'}>
+          <Grid.Col span={{ sm: 12, md: 4.5 }}>
+            <Stack>
+              <SongInformationWidget song={song} />
 
-            <SongOverallWidget song={song} />
+              <SongOverallWidget song={song} />
 
-            <SongLinksWidget song={song} />
-          </Stack>
-        </Grid.Col>
+              <SongLinksWidget song={song} />
+            </Stack>
+          </Grid.Col>
 
-        <Grid.Col span={{ sm: 12, md: 7.5 }}>
-          <Stack>
-            <SongDescriptionWidget song={song} />
+          <Grid.Col span={{ sm: 12, md: 7.5 }}>
+            <Stack>
+              <SongDescriptionWidget song={song} />
 
-            <SongOutlineWidget isSongFetching={isFetching} />
-          </Stack>
-        </Grid.Col>
-      </Grid>
-    </Stack>
+              <SongOutlineWidget isSongFetching={isFetching} />
+            </Stack>
+          </Grid.Col>
+        </Grid>
+      </Stack>
+    </SongProvider>
   )
 }
 

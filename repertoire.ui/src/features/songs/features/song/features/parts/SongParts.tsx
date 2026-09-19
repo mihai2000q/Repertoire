@@ -9,8 +9,8 @@ import { toast } from 'react-toastify'
 import SongPartsContextMenu from './components/SongPartsContextMenu.tsx'
 import SongPartsSelectionDrawer from './components/SongPartsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
-import { useAppSelector } from '../../../../../../state/store.ts'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
+import { useSongContext } from '../../context/SongContext.tsx'
 
 interface SongPartsWidgetProps {
   parts: SongPart[]
@@ -19,7 +19,7 @@ interface SongPartsWidgetProps {
 }
 
 function SongParts({ parts, isSongFetching, isPartsFetching }: SongPartsWidgetProps) {
-  const songId = useAppSelector((state) => state.song.songId)
+  const { songId } = useSongContext()
 
   const [moveSongPartInSong, { isLoading: isMoveLoading }] = useMoveSongPartInSongMutation()
 

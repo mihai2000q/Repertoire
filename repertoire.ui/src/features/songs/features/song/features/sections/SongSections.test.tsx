@@ -1,13 +1,14 @@
-import { emptySongSection, reduxRender } from '../../../../../../test-utils.tsx'
+import { emptySong, emptySongSection, mantineRender } from '../../../../../../test-utils.tsx'
+import { SongProvider } from '../../context/SongContext.tsx'
 import SongSections from './SongSections.tsx'
-import { SongSection } from '../../../../../../types/models/Song.ts'
+import Song, { SongSection } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MoveSongSectionRequest } from './types/requests/SongSectionRequests.ts'
-import { createRef } from 'react'
+import { createRef, ReactNode } from 'react'
 
 // Mock Main Context
 vi.mock('../../../../../../context/MainContext.tsx', () => ({
@@ -74,8 +75,16 @@ describe('Song Sections', () => {
 
   afterAll(() => server.close())
 
+  function render(ui: ReactNode, song: Song = emptySong) {
+    return mantineRender(
+      <SongProvider song={song}>
+        {ui}
+      </SongProvider>
+    )
+  }
+
   it('should render', async () => {
-    reduxRender(<SongSections sections={sections} />)
+    render(<SongSections sections={sections} />)
 
     const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
     for (let i = 0; i < sections.length; i++) {
@@ -97,9 +106,7 @@ describe('Song Sections', () => {
       })
     )
 
-    reduxRender(<SongSections sections={sections} />, {
-      song: { songId: songId, isArtistBand: false }
-    })
+    render(<SongSections sections={sections} />, { ...emptySong, id: songId })
 
     fireEvent.mouseDown(screen.getByLabelText(`song-section-${section.name}`))
     fireEvent.dragStart(screen.getByLabelText(`song-section-${section.name}`))
@@ -124,7 +131,7 @@ describe('Song Sections', () => {
   it('should show the drawer when selecting sections, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSections sections={sections} />)
+    render(<SongSections sections={sections} />)
 
     // selection drawer
     await user.keyboard('{Control>}')

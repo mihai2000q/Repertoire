@@ -8,8 +8,8 @@ import { useMemo } from 'react'
 import SongSectionsContextMenu from './components/SongSectionsContextMenu.tsx'
 import SongSectionsSelectionDrawer from './components/SongSectionsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
-import { useAppSelector } from '../../../../../../state/store.ts'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
+import { useSongContext } from '../../context/SongContext.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -18,7 +18,7 @@ interface SongSectionsWidgetProps {
 }
 
 function SongSections({ sections, isSectionsFetching, isSongFetching }: SongSectionsWidgetProps) {
-  const songId = useAppSelector((state) => state.song.songId)
+  const { songId } = useSongContext()
 
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
 

@@ -1,17 +1,19 @@
 import {
+  emptySong,
   emptySongArrangement,
   emptySongPart,
   emptySongSection,
-  emptySongSettings,
   reduxRender
 } from '../../../../../../test-utils.tsx'
-import { SongArrangement, SongPart, SongSection } from '../../../../../../types/models/Song.ts'
+import { SongProvider } from '../../context/SongContext.tsx'
+import Song, { SongArrangement, SongPart, SongSection } from '../../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { createRef } from 'react'
+import { ReactNode } from 'react'
 import SongOutlineWidget from './SongOutlineWidget.tsx'
 import OutlineView from './types/enums/OutlineView.ts'
 
@@ -24,6 +26,19 @@ vi.mock('../../../../../../context/MainContext.tsx', () => ({
 }))
 
 describe('Song Outline Widget', () => {
+  function render(
+    ui: ReactNode,
+    song: Song = emptySong,
+    preloadedState?: Parameters<typeof reduxRender>[1]
+  ) {
+    return reduxRender(
+      <SongProvider song={song}>
+        {ui}
+      </SongProvider>,
+      preloadedState
+    )
+  }
+
   const sections: SongSection[] = [
     {
       ...emptySongSection,
@@ -110,9 +125,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    reduxRender(<SongOutlineWidget />, {
-      song: { songId: '', isArtistBand: false, settings: emptySongSettings }
-    })
+    render(<SongOutlineWidget />)
 
     expect(screen.getByLabelText(/outline-loader/i)).toBeInTheDocument()
     expect(await screen.findByText(/outline/i)).toBeInTheDocument()
@@ -127,8 +140,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    reduxRender(<SongOutlineWidget />, {
-      song: { songId: '', isArtistBand: false, settings: emptySongSettings },
+    render(<SongOutlineWidget />, emptySong, {
       songOutline: { view: OutlineView.Parts, showDetails: false }
     })
 
@@ -147,9 +159,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    reduxRender(<SongOutlineWidget />, {
-      song: { songId: '', isArtistBand: false, settings: emptySongSettings }
-    })
+    render(<SongOutlineWidget />)
 
     expect(await screen.findByLabelText('add-new-song-section-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-section-card'))
@@ -165,8 +175,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    reduxRender(<SongOutlineWidget />, {
-      song: { songId: '', isArtistBand: false, settings: emptySongSettings },
+    render(<SongOutlineWidget />, emptySong, {
       songOutline: { view: OutlineView.Parts, showDetails: false }
     })
 

@@ -7,8 +7,8 @@ import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import BandMemberCompactSelect from '../../../../../../../components/form/select/compact/BandMemberCompactSelect.tsx'
 import InstrumentCompactSelect from '../../../../../../../components/form/select/compact/InstrumentCompactSelect.tsx'
 import { Instrument } from '../../../../../../../types/models/Song.ts'
-import { useAppSelector } from '../../../../../../../state/store.ts'
 import SongSectionSelect from '../../../../../../../components/form/select/SongSectionSelect.tsx'
+import { useSongContext } from '../../../context/SongContext.tsx'
 
 interface AddNewSongPartProps {
   opened: boolean
@@ -17,9 +17,7 @@ interface AddNewSongPartProps {
 }
 
 function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps) {
-  const songId = useAppSelector((state) => state.song.songId)
-  const settings = useAppSelector((state) => state.song.settings)
-  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+  const { songId, settings, artistBandMembers: bandMembers } = useSongContext()
 
   const [createSongPartMutation, { isLoading }] = useCreateSongPartMutation()
 

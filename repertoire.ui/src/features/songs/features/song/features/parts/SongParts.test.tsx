@@ -1,13 +1,14 @@
-import { emptySongPart, reduxRender, withToastify } from '../../../../../../test-utils.tsx'
+import { emptySong, emptySongPart, mantineRender, withToastify } from '../../../../../../test-utils.tsx'
+import { SongProvider } from '../../context/SongContext.tsx'
 import SongParts from './SongParts.tsx'
-import { SongPart } from '../../../../../../types/models/Song.ts'
+import Song, { SongPart } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MoveSongPartInSongRequest } from './types/requests/SongPartRequests.ts'
-import { createRef } from 'react'
+import { createRef, ReactNode } from 'react'
 
 // Mock Main Context
 vi.mock('../../../../../../context/MainContext.tsx', () => ({
@@ -65,8 +66,16 @@ describe('Song Parts', () => {
 
   afterAll(() => server.close())
 
+  function render(ui: ReactNode, song: Song = emptySong) {
+    return mantineRender(
+      <SongProvider song={song}>
+        {ui}
+      </SongProvider>
+    )
+  }
+
   it('should render', async () => {
-    reduxRender(<SongParts parts={parts} />)
+    render(<SongParts parts={parts} />)
 
     const renderedParts = await screen.findAllByLabelText(/song-part-(?!details)/)
     for (let i = 0; i < parts.length; i++) {
@@ -88,9 +97,7 @@ describe('Song Parts', () => {
       })
     )
 
-    reduxRender(<SongParts parts={parts} />, {
-      song: { songId: songId, isArtistBand: false }
-    })
+    render(<SongParts parts={parts} />, { ...emptySong, id: songId })
 
     fireEvent.mouseDown(screen.getByLabelText(`song-part-${part.name}`))
     fireEvent.dragStart(screen.getByLabelText(`song-part-${part.name}`))
@@ -118,7 +125,7 @@ describe('Song Parts', () => {
     const part1 = parts[0]
     const part2 = parts[1]
 
-    reduxRender(withToastify(<SongParts parts={parts} />))
+    render(withToastify(<SongParts parts={parts} />))
 
     // click the first part
     await user.click(
@@ -149,7 +156,7 @@ describe('Song Parts', () => {
   it('should show the drawer when selecting parts, and the context menu when right-clicking after selection', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongParts parts={parts} />)
+    render(<SongParts parts={parts} />)
 
     // selection drawer
     await user.keyboard('{Control>}')

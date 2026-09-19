@@ -21,7 +21,7 @@ import { toast } from 'react-toastify'
 import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import BandMemberSelect from '../../../../../../../../components/form/select/BandMemberSelect.tsx'
 import InstrumentSelect from '../../../../../../../../components/form/select/InstrumentSelect.tsx'
-import { useAppSelector } from '../../../../../../../../state/store.ts'
+import { useSongContext } from '../../../../context/SongContext.tsx'
 
 interface EditSongPartModalProps {
   opened: boolean
@@ -31,7 +31,7 @@ interface EditSongPartModalProps {
 }
 
 function EditSongPartModal({ opened, onClose, part, sectionId }: EditSongPartModalProps) {
-  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+  const { artistBandMembers: bandMembers } = useSongContext()
 
   const [updateSongPartMutation, { isLoading }] = useUpdateSongPartMutation()
 

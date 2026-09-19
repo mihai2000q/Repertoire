@@ -8,15 +8,17 @@ import {
 } from '../../../../../../../test-utils.tsx'
 import SongSectionCard from './SongSectionCard.tsx'
 import { Instrument, SongSection } from '../../../../../../../types/models/Song.ts'
-import { act, screen, within } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { setupServer } from 'msw/node'
 import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import { setSong } from '../../../state/slice/songSlice.tsx'
 import OutlineView from '../../outline/types/enums/OutlineView.ts'
 import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
+import { SongProvider } from '../../../context/SongContext.tsx'
+import { ReactNode } from 'react'
+import { RootState } from '../../../../../../../state/store.ts'
 
 // Mock Context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -72,10 +74,19 @@ describe('Song Section Card', () => {
     server.close()
   })
 
+  function render(ui: ReactNode, song = emptySong, preloadedState?: Partial<RootState>) {
+    return reduxRender(
+      <SongProvider song={song}>
+        {ui}
+      </SongProvider>,
+      preloadedState
+    )
+  }
+
   it('should render and display info', () => {
     const maxSectionProgress = 60
 
-    reduxRender(
+    render(
       <SongSectionCard
         section={section}
         maxSectionProgress={maxSectionProgress}
@@ -122,7 +133,7 @@ describe('Song Section Card', () => {
     ]
 
     // when artist is a band
-    const [_, store] = reduxRender(
+    const [{ rerender }] = render(
       <SongSectionCard
         section={{
           ...section,
@@ -152,7 +163,7 @@ describe('Song Section Card', () => {
         maxSectionProgress={0}
         isDragging={false}
       />,
-      { song: { songId: '', isArtistBand: true } }
+      { ...emptySong, artist: { ...emptyArtist, isBand: true } }
     )
 
     const instrumentsEl = screen.getByLabelText('instruments')
@@ -181,7 +192,11 @@ describe('Song Section Card', () => {
 
     // when artist is not a band
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
-    await act(() => store.dispatch(setSong(newSong)))
+    rerender(
+      <SongProvider song={newSong}>
+        <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
+      </SongProvider>
+    )
 
     expect(screen.queryByLabelText('band-members')).not.toBeInTheDocument()
   })
@@ -189,7 +204,7 @@ describe('Song Section Card', () => {
   it('should show details when clicking', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+    render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     await user.click(screen.getByLabelText(`song-section-${section.name}`))
 
@@ -199,9 +214,11 @@ describe('Song Section Card', () => {
   })
 
   it('should show details from redux selector', async () => {
-    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />, {
-      songOutline: { view: OutlineView.Sections, showDetails: true }
-    })
+    render(
+      <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />,
+      emptySong,
+      { songOutline: { view: OutlineView.Sections, showDetails: true } }
+    )
 
     section.parts.forEach((part) => {
       expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
@@ -211,7 +228,7 @@ describe('Song Section Card', () => {
   it('should display menu on right click', async () => {
     const user = userEvent.setup()
 
-    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+    render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -227,7 +244,7 @@ describe('Song Section Card', () => {
     it('should open edit song section modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -250,11 +267,11 @@ describe('Song Section Card', () => {
       )
 
       const songId = '1'
-      reduxRender(
+      render(
         withToastify(
           <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
         ),
-        { song: { songId, isArtistBand: false } }
+        { ...emptySong, id: songId, artist: { ...emptyArtist, isBand: false } }
       )
 
       await user.pointer({
@@ -280,7 +297,7 @@ describe('Song Section Card', () => {
     it('should open edit song section modal when clicking edit', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -294,7 +311,7 @@ describe('Song Section Card', () => {
     it('should display delete section modal when clicking delete', async () => {
       const user = userEvent.setup()
 
-      reduxRender(
+      render(
         withToastify(
           <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
         )
@@ -322,7 +339,7 @@ describe('Song Section Card', () => {
       clearSelection: vi.fn()
     })
 
-    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+    render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     await user.pointer({
       keys: '[MouseRight>]',
@@ -341,7 +358,7 @@ describe('Song Section Card', () => {
       clearSelection: vi.fn()
     })
 
-    reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+    render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
     expect(screen.queryByRole('button', { name: 'drag-handle' })).not.toBeInTheDocument()
     expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
@@ -351,7 +368,7 @@ describe('Song Section Card', () => {
     it('when avatar is hovered', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.hover(screen.getByLabelText(`song-section-${section.name}`))
 
@@ -364,7 +381,7 @@ describe('Song Section Card', () => {
     it('when context menu is open', async () => {
       const user = userEvent.setup()
 
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       await user.pointer({
         keys: '[MouseRight>]',
@@ -378,7 +395,7 @@ describe('Song Section Card', () => {
     })
 
     it('when is dragging', async () => {
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={true} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={true} />)
 
       expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
         'aria-selected',
@@ -396,7 +413,7 @@ describe('Song Section Card', () => {
         clearSelection: vi.fn()
       })
 
-      reduxRender(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
+      render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
       expect(screen.getByLabelText(`song-section-${section.name}`)).toHaveAttribute(
         'aria-selected',

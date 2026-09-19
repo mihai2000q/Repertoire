@@ -9,16 +9,14 @@ import { useUpdateAllSongPartsMutation } from '../../../parts/state/api/songPart
 import { useUpdateSongSettingsMutation } from '../../../../../../../../state/api/songsApi.ts'
 import { IconSettings } from '@tabler/icons-react'
 import { useDidUpdate } from '@mantine/hooks'
-import { useAppSelector } from '../../../../../../../../state/store.ts'
+import { useSongContext } from '../../../../context/SongContext.tsx'
 
 interface SongOutlineSettingsButtonProps {
   parts: SongPart[]
 }
 
 function SongOutlineSettingsButton({ parts }: SongOutlineSettingsButtonProps) {
-  const songId = useAppSelector((state) => state.song.songId)
-  const settings = useAppSelector((state) => state.song.settings)
-  const bandMembers = useAppSelector((state) => state.song.artistBandMembers)
+  const { songId, settings, artistBandMembers: bandMembers } = useSongContext()
 
   const [updateSettings] = useUpdateSongSettingsMutation()
   const [updateAll, { isLoading: isUpdateAllLoading }] = useUpdateAllSongPartsMutation()

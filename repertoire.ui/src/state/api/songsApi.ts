@@ -21,7 +21,6 @@ import {
 import HttpMessageResponse from '../../types/responses/HttpMessageResponse.ts'
 import createFormData from '../../utils/createFormData.ts'
 import createQueryParams from '../../utils/createQueryParams.ts'
-import { setSong, setSongId } from '../../features/songs/features/song/state/slice/songSlice.tsx'
 
 const songsApi = api.injectEndpoints({
   endpoints: (build) => ({
@@ -41,14 +40,7 @@ const songsApi = api.injectEndpoints({
               bandMembers: response.artist.bandMembers ?? []
             }
           : response.artist
-      }),
-      async onQueryStarted(id, { dispatch, queryFulfilled }) {
-        dispatch(setSongId(id))
-        try {
-          const { data: song } = await queryFulfilled
-          dispatch(setSong(song))
-        } catch { /* empty */ }
-      }
+      })
     }),
 
     // Infinite Queries

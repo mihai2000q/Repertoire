@@ -18,6 +18,7 @@ import SongOutlineProgressBar from '../../../../../../../components/bar/SongOutl
 import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
 import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
 import InstrumentsGroup from './section/InstrumentsGroup.tsx'
+import { useSongContext } from '../../../context/SongContext.tsx'
 import { useAppSelector } from '../../../../../../../state/store.ts'
 import DeleteSongSectionModal from './modal/DeleteSongSectionModal.tsx'
 import { toast } from 'react-toastify'
@@ -49,8 +50,7 @@ function SongSectionCard({
   const { ref: hoverRef, hovered } = useHover()
   const sectionRef = useMergedRef(hoverRef)
 
-  const songId = useAppSelector((state) => state.song.songId)
-  const isArtistBand = useAppSelector((state) => state.song.isArtistBand)
+  const { songId, isArtistBand } = useSongContext()
   const showDetails = useAppSelector((state) => state.songOutline.showDetails)
 
   const [updateSongParts, { isLoading: isUpdateSongPartsLoading }] =
