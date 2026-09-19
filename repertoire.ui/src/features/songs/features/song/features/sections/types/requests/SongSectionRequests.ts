@@ -30,6 +30,7 @@ export interface MoveSongSectionRequest {
 
 export interface BulkDeleteSongSectionsRequest {
   ids: string[]
+  partIds: string[]
   songId: string
 }
 
