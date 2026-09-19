@@ -40,7 +40,7 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
   }, [settings])
 
   function handleOnTransitionEnd() {
-    if (opened) scrollIntoView()
+    if (opened) scrollIntoView?.()
   }
 
   async function addPart() {
@@ -79,7 +79,7 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
             position={'top'}
             transitionProps={{ duration: 160, transition: 'fade-up' }}
             disabled={songSection === null}
-            tooltipLabel={songSection === null && 'A song section must be selected'}
+            tooltipLabel={songSection === null ? 'A song section must be selected' : undefined}
           />
 
           <InstrumentCompactSelect
@@ -90,7 +90,15 @@ function AddNewSongPart({ opened, onClose, scrollIntoView }: AddNewSongPartProps
           />
         </Group>
 
-        <SongSectionSelect option={songSection} onOptionChange={setSongSection} songId={songId} />
+        <SongSectionSelect
+          w={95}
+          option={songSection}
+          onOptionChange={setSongSection}
+          songId={songId}
+          comboboxProps={{
+            transitionProps: { duration: 160, transition: 'fade-up' }
+          }}
+        />
 
         <TextInput
           ref={nameInputRef}

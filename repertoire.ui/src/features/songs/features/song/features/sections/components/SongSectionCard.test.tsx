@@ -214,7 +214,7 @@ describe('Song Section Card', () => {
     expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
   })
 
-  it('should show details from redux selector', async () => {
+  it('should show details from context', async () => {
     render(
       <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />,
       emptySong,
@@ -352,7 +352,7 @@ describe('Song Section Card', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
   })
 
-  it('should hide the drag handle and display a checkmark, when click selected (part of the selected ids)', () => {
+  it('should display a checkmark, when click selected (part of the selected ids)', () => {
     vi.mocked(useClickSelect).mockReturnValue({
       selectables: [],
       addSelectable: vi.fn(),
@@ -364,7 +364,6 @@ describe('Song Section Card', () => {
 
     render(<SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />)
 
-    expect(screen.queryByRole('button', { name: 'drag-handle' })).not.toBeInTheDocument()
     expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
   })
 

@@ -42,10 +42,9 @@ function SongSections({
   }, [sections])
 
   function onSectionsDragEnd({ source, destination }) {
-    reorder({ from: source.index, to: destination?.index || 0 })
-
     if (!destination || source.index === destination.index) return
 
+    reorder({ from: source.index, to: destination.index })
     moveSongSection({
       id: sections[source.index].id,
       overId: sections[destination.index].id,

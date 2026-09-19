@@ -1,4 +1,9 @@
-import { reduxRender, emptySongPart, emptySongSection, withToastify } from '../../../../../../../test-utils.tsx'
+import {
+  emptySongPart,
+  emptySongSection,
+  reduxRender,
+  withToastify
+} from '../../../../../../../test-utils.tsx'
 import SongSectionsContextMenu from './SongSectionsContextMenu.tsx'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
@@ -131,7 +136,7 @@ describe('Song Sections Context Menu', () => {
     expect(await screen.findByRole('dialog', { name: /delete parts/i })).toBeInTheDocument()
   })
 
-  it('should bulk rehearse selected parts by 1', async () => {
+  it("should bulk rehearsal's selected parts by 1", async () => {
     const user = userEvent.setup()
     const selectedPartIds = sections.map((section) => `part-${section.parts[0].id}:${section.id}`)
     const selectedParts = sections.map((section) => section.parts[0])

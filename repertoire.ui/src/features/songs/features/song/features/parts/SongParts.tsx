@@ -40,7 +40,7 @@ function SongParts({ parts, isSongFetching, isPartsFetching }: SongPartsWidgetPr
 
   function showRehearsalsToast(partName: string) {
     if (rehearsalsToastId.current) toast.dismiss(rehearsalsToastId.current)
-    rehearsalsToastId.current = toast.info(`${partName} rehearsals' have been increased by 1!`)
+    rehearsalsToastId.current = toast.info(`${partName} rehearsals increased by 1!`)
   }
 
   function onPartsDragEnd({ source, destination }) {

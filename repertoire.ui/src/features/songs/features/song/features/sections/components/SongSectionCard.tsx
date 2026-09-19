@@ -73,7 +73,7 @@ function SongSectionCard({
 
   function showRehearsalsToast(partName: string) {
     if (rehearsalsToastId.current) toast.dismiss(rehearsalsToastId.current)
-    rehearsalsToastId.current = toast.info(`${partName} rehearsals' have been increased by 1!`)
+    rehearsalsToastId.current = toast.info(`${partName} rehearsals increased by 1!`)
   }
 
   const [maxPartProgress, bandMembers, instruments] = useMemo(() => {
@@ -84,8 +84,7 @@ function SongSectionCard({
     section.parts.forEach((part) => {
       if (part.progress > progress) progress = section.progress
       part.bandMembers.forEach((bandMember) => {
-        if (!bandMembers.some((m) => m.id === bandMember.id))
-          bandMembers.push(bandMember)
+        if (!bandMembers.some((m) => m.id === bandMember.id)) bandMembers.push(bandMember)
       })
       if (part.instrument && !instruments.some((i) => i.id === part.instrument.id))
         instruments.push(part.instrument)
@@ -116,191 +115,189 @@ function SongSectionCard({
   }
 
   return (
-    <Stack gap={0}>
-      <Stack
-        ref={ref}
-        gap={0}
-        {...draggableProvided?.draggableProps}
-        {...draggableProvided?.dragHandleProps}
-        style={{
-          ...draggableProvided?.draggableProps?.style,
-          cursor: 'default'
-        }}
-        sx={(theme) => ({
-          transition: '0.25s',
-          borderRadius: 0,
-          border: '1px solid transparent',
-          boxShadow: theme.shadows.divider,
-          ...(isDragging && {
-            boxShadow: theme.shadows.xl,
-            borderRadius: '16px',
-            backgroundColor: alpha(theme.white, 0.33),
-            border: `1px solid ${alpha(theme.colors.primary[8], 0.33)}`
-          })
-        })}
+    <Stack
+      ref={ref}
+      gap={0}
+      {...draggableProvided?.draggableProps}
+      {...draggableProvided?.dragHandleProps}
+      style={{
+        ...draggableProvided?.draggableProps?.style,
+        cursor: 'default'
+      }}
+      sx={(theme) => ({
+        transition: '0.25s',
+        borderRadius: 0,
+        border: '1px solid transparent',
+        boxShadow: theme.shadows.divider,
+        ...(isDragging && {
+          boxShadow: theme.shadows.xl,
+          borderRadius: '16px',
+          backgroundColor: alpha(theme.white, 0.33),
+          border: `1px solid ${alpha(theme.colors.primary[8], 0.33)}`
+        })
+      })}
+    >
+      <ContextMenu
+        opened={openedContextMenu}
+        onChange={toggleContextMenu}
+        disabled={isClickSelectionActive}
       >
-        <ContextMenu
-          opened={openedContextMenu}
-          onChange={toggleContextMenu}
-          disabled={isClickSelectionActive}
-        >
-          <ContextMenu.Target>
-            <Stack
-              ref={sectionRef}
-              aria-label={`song-section-${section.name}`}
-              aria-selected={isSelected}
-              gap={0}
-              py={'sm'}
-              onClick={handleClick}
-              sx={(theme) => ({
-                cursor: 'pointer',
-                transition: '0.25s',
-                borderRadius: 0,
-                ...(isSelected && {
-                  boxShadow: theme.shadows.md,
-                  backgroundColor: theme.colors.gray[0]
-                }),
+        <ContextMenu.Target>
+          <Stack
+            ref={sectionRef}
+            aria-label={`song-section-${section.name}`}
+            aria-selected={isSelected}
+            gap={0}
+            py={'sm'}
+            onClick={handleClick}
+            sx={(theme) => ({
+              cursor: 'pointer',
+              transition: '0.25s',
+              borderRadius: 0,
+              ...(isSelected && {
+                boxShadow: theme.shadows.md,
+                backgroundColor: theme.colors.gray[0]
+              }),
 
-                ...(isClickSelected && {
-                  boxShadow: 'none',
-                  backgroundColor: theme.colors.gray[0],
-                  ...(hovered && {
-                    boxShadow: theme.shadows.xs,
-                    backgroundColor: alpha(theme.colors.gray[1], 0.5)
-                  }),
-                  ...(isLastInSelection && {
-                    boxShadow: theme.shadows.lg
-                  })
+              ...(isClickSelected && {
+                boxShadow: 'none',
+                backgroundColor: theme.colors.gray[0],
+                ...(hovered && {
+                  boxShadow: theme.shadows.xs,
+                  backgroundColor: alpha(theme.colors.gray[1], 0.5)
                 }),
-
-                ...(isDragging && {
-                  transition: '0s',
-                  boxShadow: 'none',
-                  borderRadius: '16px'
+                ...(isLastInSelection && {
+                  boxShadow: theme.shadows.lg
                 })
-              })}
-            >
-              <Group gap={'sm'} pl={'sm'} pr={'md'}>
-                {!isClickSelected ? (
-                  <IconChevronDown
-                    color={'gray'}
-                    size={16}
-                    style={{
-                      transition: 'transform 200ms ease',
-                      transform: openedDetails ? 'rotate(180deg)' : 'rotate(0deg)'
-                    }}
-                  />
-                ) : (
-                  <Center
-                    data-testid={'selected-checkmark'}
-                    w={16}
-                    h={16}
-                    style={(theme) => ({
-                      borderRadius: '100%',
-                      backgroundColor: alpha(theme.colors.green[2], 0.95)
-                    })}
-                  >
-                    <IconCheck color={'white'} size={'75%'} />
-                  </Center>
-                )}
+              }),
 
-                <Stack gap={'xs'} flex={1}>
-                  <Group gap={'xs'}>
-                    <Text fw={600} fz={'13px'} truncate={'end'}>
-                      {section.name}
-                    </Text>
-                    <SongSectionTypeBadge songSectionType={section.songSectionType} />
-                    <RehearsalsBadge rehearsals={section.rehearsals} />
-                  </Group>
-
-                  <Group gap={'md'}>
-                    <SongOutlineConfidenceBar
-                      w={'8vw'}
-                      size={'4px'}
-                      confidence={section.confidence}
-                    />
-                    <SongOutlineProgressBar
-                      w={'8vw'}
-                      size={'4px'}
-                      progress={section.progress}
-                      maxProgress={maxSectionProgress}
-                    />
-                  </Group>
-                </Stack>
-
-                <Group gap={'xxs'}>
-                  {instruments.length > 0 && (
-                    <InstrumentsGroup aria-label={'instruments'} instruments={instruments} />
-                  )}
-                  {isArtistBand && bandMembers.length > 0 && (
-                    <BandMembersGroup aria-label={'band-members'} bandMembers={bandMembers} />
-                  )}
-                </Group>
-              </Group>
-            </Stack>
-          </ContextMenu.Target>
-
-          <ContextMenu.Dropdown>
-            <ContextMenu.Label>Section</ContextMenu.Label>
-            <ContextMenu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
-              Edit
-            </ContextMenu.Item>
-            <MenuItemConfirmation
-              isLoading={isUpdateSongPartsLoading}
-              onConfirm={handleAddRehearsal}
-              leftSection={<IconRefresh size={14} />}
-              disabled={section.parts.length === 0}
-            >
-              Add Rehearsal
-            </MenuItemConfirmation>
-            <ContextMenu.Divider />
-
-            <ContextMenu.Item
-              leftSection={<IconTrash size={14} />}
-              c={'red.5'}
-              onClick={openDeleteWarning}
-            >
-              Delete
-            </ContextMenu.Item>
-          </ContextMenu.Dropdown>
-
-          <EditSongSectionModal opened={openedEdit} onClose={closeEdit} section={section} />
-          <DeleteSongSectionModal
-            opened={openedDeleteWarning}
-            onClose={closeDeleteWarning}
-            section={section}
-            songId={songId}
-          />
-        </ContextMenu>
-
-        <Collapse expanded={openedDetails}>
-          <Box pos={'relative'}>
-            <Box
-              pos={'absolute'}
-              top={0}
-              left={35}
-              bottom={0}
-              my={'4px'}
-              style={(theme) => ({
-                borderLeft: `2px solid ${theme.colors.gray[1]}`
-              })}
-            />
-            <Stack gap={0}>
-              {section.parts.map((part) => (
-                <SongSectionPartCard
-                  key={part.id}
-                  part={part}
-                  sectionId={section.id}
-                  maxPartProgress={maxPartProgress}
-                  isDragging={false}
-                  showRehearsalsToast={showRehearsalsToast}
+              ...(isDragging && {
+                transition: '0s',
+                boxShadow: 'none',
+                borderRadius: '16px'
+              })
+            })}
+          >
+            <Group gap={'sm'} pl={'sm'} pr={'md'}>
+              {!isClickSelected ? (
+                <IconChevronDown
+                  color={'gray'}
+                  size={16}
+                  style={{
+                    transition: 'transform 200ms ease',
+                    transform: openedDetails ? 'rotate(180deg)' : 'rotate(0deg)'
+                  }}
                 />
-              ))}
-            </Stack>
-          </Box>
-        </Collapse>
-      </Stack>
+              ) : (
+                <Center
+                  data-testid={'selected-checkmark'}
+                  w={16}
+                  h={16}
+                  style={(theme) => ({
+                    borderRadius: '100%',
+                    backgroundColor: alpha(theme.colors.green[2], 0.95)
+                  })}
+                >
+                  <IconCheck color={'white'} size={'75%'} />
+                </Center>
+              )}
+
+              <Stack gap={'xs'} flex={1}>
+                <Group gap={'xs'}>
+                  <Text fw={600} fz={'13px'} truncate={'end'}>
+                    {section.name}
+                  </Text>
+                  <SongSectionTypeBadge songSectionType={section.songSectionType} />
+                  <RehearsalsBadge rehearsals={section.rehearsals} />
+                </Group>
+
+                <Group gap={'md'}>
+                  <SongOutlineConfidenceBar
+                    w={'8vw'}
+                    size={'4px'}
+                    confidence={section.confidence}
+                  />
+                  <SongOutlineProgressBar
+                    w={'8vw'}
+                    size={'4px'}
+                    progress={section.progress}
+                    maxProgress={maxSectionProgress}
+                  />
+                </Group>
+              </Stack>
+
+              <Group gap={'xxs'}>
+                {instruments.length > 0 && (
+                  <InstrumentsGroup aria-label={'instruments'} instruments={instruments} />
+                )}
+                {isArtistBand && bandMembers.length > 0 && (
+                  <BandMembersGroup aria-label={'band-members'} bandMembers={bandMembers} />
+                )}
+              </Group>
+            </Group>
+          </Stack>
+        </ContextMenu.Target>
+
+        <ContextMenu.Dropdown>
+          <ContextMenu.Label>Section</ContextMenu.Label>
+          <ContextMenu.Item leftSection={<IconEdit size={14} />} onClick={openEdit}>
+            Edit
+          </ContextMenu.Item>
+          <MenuItemConfirmation
+            isLoading={isUpdateSongPartsLoading}
+            onConfirm={handleAddRehearsal}
+            leftSection={<IconRefresh size={14} />}
+            disabled={section.parts.length === 0}
+          >
+            Add Rehearsal
+          </MenuItemConfirmation>
+          <ContextMenu.Divider />
+
+          <ContextMenu.Item
+            leftSection={<IconTrash size={14} />}
+            c={'red.5'}
+            onClick={openDeleteWarning}
+          >
+            Delete
+          </ContextMenu.Item>
+        </ContextMenu.Dropdown>
+
+        <EditSongSectionModal opened={openedEdit} onClose={closeEdit} section={section} />
+        <DeleteSongSectionModal
+          opened={openedDeleteWarning}
+          onClose={closeDeleteWarning}
+          section={section}
+          songId={songId}
+        />
+      </ContextMenu>
+
+      <Collapse expanded={openedDetails} onTransitionEnd={scrollIntoView}>
+        <Box pos={'relative'}>
+          <Box
+            pos={'absolute'}
+            top={0}
+            left={35}
+            bottom={0}
+            my={'4px'}
+            style={(theme) => ({
+              borderLeft: `2px solid ${theme.colors.gray[1]}`
+            })}
+          />
+          <Stack gap={0} pl={35}>
+            {section.parts.map((part) => (
+              <SongSectionPartCard
+                key={part.id}
+                part={part}
+                sectionId={section.id}
+                maxPartProgress={maxPartProgress}
+                isDragging={false}
+                showRehearsalsToast={showRehearsalsToast}
+              />
+            ))}
             <AddNewSongSectionPart section={section} />
+          </Stack>
+        </Box>
+      </Collapse>
     </Stack>
   )
 }

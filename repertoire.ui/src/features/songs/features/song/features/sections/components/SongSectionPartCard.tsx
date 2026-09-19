@@ -108,12 +108,12 @@ function SongSectionPartCard({
           aria-label={`song-section-part-${part.name}`}
           aria-selected={isSelected}
           gap={0}
-          px={'45px'}
+          pl={'sm'}
+          pr={45}
           onClick={handleClick}
           sx={(theme) => ({
             cursor: 'pointer',
             transition: '0.25s',
-            borderRadius: 0,
             border: '1px solid transparent',
             ...(isSelected && {
               boxShadow: theme.shadows.md,

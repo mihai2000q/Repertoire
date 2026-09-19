@@ -131,7 +131,7 @@ describe('Song Sections Selection Drawer', () => {
     expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeEnabled()
   })
 
-  it('should bulk rehearse selected parts by 1', async () => {
+  it("should bulk rehearsals' selected parts by 1", async () => {
     const user = userEvent.setup()
 
     const selectedPartIds = sections.map((section) => `part-${section.parts[0].id}:${section.id}`)

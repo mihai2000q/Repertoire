@@ -5,7 +5,7 @@ import Album from '../../../types/models/Album.ts'
 import { useDeleteAlbumMutation } from '../../../state/api/albumsApi.ts'
 import { toast } from 'react-toastify'
 
-interface DeleteArtistModalProps {
+interface DeleteAlbumModalProps {
   opened: boolean
   onClose: () => void
   album: Album
@@ -13,7 +13,7 @@ interface DeleteArtistModalProps {
   withName?: boolean
 }
 
-function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: DeleteArtistModalProps) {
+function DeleteAlbumModal({ opened, onClose, album, onDelete, withName }: DeleteAlbumModalProps) {
   const [deleteAlbumMutation, { isLoading }] = useDeleteAlbumMutation()
   const [deleteWithSongs, setDeleteWithSongs] = useState(false)
 
