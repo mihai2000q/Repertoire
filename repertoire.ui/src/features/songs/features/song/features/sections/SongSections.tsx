@@ -15,9 +15,15 @@ interface SongSectionsWidgetProps {
   sections: SongSection[]
   isSongFetching?: boolean
   isSectionsFetching?: boolean
+  scrollIntoView?: () => void
 }
 
-function SongSections({ sections, isSectionsFetching, isSongFetching }: SongSectionsWidgetProps) {
+function SongSections({
+  sections,
+  isSectionsFetching,
+  isSongFetching,
+  scrollIntoView
+}: SongSectionsWidgetProps) {
   const { songId } = useSongContext()
 
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
@@ -74,9 +80,10 @@ function SongSections({ sections, isSectionsFetching, isSongFetching }: SongSect
                         {(provided, snapshot) => (
                           <SongSectionCard
                             section={section}
-                            isDragging={snapshot.isDragging}
                             maxSectionProgress={maxSectionProgress}
+                            isDragging={snapshot.isDragging}
                             draggableProvided={provided}
+                            scrollIntoView={scrollIntoView}
                           />
                         )}
                       </Draggable>

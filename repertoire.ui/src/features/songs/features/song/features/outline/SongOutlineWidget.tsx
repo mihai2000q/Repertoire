@@ -50,16 +50,12 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
   const scrollableRef = useRef<HTMLDivElement>(null)
   const { mainScroll } = useMain()
 
-  function scrollAddIntoView() {
+  function scrollIntoView() {
     scrollableRef.current?.scrollTo({ top: scrollableRef.current.scrollHeight, behavior: 'smooth' })
     mainScroll.ref.current?.scrollTo({
       top: mainScroll.ref.current.scrollHeight,
       behavior: 'smooth'
     })
-  }
-
-  function scrollCardIntoView() {
-    ref.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   if (
@@ -88,7 +84,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
               toggleAdd={toggleAdd}
               parts={parts}
               sectionParts={sections?.flatMap((s) => s.parts)}
-              scrollIntoView={scrollCardIntoView}
+              scrollIntoView={scrollIntoView}
             />
           </Group>
 
@@ -96,7 +92,10 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
             viewportRef={scrollableRef}
             scrollbars={'y'}
             scrollbarSize={7}
-            mah={(showDetails ? 2 : 1) * 383.35}
+            mah={
+              (view === OutlineView.Sections ? (showDetails ? 2.5 : 2) : showDetails ? 2 : 1) *
+              383.35
+            }
             style={{ transition: 'max-height 0.25s' }}
           >
             <Stack gap={0}>
@@ -108,6 +107,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
                     sections={sections}
                     isSongFetching={isSongFetching}
                     isSectionsFetching={isSectionsFetching}
+                    scrollIntoView={scrollIntoView}
                   />
                 ))}
               {view === OutlineView.Parts &&
@@ -137,14 +137,14 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
                   songId={songId}
                   opened={openedAdd}
                   onClose={toggleAdd}
-                  scrollIntoView={scrollAddIntoView}
+                  scrollIntoView={scrollIntoView}
                 />
               )}
               {view === OutlineView.Parts && (
                 <AddNewSongPart
                   opened={openedAdd}
                   onClose={toggleAdd}
-                  scrollIntoView={scrollAddIntoView}
+                  scrollIntoView={scrollIntoView}
                 />
               )}
             </Stack>
