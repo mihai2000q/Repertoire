@@ -60,6 +60,7 @@ func (s *SongPart) AfterFind(*gorm.DB) error {
 	for _, sp := range s.SectionParts {
 		if sp.BandMember != nil && !seenBm[sp.BandMember.ID] {
 			seenBm[sp.BandMember.ID] = true
+			sp.BandMember.ImageURL = sp.BandMember.ImageURL.ToFullURL()
 			s.BandMembers = append(s.BandMembers, *sp.BandMember)
 		}
 	}
