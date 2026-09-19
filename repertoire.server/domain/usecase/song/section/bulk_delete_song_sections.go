@@ -47,10 +47,9 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 			return errCode.Error
 		}
 
-		// map for easy lookup
-		idsMap := make(map[uuid.UUID]bool)
-		for _, iD := range request.IDs {
-			idsMap[iD] = true
+		idsMap := make(map[uuid.UUID]bool, len(request.IDs))
+		for _, id := range request.IDs {
+			idsMap[id] = true
 		}
 
 		// Reorder the remaining sections
@@ -60,7 +59,7 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 				sectionsFound++
 				continue
 			}
-			song.Sections[i].Order = song.Sections[i].Order - uint(sectionsFound)
+			song.Sections[i].Order -= uint(sectionsFound)
 		}
 
 		// Validate all requested section IDs were found
@@ -68,23 +67,33 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 			errCode = httperror.NotFoundError(errors.New("song sections not found"))
 			return errCode.Error
 		}
-
-		if err := b.txSongRepo.UpdateWithAssociations(&song); err != nil {
-			return err
-		}
-
-		if request.WithParts {
-			b.txSongPartRepo = factory.NewSongPartRepository()
-			if errCode = b.deleteParts(request.IDs); errCode != nil {
+		// Validate parts
+		if len(request.PartIDs) > 0 {
+			if errCode = b.validatePartsBelongToSections(request.IDs, request.PartIDs); errCode != nil {
 				return errCode.Error
 			}
 		}
 
-		if err := b.txSongSectionRepo.Delete(request.IDs); err != nil {
+		// Update sections
+		if err := b.txSongRepo.UpdateWithAssociations(&song); err != nil {
 			return err
 		}
 
-		return nil
+		if len(request.PartIDs) > 0 {
+			b.txSongPartRepo = factory.NewSongPartRepository()
+			// Update song
+			errCode = b.songProcessor.UpdateSongAfterPartsDeletion(b.txSongRepo, request.SongID, request.PartIDs)
+			if errCode != nil {
+				return errCode.Error
+			}
+			// Delete parts
+			if err := b.txSongPartRepo.Delete(request.PartIDs); err != nil {
+				return err
+			}
+		}
+
+		// Delete sections
+		return b.txSongSectionRepo.Delete(request.IDs)
 	})
 	if err != nil {
 		if errCode != nil {
@@ -92,41 +101,32 @@ func (b BulkDeleteSongSections) Handle(request requests.BulkDeleteSongSectionsRe
 		}
 		return httperror.DatabaseError(err)
 	}
-
 	return nil
 }
 
-func (b BulkDeleteSongSections) deleteParts(ids []uuid.UUID) *httperror.ErrorCode {
+func (b BulkDeleteSongSections) validatePartsBelongToSections(
+	sectionIDs []uuid.UUID,
+	partIDs []uuid.UUID,
+) *httperror.ErrorCode {
 	var sections []model.SongSection
-	if err := b.txSongSectionRepo.GetAllByIDsWithSectionParts(&sections, ids); err != nil {
+	if err := b.txSongSectionRepo.GetAllByIDsWithSectionParts(&sections, sectionIDs); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
-	// Collect all part IDs from all sections (deduplicate)
-	var partIDsToDelete []uuid.UUID
-	partSet := make(map[uuid.UUID]bool)
-	partsCount := 0
+	partsInSections := make(map[uuid.UUID]bool)
 	for _, sec := range sections {
 		for _, sp := range sec.SectionParts {
-			if !partSet[sp.PartID] {
-				partSet[sp.PartID] = true
-				partIDsToDelete = append(partIDsToDelete, sp.PartID)
-				partsCount++
-			}
+			partsInSections[sp.PartID] = true
 		}
 	}
 
-	if partsCount == 0 {
-		return nil
+	seen := make(map[uuid.UUID]bool, len(partIDs))
+	for _, partID := range partIDs {
+		if !partsInSections[partID] {
+			return httperror.ConflictError(errors.New("song parts don't belong to section"))
+		}
+		seen[partID] = true
 	}
 
-	errCode := b.songProcessor.UpdateSongAfterPartsDeletion(b.txSongRepo, sections[0].SongID, partIDsToDelete)
-	if errCode != nil {
-		return errCode
-	}
-
-	if err := b.txSongPartRepo.Delete(partIDsToDelete); err != nil {
-		return httperror.DatabaseError(err)
-	}
 	return nil
 }

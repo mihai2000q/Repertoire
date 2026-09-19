@@ -50,6 +50,42 @@ func TestBulkDeleteSongSections_WhenSectionsAreNotFound_ShouldReturnNotFoundErro
 	assert.Equal(t, http.StatusNotFound, w.Code)
 }
 
+func TestBulkDeleteSongSections_WhenPartsAreNotFound_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:     []uuid.UUID{songData.SongSections[0].ID},
+		PartIDs: []uuid.UUID{songData.SongParts[2].ID, uuid.New()},
+		SongID:  songData.Songs[0].ID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk-delete", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
+func TestBulkDeleteSongSections_WhenPartsDoNotBelong_ShouldReturnConflictError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
+
+	request := requests.BulkDeleteSongSectionsRequest{
+		IDs:     []uuid.UUID{songData.SongSections[0].ID},
+		PartIDs: []uuid.UUID{songData.SongParts[2].ID},
+		SongID:  songData.Songs[0].ID,
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/songs/sections/bulk-delete", request)
+
+	// then
+	assert.Equal(t, http.StatusConflict, w.Code)
+}
+
 func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
@@ -96,18 +132,18 @@ func TestBulkDeleteSongSections_WhenSuccessfulWithParts_ShouldDeleteSectionsAndP
 
 	song := songData.Songs[0]
 	request := requests.BulkDeleteSongSectionsRequest{
-		IDs:       []uuid.UUID{songData.SongSections[0].ID, songData.SongSections[1].ID},
-		SongID:    song.ID,
-		WithParts: true,
+		IDs:     []uuid.UUID{songData.SongSections[0].ID, songData.SongSections[1].ID},
+		PartIDs: []uuid.UUID{songData.SongParts[0].ID, songData.SongParts[0].ID, songData.SongParts[1].ID},
+		SongID:  song.ID,
 	}
 
 	// Collect unique part IDs that are expected to be deleted
-	partIDSet := make(map[uuid.UUID]bool)
+	seen := make(map[uuid.UUID]bool)
 	expectedDeletedPartIDs := make([]uuid.UUID, 0)
-	for _, sp := range songData.SongSectionParts {
-		if slices.Contains(request.IDs, sp.SectionID) && !partIDSet[sp.PartID] {
-			partIDSet[sp.PartID] = true
-			expectedDeletedPartIDs = append(expectedDeletedPartIDs, sp.PartID)
+	for _, pid := range request.PartIDs {
+		if !seen[pid] {
+			seen[pid] = true
+			expectedDeletedPartIDs = append(expectedDeletedPartIDs, pid)
 		}
 	}
 

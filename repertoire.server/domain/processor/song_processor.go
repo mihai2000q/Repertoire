@@ -146,7 +146,7 @@ func (s *songProcessor) UpdateSongAfterPartsDeletion(
 		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
-	// map for easy lookup
+	// Map for easy lookup and deduplicate
 	partIDsMap := make(map[uuid.UUID]bool)
 	for _, iD := range partIDs {
 		partIDsMap[iD] = true

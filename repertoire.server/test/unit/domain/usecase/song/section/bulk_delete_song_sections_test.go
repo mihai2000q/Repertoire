@@ -158,6 +158,56 @@ func TestBulkDeleteSongSections_WhenSectionsNotFound_ShouldReturnNotFoundError(t
 	txSongSectionRepo.AssertExpectations(t)
 }
 
+func TestBulkDeleteSongSections_WhenGetSectionsWithPartsFails_ShouldReturnInternalServerError(t *testing.T) {
+	// given
+	transactionManager := new(transaction.ManagerMock)
+	songProcessor := new(processor.SongProcessorMock)
+	_uut := section.NewBulkDeleteSongSections(transactionManager, songProcessor)
+
+	request := requests.BulkDeleteSongSectionsRequest{
+		SongID:  uuid.New(),
+		IDs:     []uuid.UUID{uuid.New()},
+		PartIDs: []uuid.UUID{uuid.New()},
+	}
+
+	repositoryFactory := new(transaction.RepositoryFactoryMock)
+	txSongRepo := new(repository.SongRepositoryMock)
+	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
+
+	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
+	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
+	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
+
+	mockSong := &model.Song{
+		ID: request.SongID,
+		Sections: []model.SongSection{
+			{ID: request.IDs[0]},
+		},
+	}
+	txSongRepo.On("GetWithSections", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	internalError := errors.New("get sections with parts error")
+	txSongSectionRepo.On("GetAllByIDsWithSectionParts", new([]model.SongSection), request.IDs).
+		Return(internalError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
+	assert.Equal(t, internalError, errCode.Error)
+
+	repositoryFactory.AssertExpectations(t)
+	transactionManager.AssertExpectations(t)
+	txSongRepo.AssertExpectations(t)
+	txSongSectionRepo.AssertExpectations(t)
+	songProcessor.AssertExpectations(t)
+}
+
 func TestBulkDeleteSongSections_WhenUpdateSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	transactionManager := new(transaction.ManagerMock)
@@ -205,65 +255,7 @@ func TestBulkDeleteSongSections_WhenUpdateSongFails_ShouldReturnInternalServerEr
 	txSongSectionRepo.AssertExpectations(t)
 }
 
-// With Parts
-
-func TestBulkDeleteSongSections_WithParts_WhenGetSectionsWithPartsFails_ShouldReturnInternalServerError(t *testing.T) {
-	// given
-	transactionManager := new(transaction.ManagerMock)
-	songProcessor := new(processor.SongProcessorMock)
-	_uut := section.NewBulkDeleteSongSections(transactionManager, songProcessor)
-
-	request := requests.BulkDeleteSongSectionsRequest{
-		SongID:    uuid.New(),
-		IDs:       []uuid.UUID{uuid.New()},
-		WithParts: true,
-	}
-
-	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	txSongRepo := new(repository.SongRepositoryMock)
-	txSongSectionRepo := new(repository.SongSectionRepositoryMock)
-	txSongPartRepo := new(repository.SongPartRepositoryMock)
-
-	repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
-	repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
-	repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
-	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
-
-	mockSong := &model.Song{
-		ID: request.SongID,
-		Sections: []model.SongSection{
-			{ID: request.IDs[0]},
-		},
-	}
-	txSongRepo.On("GetWithSections", new(model.Song), request.SongID).
-		Return(nil, mockSong).
-		Once()
-	txSongRepo.On("UpdateWithAssociations", mock.IsType(mockSong)).
-		Return(nil).
-		Once()
-
-	internalError := errors.New("get sections with parts error")
-	txSongSectionRepo.On("GetAllByIDsWithSectionParts", new([]model.SongSection), request.IDs).
-		Return(internalError).
-		Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
-
-	repositoryFactory.AssertExpectations(t)
-	transactionManager.AssertExpectations(t)
-	txSongRepo.AssertExpectations(t)
-	txSongSectionRepo.AssertExpectations(t)
-	txSongPartRepo.AssertExpectations(t)
-	songProcessor.AssertExpectations(t)
-}
-
-func TestBulkDeleteSongSections_WithParts_WhenUpdateSongAfterPartsDeletionFails_ShouldReturnError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenUpdateSongAfterPartsDeletionFails_ShouldReturnError(t *testing.T) {
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	songProcessor := new(processor.SongProcessorMock)
@@ -272,9 +264,9 @@ func TestBulkDeleteSongSections_WithParts_WhenUpdateSongAfterPartsDeletionFails_
 	sectionID := uuid.New()
 	partID := uuid.New()
 	request := requests.BulkDeleteSongSectionsRequest{
-		SongID:    uuid.New(),
-		IDs:       []uuid.UUID{sectionID},
-		WithParts: true,
+		SongID:  uuid.New(),
+		IDs:     []uuid.UUID{sectionID},
+		PartIDs: []uuid.UUID{partID},
 	}
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
@@ -338,7 +330,7 @@ func TestBulkDeleteSongSections_WithParts_WhenUpdateSongAfterPartsDeletionFails_
 	songProcessor.AssertExpectations(t)
 }
 
-func TestBulkDeleteSongSections_WithParts_WhenDeletePartsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestBulkDeleteSongSections_WhenDeletePartsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	transactionManager := new(transaction.ManagerMock)
 	songProcessor := new(processor.SongProcessorMock)
@@ -347,9 +339,9 @@ func TestBulkDeleteSongSections_WithParts_WhenDeletePartsFails_ShouldReturnInter
 	sectionID := uuid.New()
 	partID := uuid.New()
 	request := requests.BulkDeleteSongSectionsRequest{
-		SongID:    uuid.New(),
-		IDs:       []uuid.UUID{sectionID},
-		WithParts: true,
+		SongID:  uuid.New(),
+		IDs:     []uuid.UUID{sectionID},
+		PartIDs: []uuid.UUID{partID},
 	}
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
@@ -393,12 +385,12 @@ func TestBulkDeleteSongSections_WithParts_WhenDeletePartsFails_ShouldReturnInter
 		Return(nil, &mockSections).
 		Once()
 
-	songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepo, request.SongID, []uuid.UUID{partID}).
+	songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepo, request.SongID, request.PartIDs).
 		Return(nil).
 		Once()
 
 	internalError := errors.New("delete parts error")
-	txSongPartRepo.On("Delete", []uuid.UUID{partID}).
+	txSongPartRepo.On("Delete", request.PartIDs).
 		Return(internalError).
 		Once()
 
@@ -424,9 +416,8 @@ func TestBulkDeleteSongSections_WhenDeleteSectionsFails_ShouldReturnInternalServ
 	_uut := section.NewBulkDeleteSongSections(transactionManager, nil)
 
 	request := requests.BulkDeleteSongSectionsRequest{
-		SongID:    uuid.New(),
-		IDs:       []uuid.UUID{uuid.New()},
-		WithParts: false,
+		SongID: uuid.New(),
+		IDs:    []uuid.UUID{uuid.New()},
 	}
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
@@ -468,111 +459,83 @@ func TestBulkDeleteSongSections_WhenDeleteSectionsFails_ShouldReturnInternalServ
 	txSongRepo.AssertExpectations(t)
 	txSongSectionRepo.AssertExpectations(t)
 }
-
 func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T) {
+	// partRef points at song.Sections[section].SectionParts[part]
+	type partRef struct{ section, part int }
+	sharedPartID := uuid.New()
+
 	tests := []struct {
 		name          string
 		song          model.Song
 		deleteIndices []int
-		withParts     bool
+		partsToDelete []partRef
 	}{
 		{
-			name: "Delete single middle section",
+			name: "Delete sections with all their parts",
 			song: model.Song{
 				ID: uuid.New(),
 				Sections: []model.SongSection{
 					{ID: uuid.New(), Order: 0, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
 					{ID: uuid.New(), Order: 1, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
-					{ID: uuid.New(), Order: 2, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
 				},
 			},
 			deleteIndices: []int{1},
+			partsToDelete: []partRef{{1, 0}},
 		},
 		{
-			name: "Delete multiple sections",
+			name: "Delete sections with only some of their parts",
 			song: model.Song{
 				ID: uuid.New(),
 				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0},
-					{ID: uuid.New(), Order: 1},
-					{ID: uuid.New(), Order: 2},
-					{ID: uuid.New(), Order: 3},
-					{ID: uuid.New(), Order: 4},
-				},
-			},
-			deleteIndices: []int{1, 3},
-		},
-		{
-			name: "Delete first section",
-			song: model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0},
-					{ID: uuid.New(), Order: 1},
-					{ID: uuid.New(), Order: 2},
+					{ID: uuid.New(), Order: 0, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}, {PartID: uuid.New()}}},
+					{ID: uuid.New(), Order: 1, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
 				},
 			},
 			deleteIndices: []int{0},
+			partsToDelete: []partRef{{0, 0}},
 		},
 		{
-			name: "Delete last section",
+			name: "Delete sections sharing a part",
 			song: model.Song{
 				ID: uuid.New(),
 				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0},
-					{ID: uuid.New(), Order: 1},
-					{ID: uuid.New(), Order: 2},
-				},
-			},
-			deleteIndices: []int{2},
-		},
-		{
-			name: "Delete all sections",
-			song: model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0},
-					{ID: uuid.New(), Order: 1},
+					{ID: uuid.New(), Order: 0, SectionParts: []model.SongSectionPart{{PartID: sharedPartID}, {PartID: uuid.New()}}},
+					{ID: uuid.New(), Order: 1, SectionParts: []model.SongSectionPart{{PartID: sharedPartID}}},
+					{ID: uuid.New(), Order: 2, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
 				},
 			},
 			deleteIndices: []int{0, 1},
-		},
-		{
-			name: "Delete sections with parts",
-			song: model.Song{
-				ID: uuid.New(),
-				Sections: []model.SongSection{
-					{ID: uuid.New(), Order: 0, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
-					{ID: uuid.New(), Order: 1, SectionParts: []model.SongSectionPart{{PartID: uuid.New()}}},
-				},
-			},
-			deleteIndices: []int{1},
-			withParts:     true,
+			partsToDelete: []partRef{{0, 0}, {0, 1}, {1, 0}}, // the shared part is sent twice
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// given
+			idsToDelete := make([]uuid.UUID, len(tt.deleteIndices))
+			for i, idx := range tt.deleteIndices {
+				idsToDelete[i] = tt.song.Sections[idx].ID
+			}
+			partIDsToDelete := make([]uuid.UUID, len(tt.partsToDelete))
+			for i, ref := range tt.partsToDelete {
+				partIDsToDelete[i] = tt.song.Sections[ref.section].SectionParts[ref.part].PartID
+			}
+			withParts := len(partIDsToDelete) > 0
+
 			transactionManager := new(transaction.ManagerMock)
 			var songProcessor *processor.SongProcessorMock
 			var _uut section.BulkDeleteSongSections
-
-			if tt.withParts {
+			if withParts {
 				songProcessor = new(processor.SongProcessorMock)
 				_uut = section.NewBulkDeleteSongSections(transactionManager, songProcessor)
 			} else {
 				_uut = section.NewBulkDeleteSongSections(transactionManager, nil)
 			}
 
-			idsToDelete := make([]uuid.UUID, len(tt.deleteIndices))
-			for i, idx := range tt.deleteIndices {
-				idsToDelete[i] = tt.song.Sections[idx].ID
-			}
 			request := requests.BulkDeleteSongSectionsRequest{
-				SongID:    tt.song.ID,
-				IDs:       idsToDelete,
-				WithParts: tt.withParts,
+				SongID:  tt.song.ID,
+				IDs:     idsToDelete,
+				PartIDs: partIDsToDelete,
 			}
 
 			// given - mocking
@@ -583,7 +546,7 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T
 
 			repositoryFactory.On("NewSongRepository").Return(txSongRepo).Once()
 			repositoryFactory.On("NewSongSectionRepository").Return(txSongSectionRepo).Once()
-			if tt.withParts {
+			if withParts {
 				repositoryFactory.On("NewSongPartRepository").Return(txSongPartRepo).Once()
 			}
 			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
@@ -607,36 +570,21 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T
 				}).
 				Return(nil).Once()
 
-			if tt.withParts {
+			if withParts {
 				var mockSections []model.SongSection
 				for _, idx := range tt.deleteIndices {
-					sec := tt.song.Sections[idx]
-					sec.SongID = tt.song.ID
-					mockSections = append(mockSections, sec)
+					mockSections = append(mockSections, tt.song.Sections[idx])
 				}
 				txSongSectionRepo.On("GetAllByIDsWithSectionParts", new([]model.SongSection), idsToDelete).
 					Return(nil, &mockSections).
 					Once()
 
-				var partIDsToDelete []uuid.UUID
-				partSet := make(map[uuid.UUID]bool)
-				for _, sec := range mockSections {
-					for _, sp := range sec.SectionParts {
-						if !partSet[sp.PartID] {
-							partSet[sp.PartID] = true
-							partIDsToDelete = append(partIDsToDelete, sp.PartID)
-						}
-					}
-				}
-
-				if len(partIDsToDelete) > 0 {
-					songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepo, tt.song.ID, partIDsToDelete).
-						Return(nil).
-						Once()
-					txSongPartRepo.On("Delete", partIDsToDelete).
-						Return(nil).
-						Once()
-				}
+				songProcessor.On("UpdateSongAfterPartsDeletion", txSongRepo, tt.song.ID, partIDsToDelete).
+					Return(nil).
+					Once()
+				txSongPartRepo.On("Delete", partIDsToDelete).
+					Return(nil).
+					Once()
 			}
 
 			// Delete sections
@@ -654,7 +602,7 @@ func TestBulkDeleteSongSections_WhenSuccessful_ShouldDeleteSections(t *testing.T
 			transactionManager.AssertExpectations(t)
 			txSongRepo.AssertExpectations(t)
 			txSongSectionRepo.AssertExpectations(t)
-			if tt.withParts {
+			if withParts {
 				txSongPartRepo.AssertExpectations(t)
 				songProcessor.AssertExpectations(t)
 			}
