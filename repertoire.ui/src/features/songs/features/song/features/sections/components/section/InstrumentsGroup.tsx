@@ -1,4 +1,13 @@
-import { alpha, Avatar, AvatarGroup, AvatarGroupProps, Tooltip } from '@mantine/core'
+import {
+  alpha,
+  Avatar,
+  AvatarGroup,
+  AvatarGroupProps,
+  Group,
+  Stack,
+  Text,
+  Tooltip
+} from '@mantine/core'
 import { Instrument } from '../../../../../../../../types/models/Song.ts'
 import useInstrumentIcon from '../../../../../../../../hooks/useInstrumentIcon.tsx'
 
@@ -9,13 +18,36 @@ interface InstrumentsGroupProps extends AvatarGroupProps {
 function InstrumentsGroup({ instruments, ...props }: InstrumentsGroupProps) {
   const getInstrumentIcon = useInstrumentIcon()
 
-  const tooltipLabel = instruments.reduce(
-    (res, i, idx) => res + i.name + (idx === instruments.length - 1 ? '' : ', '),
-    ''
-  )
-
   return (
-    <Tooltip label={tooltipLabel} openDelay={300}>
+    <Tooltip
+      label={
+        <Stack gap={'xxs'}>
+          {instruments.map((instrument) => (
+            <Group key={instrument.id} gap={'xxs'}>
+              <Avatar
+                bg={'transparent'}
+                key={instrument.id}
+                aria-label={instrument.name}
+                size={'15px'}
+                bd={0}
+                styles={(theme) => ({
+                  placeholder: {
+                    color: theme.colors.gray[2],
+                    backgroundColor: 'transparent'
+                  }
+                })}
+              >
+                {getInstrumentIcon(instrument)}
+              </Avatar>
+              <Text fz={'xs'} c={'gray.2'}>
+                {instrument.name}
+              </Text>
+            </Group>
+          ))}
+        </Stack>
+      }
+      openDelay={300}
+    >
       <AvatarGroup {...props}>
         {instruments.map((instrument) => (
           <Avatar
