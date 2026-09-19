@@ -1,15 +1,13 @@
 import { Center, SegmentedControl, Tooltip } from '@mantine/core'
 import { IconList, IconListTree } from '@tabler/icons-react'
-import { useAppDispatch, useAppSelector } from '../../../../../../../../state/store.ts'
 import OutlineView from '../../types/enums/OutlineView.ts'
-import { setView } from '../../state/slice/songOutlineSlice.ts'
+import { useSongOutlineContext } from '../../context/SongOutlineContext.tsx'
 
 function SongOutlineViewControl() {
-  const dispatch = useAppDispatch()
-  const view = useAppSelector((state) => state.songOutline.view)
+  const { view, setView } = useSongOutlineContext()
 
   function handleChange(view: OutlineView) {
-    dispatch(setView(view))
+    setView(view)
   }
 
   return (

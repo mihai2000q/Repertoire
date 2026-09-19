@@ -2,7 +2,7 @@ import {
   emptyArtist,
   emptySong,
   emptySongPart,
-  mantineRender,
+  reduxRender,
   withToastify
 } from '../../../../../../../test-utils.tsx'
 import SongSectionPartCard from './SongSectionPartCard.tsx'
@@ -15,6 +15,7 @@ import { UpdateSongPartRequest } from '../../parts/types/requests/SongPartReques
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
 import { SongProvider } from '../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
 
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -64,9 +65,9 @@ describe('Song Section Part Card', () => {
   })
 
   function render(ui: ReactNode, song = emptySong) {
-    return mantineRender(
+    return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider>{ui}</SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -97,7 +98,7 @@ describe('Song Section Part Card', () => {
     }
 
     // when artist is a band
-    const { rerender } = render(
+    const [{ rerender }] = render(
       <SongSectionPartCard
         part={{
           ...part,

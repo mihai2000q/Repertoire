@@ -3,56 +3,65 @@ import userEvent from '@testing-library/user-event'
 import SongOutlineViewControl from './SongOutlineViewControl.tsx'
 import OutlineView from '../../types/enums/OutlineView.ts'
 import LocalStorageKeys from '../../../../../../../../types/enums/keys/LocalStorageKeys.ts'
-import { reduxRender } from '../../../../../../../../test-utils.tsx'
-import { RootState } from '../../../../../../../../state/store.ts'
+import { emptySong, mantineRender } from '../../../../../../../../test-utils.tsx'
+import { SongProvider } from '../../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../context/SongOutlineContext.tsx'
 
 describe('SongOutlineViewControl', () => {
+  function render() {
+    return mantineRender(
+      <SongProvider song={emptySong}>
+        <SongOutlineProvider>
+          <SongOutlineViewControl />
+        </SongOutlineProvider>
+      </SongProvider>
+    )
+  }
+
   afterEach(() => {
     localStorage.clear()
   })
 
   it('should render both view options', () => {
-    reduxRender(<SongOutlineViewControl />)
+    render()
 
     expect(screen.getByLabelText('sections-view')).toBeInTheDocument()
     expect(screen.getByLabelText('parts-view')).toBeInTheDocument()
   })
 
-  it('should dispatch the default view, Sections, on mount when nothing is persisted', () => {
-    const [, store] = reduxRender(<SongOutlineViewControl />)
-
-    expect((store.getState() as RootState).songOutline.view).toBe(OutlineView.Sections)
+  it('should check the default view, Sections, on mount when nothing is persisted', () => {
+    render()
+    expect(screen.getByRole('radio', { name: 'sections-view' })).toBeChecked()
   })
 
-  it('should dispatch the persisted view on mount', () => {
+  it('should check the persisted view on mount', () => {
     localStorage.setItem(LocalStorageKeys.SongOutlineView, JSON.stringify(OutlineView.Parts))
 
-    const [, store] = reduxRender(<SongOutlineViewControl />)
-
-    expect((store.getState() as RootState).songOutline.view).toBe(OutlineView.Parts)
+    render()
+    expect(screen.getByRole('radio', { name: 'parts-view' })).toBeChecked()
   })
 
-  it('should dispatch the new view and persist it when switching to parts view', async () => {
+  it('should check the new view and persist it when switching to parts view', async () => {
     const user = userEvent.setup()
-    const [, store] = reduxRender(<SongOutlineViewControl />)
+    render()
 
     await user.click(screen.getByRole('radio', { name: 'parts-view' }))
 
-    expect((store.getState() as RootState).songOutline.view).toBe(OutlineView.Parts)
+    expect(screen.getByRole('radio', { name: 'parts-view' })).toBeChecked()
     expect(localStorage.getItem(LocalStorageKeys.SongOutlineView)).toContain(
       String(OutlineView.Parts)
     )
   })
 
-  it('should dispatch the new view and persist it when switching back to sections view', async () => {
+  it('should check the new view and persist it when switching back to sections view', async () => {
     localStorage.setItem(LocalStorageKeys.SongOutlineView, JSON.stringify(OutlineView.Parts))
 
     const user = userEvent.setup()
-    const [, store] = reduxRender(<SongOutlineViewControl />)
+    render()
 
     await user.click(screen.getByRole('radio', { name: 'sections-view' }))
 
-    expect((store.getState() as RootState).songOutline.view).toBe(OutlineView.Sections)
+    expect(screen.getByRole('radio', { name: 'sections-view' })).toBeChecked()
     expect(localStorage.getItem(LocalStorageKeys.SongOutlineView)).toContain(
       String(OutlineView.Sections)
     )

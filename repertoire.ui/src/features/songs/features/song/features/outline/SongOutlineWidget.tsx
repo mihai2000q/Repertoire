@@ -8,7 +8,6 @@ import NewHorizontalCard from '../../../../../../components/card/NewHorizontalCa
 import AddNewSongPart from './components/AddNewSongPart.tsx'
 import AddNewSongSection from './components/AddNewSongSection.tsx'
 import SongSections from '../sections/SongSections.tsx'
-import { useAppSelector } from '../../../../../../state/store.ts'
 import OutlineView from './types/enums/OutlineView.ts'
 import SongOutlineToolbar from './components/SongOutlineToolbar.tsx'
 import { useGetSongSectionsQuery } from '../sections/state/api/songSectionsApi.ts'
@@ -18,6 +17,7 @@ import SongOutlineWidgetLoader from './components/loader/SongOutlineWidgetLoader
 import SongSectionsLoader from './components/loader/SongSectionsLoader.tsx'
 import SongPartsLoader from './components/loader/SongPartsLoader.tsx'
 import { useSongContext } from '../../context/SongContext.tsx'
+import { useSongOutlineContext } from './context/SongOutlineContext.tsx'
 
 interface SongOutlineWidgetProps {
   isSongFetching?: boolean
@@ -25,9 +25,7 @@ interface SongOutlineWidgetProps {
 
 function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
   const { songId } = useSongContext()
-
-  const outlineView = useAppSelector((state) => state.songOutline.view)
-  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
+  const { view, showDetails } = useSongOutlineContext()
 
   const {
     data: sections,
@@ -37,13 +35,13 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
     {
       songId: songId
     },
-    { skip: outlineView !== OutlineView.Sections }
+    { skip: view !== OutlineView.Sections }
   )
   const {
     data: parts,
     isLoading: isPartsLoading,
     isFetching: isPartsFetching
-  } = useGetSongPartsQuery({ songId: songId }, { skip: outlineView !== OutlineView.Parts })
+  } = useGetSongPartsQuery({ songId: songId }, { skip: view !== OutlineView.Parts })
 
   const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
 
@@ -64,14 +62,14 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
   }
 
   if (
-    (outlineView === OutlineView.Parts && (isPartsLoading || !parts) && !sections) ||
-    (outlineView === OutlineView.Sections && (isSectionsLoading || !sections) && !parts)
+    (view === OutlineView.Parts && (isPartsLoading || !parts) && !sections) ||
+    (view === OutlineView.Sections && (isSectionsLoading || !sections) && !parts)
   ) {
-    return <SongOutlineWidgetLoader outlineView={outlineView} />
+    return <SongOutlineWidgetLoader outlineView={view} />
   }
 
   return (
-    <ClickSelectProvider data={outlineView === OutlineView.Sections ? sections : parts}>
+    <ClickSelectProvider data={view === OutlineView.Sections ? sections : parts}>
       <Card ref={ref} variant={'widget'} aria-label={'outline-widget'} p={0}>
         <Stack gap={0}>
           <LoadingOverlayDebounced
@@ -101,7 +99,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
             style={{ transition: 'max-height 0.25s' }}
           >
             <Stack gap={0}>
-              {outlineView === OutlineView.Sections &&
+              {view === OutlineView.Sections &&
                 (isSectionsLoading || !sections ? (
                   <SongSectionsLoader />
                 ) : (
@@ -111,7 +109,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
                     isSectionsFetching={isSectionsFetching}
                   />
                 ))}
-              {outlineView === OutlineView.Parts &&
+              {view === OutlineView.Parts &&
                 (isPartsLoading || !parts ? (
                   <SongPartsLoader />
                 ) : (
@@ -122,18 +120,18 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
                   />
                 ))}
 
-              {outlineView === OutlineView.Sections && sections?.length === 0 && (
+              {view === OutlineView.Sections && sections?.length === 0 && (
                 <NewHorizontalCard ariaLabel={'add-new-song-section-card'} onClick={toggleAdd}>
                   Add New Song Section
                 </NewHorizontalCard>
               )}
-              {outlineView === OutlineView.Parts && parts?.length === 0 && (
+              {view === OutlineView.Parts && parts?.length === 0 && (
                 <NewHorizontalCard ariaLabel={'add-new-song-part-card'} onClick={toggleAdd}>
                   Add New Song Part
                 </NewHorizontalCard>
               )}
 
-              {outlineView === OutlineView.Sections && (
+              {view === OutlineView.Sections && (
                 <AddNewSongSection
                   songId={songId}
                   opened={openedAdd}
@@ -141,7 +139,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
                   scrollIntoView={scrollAddIntoView}
                 />
               )}
-              {outlineView === OutlineView.Parts && (
+              {view === OutlineView.Parts && (
                 <AddNewSongPart
                   opened={openedAdd}
                   onClose={toggleAdd}

@@ -11,6 +11,7 @@ import useDynamicDocumentTitle from '../../../../hooks/useDynamicDocumentTitle.t
 import { useEffect } from 'react'
 import SongOutlineWidget from './features/outline/SongOutlineWidget.tsx'
 import { SongProvider } from './context/SongContext.tsx'
+import { SongOutlineProvider } from './features/outline/context/SongOutlineContext.tsx'
 
 function Song() {
   const params = useParams()
@@ -47,7 +48,9 @@ function Song() {
             <Stack>
               <SongDescriptionWidget song={song} />
 
-              <SongOutlineWidget isSongFetching={isFetching} />
+              <SongOutlineProvider>
+                <SongOutlineWidget isSongFetching={isFetching} />
+              </SongOutlineProvider>
             </Stack>
           </Grid.Col>
         </Grid>

@@ -33,9 +33,9 @@ import useDoubleMenu from '../../../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
 import { useSongContext } from '../../../context/SongContext.tsx'
-import { useAppSelector } from '../../../../../../../state/store.ts'
 import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBadge.tsx'
 import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
+import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
 
 interface SongPartCardProps {
   part: SongPartModel
@@ -62,7 +62,7 @@ function SongPartCard({
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
   const { songId, isArtistBand } = useSongContext()
-  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
+  const { showDetails } = useSongOutlineContext()
 
   const [updateSongPartMutation, { isLoading: isUpdateLoading }] = useUpdateSongPartMutation()
   const [deleteSongPartMutation, { isLoading: isDeleteLoading }] = useDeleteSongPartMutation()

@@ -16,6 +16,7 @@ import { createRef } from 'react'
 import { ReactNode } from 'react'
 import SongOutlineWidget from './SongOutlineWidget.tsx'
 import OutlineView from './types/enums/OutlineView.ts'
+import { SongOutlineProvider } from './context/SongOutlineContext.tsx'
 
 // Mock Main Context
 vi.mock('../../../../../../context/MainContext.tsx', () => ({
@@ -26,19 +27,6 @@ vi.mock('../../../../../../context/MainContext.tsx', () => ({
 }))
 
 describe('Song Outline Widget', () => {
-  function render(
-    ui: ReactNode,
-    song: Song = emptySong,
-    preloadedState?: Parameters<typeof reduxRender>[1]
-  ) {
-    return reduxRender(
-      <SongProvider song={song}>
-        {ui}
-      </SongProvider>,
-      preloadedState
-    )
-  }
-
   const sections: SongSection[] = [
     {
       ...emptySongSection,
@@ -118,6 +106,18 @@ describe('Song Outline Widget', () => {
 
   afterAll(() => server.close())
 
+  function render(
+    ui: ReactNode,
+    song: Song = emptySong,
+    initialView?: OutlineView
+  ) {
+    return reduxRender(
+      <SongProvider song={song}>
+        <SongOutlineProvider initialView={initialView}>{ui}</SongOutlineProvider>
+      </SongProvider>
+    )
+  }
+
   it('should render for sections', async () => {
     server.use(
       http.get('/songs/sections', () => {
@@ -140,9 +140,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    render(<SongOutlineWidget />, emptySong, {
-      songOutline: { view: OutlineView.Parts, showDetails: false }
-    })
+    render(<SongOutlineWidget />, emptySong, OutlineView.Parts)
 
     expect(screen.getByLabelText(/outline-loader/i)).toBeInTheDocument()
     expect(await screen.findByText(/outline/i)).toBeInTheDocument()
@@ -175,9 +173,7 @@ describe('Song Outline Widget', () => {
       })
     )
 
-    render(<SongOutlineWidget />, emptySong, {
-      songOutline: { view: OutlineView.Parts, showDetails: false }
-    })
+    render(<SongOutlineWidget />, emptySong, OutlineView.Parts)
 
     expect(await screen.findByLabelText('add-new-song-part-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-part-card'))

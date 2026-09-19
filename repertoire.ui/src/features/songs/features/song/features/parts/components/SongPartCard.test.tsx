@@ -14,10 +14,9 @@ import { userEvent } from '@testing-library/user-event'
 import { UpdateSongPartRequest } from '../types/requests/SongPartRequests.ts'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import OutlineView from '../../outline/types/enums/OutlineView.ts'
 import { SongProvider } from '../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
-import { RootState } from '../../../../../../../state/store.ts'
 
 // Mock Context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -69,13 +68,12 @@ describe('Song Part Card', () => {
   function render(
     ui: ReactNode,
     song: Song = emptySong,
-    preloadedState?: Partial<RootState>
+    initialShowDetails = false
   ) {
     return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider initialShowDetails={initialShowDetails}>{ui}</SongOutlineProvider>
       </SongProvider>,
-      preloadedState
     )
   }
 
@@ -146,11 +144,13 @@ describe('Song Part Card', () => {
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
     rerender(
       <SongProvider song={newSong}>
-        <SongPartCard
-          part={{ ...part, bandMembers, instrument }}
-          maxPartProgress={0}
-          isDragging={false}
-        />
+        <SongOutlineProvider>
+          <SongPartCard
+            part={{ ...part, bandMembers, instrument }}
+            maxPartProgress={0}
+            isDragging={false}
+          />
+        </SongOutlineProvider>
       </SongProvider>
     )
 
@@ -196,13 +196,13 @@ describe('Song Part Card', () => {
     await shouldShowDetails(maxPartProgress)
   })
 
-  it('should show details from redux selector', async () => {
+  it('should show details when initially expanded', async () => {
     const maxPartProgress = 67
 
     render(
       <SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />,
       { ...emptySong, artist: { ...emptyArtist, isBand: false } },
-      { songOutline: { view: OutlineView.Parts, showDetails: true } }
+      true
     )
 
     await shouldShowDetails(maxPartProgress)

@@ -5,15 +5,14 @@ import PopoverConfirmation from '../../../../../../../components/popover/Popover
 import SongOutlineSettingsButton from './toolbar/SongOutlineSettingsButton.tsx'
 import SongOutlineViewControl from './toolbar/SongOutlineViewControl.tsx'
 import { useAddPerfectSongRehearsalMutation } from '../../../../../../../state/api/songsApi.ts'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
-import { useAppDispatch, useAppSelector } from '../../../../../../../state/store.ts'
 import OutlineView from '../types/enums/OutlineView.ts'
 import SongArrangementsModal from '../../arrangements/SongArrangementsModal.tsx'
 import { SongPart } from '../../../../../../../types/models/Song.ts'
-import { setShowDetails } from '../state/slice/songOutlineSlice.ts'
 import { useSongContext } from '../../../context/SongContext.tsx'
+import { useSongOutlineContext } from '../context/SongOutlineContext.tsx'
 
 interface SongOutlineToolbarProps {
   toggleAdd: () => void
@@ -28,14 +27,8 @@ function SongOutlineToolbar({
   sectionParts,
   scrollIntoView
 }: SongOutlineToolbarProps) {
-  const dispatch = useAppDispatch()
-
   const { songId, defaultArrangementId: defaultSongArrangementId } = useSongContext()
-  const outlineView = useAppSelector((state) => state.songOutline.view)
-  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
-  useEffect(() => {
-    dispatch(setShowDetails(false))
-  }, [songId])
+  const { view: outlineView, showDetails, setShowDetails } = useSongOutlineContext()
 
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
@@ -45,9 +38,8 @@ function SongOutlineToolbar({
     useDisclosure(false)
 
   const currentParts = (outlineView === OutlineView.Sections ? sectionParts : parts) ?? []
-
   function handleShowDetails() {
-    dispatch(setShowDetails(!showDetails))
+    setShowDetails(!showDetails)
     if (!showDetails && scrollIntoView) setTimeout(scrollIntoView, 250)
   }
 

@@ -15,9 +15,9 @@ import { setupServer } from 'msw/node'
 import { AddPerfectSongRehearsalRequest } from '../../../../../../../types/requests/SongRequests.ts'
 import { createRef } from 'react'
 import SongOutlineToolbar from './SongOutlineToolbar.tsx'
-import { RootState } from '../../../../../../../state/store.ts'
 import OutlineView from '../types/enums/OutlineView.ts'
 import { SongProvider } from '../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
 
 // Mock Main Context
@@ -81,12 +81,11 @@ describe('Song Outline Toolbar', () => {
 
   afterAll(() => server.close())
 
-  function render(ui: ReactNode, song = emptySong, preloadedState?: Partial<RootState>) {
+  function render(ui: ReactNode, song = emptySong, initialView = OutlineView.Sections) {
     return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider initialView={initialView}>{ui}</SongOutlineProvider>
       </SongProvider>,
-      preloadedState
     )
   }
 
@@ -115,7 +114,7 @@ describe('Song Outline Toolbar', () => {
     render(
       <SongOutlineToolbar toggleAdd={vi.fn()} parts={parts} />,
       { ...emptySong, defaultArrangementId: '1', settings: emptySongSettings },
-      { songOutline: { view: OutlineView.Parts, showDetails: false } }
+      OutlineView.Parts
     )
 
     await user.click(screen.getByRole('radio', { name: 'parts-view' }))
@@ -148,7 +147,7 @@ describe('Song Outline Toolbar', () => {
     render(
       <SongOutlineToolbar toggleAdd={vi.fn()} parts={[]} />,
       { ...emptySong, defaultArrangementId: '1', settings: emptySongSettings },
-      { songOutline: { view: OutlineView.Parts, showDetails: false } }
+      OutlineView.Parts
     )
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
@@ -185,7 +184,7 @@ describe('Song Outline Toolbar', () => {
     render(
       <SongOutlineToolbar toggleAdd={toggleAdd} />,
       { ...emptySong, settings: emptySongSettings },
-      { songOutline: { view: OutlineView.Parts, showDetails: false } }
+      OutlineView.Parts
     )
 
     await user.click(screen.getByRole('button', { name: 'add-new-part' }))
@@ -195,7 +194,7 @@ describe('Song Outline Toolbar', () => {
   it('should show details when clicking on show details', async () => {
     const user = userEvent.setup()
 
-    const [_, store] = render(
+    render(
       <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />,
       { ...emptySong, settings: emptySongSettings }
     )
@@ -203,12 +202,10 @@ describe('Song Outline Toolbar', () => {
     await user.click(screen.getByRole('button', { name: 'show-details' }))
     expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'hide-details' })).toBeInTheDocument()
-    expect((store.getState() as RootState).songOutline.showDetails).toBeTruthy()
 
     await user.click(screen.getByRole('button', { name: 'hide-details' }))
     expect(screen.getByRole('button', { name: 'show-details' })).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'hide-details' })).not.toBeInTheDocument()
-    expect((store.getState() as RootState).songOutline.showDetails).toBeFalsy()
   })
 
   it('should open song arrangements modal when clicking on song arrangements button', async () => {
@@ -253,21 +250,21 @@ describe('Song Outline Toolbar', () => {
   it('should hide details when song changes', async () => {
     const user = userEvent.setup()
 
-    const [{ rerender }, store] = render(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
+    const [{ rerender }] = render(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
       ...emptySong, settings: emptySongSettings
     })
 
     await user.click(screen.getByRole('button', { name: 'show-details' }))
     expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'hide-details' })).toBeInTheDocument()
-    expect((store.getState() as RootState).songOutline.showDetails).toBeTruthy()
 
     const newSong = { ...emptySong, id: 'new' }
     rerender(
       <SongProvider song={newSong}>
-        <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />
+        <SongOutlineProvider>
+          <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />
+        </SongOutlineProvider>
       </SongProvider>
     )
-    expect((store.getState() as RootState).songOutline.showDetails).toBeFalsy()
   })
 })

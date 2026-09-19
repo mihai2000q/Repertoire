@@ -1,5 +1,6 @@
-import { emptySong, emptySongSection, mantineRender } from '../../../../../../test-utils.tsx'
+import { emptySong, emptySongSection, reduxRender } from '../../../../../../test-utils.tsx'
 import { SongProvider } from '../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../outline/context/SongOutlineContext.tsx'
 import SongSections from './SongSections.tsx'
 import Song, { SongSection } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
@@ -76,9 +77,9 @@ describe('Song Sections', () => {
   afterAll(() => server.close())
 
   function render(ui: ReactNode, song: Song = emptySong) {
-    return mantineRender(
+    return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider>{ui}</SongOutlineProvider>
       </SongProvider>
     )
   }

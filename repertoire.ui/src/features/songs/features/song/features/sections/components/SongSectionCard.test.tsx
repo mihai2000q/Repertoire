@@ -14,11 +14,10 @@ import { http, HttpResponse } from 'msw'
 import { userEvent } from '@testing-library/user-event'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import { useClickSelect } from '../../../../../../../context/ClickSelectContext.tsx'
-import OutlineView from '../../outline/types/enums/OutlineView.ts'
 import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartRequests.ts'
 import { SongProvider } from '../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
-import { RootState } from '../../../../../../../state/store.ts'
 
 // Mock Context
 vi.mock('../../../../../../../context/ClickSelectContext', () => ({
@@ -74,12 +73,11 @@ describe('Song Section Card', () => {
     server.close()
   })
 
-  function render(ui: ReactNode, song = emptySong, preloadedState?: Partial<RootState>) {
+  function render(ui: ReactNode, song = emptySong, initialShowDetails = false) {
     return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider initialShowDetails={initialShowDetails}>{ui}</SongOutlineProvider>
       </SongProvider>,
-      preloadedState
     )
   }
 
@@ -194,7 +192,9 @@ describe('Song Section Card', () => {
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
     rerender(
       <SongProvider song={newSong}>
-        <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
+        <SongOutlineProvider>
+          <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />
+        </SongOutlineProvider>
       </SongProvider>
     )
 
@@ -217,7 +217,7 @@ describe('Song Section Card', () => {
     render(
       <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />,
       emptySong,
-      { songOutline: { view: OutlineView.Sections, showDetails: true } }
+      true
     )
 
     section.parts.forEach((part) => {

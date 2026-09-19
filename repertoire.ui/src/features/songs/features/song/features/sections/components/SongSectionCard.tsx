@@ -19,12 +19,12 @@ import RehearsalsBadge from '../../../../../../../components/badge/RehearsalsBad
 import BandMembersGroup from '../../../../../../../components/avatar/BandMembersGroup.tsx'
 import InstrumentsGroup from './section/InstrumentsGroup.tsx'
 import { useSongContext } from '../../../context/SongContext.tsx'
-import { useAppSelector } from '../../../../../../../state/store.ts'
 import DeleteSongSectionModal from './modal/DeleteSongSectionModal.tsx'
 import { toast } from 'react-toastify'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import plural from '../../../../../../../utils/plural.ts'
 import MenuItemConfirmation from '../../../../../../../components/menu/item/MenuItemConfirmation.tsx'
+import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
 
 interface SongSectionCardProps {
   section: SongSectionModel
@@ -51,7 +51,7 @@ function SongSectionCard({
   const sectionRef = useMergedRef(hoverRef)
 
   const { songId, isArtistBand } = useSongContext()
-  const showDetails = useAppSelector((state) => state.songOutline.showDetails)
+  const { showDetails } = useSongOutlineContext()
 
   const [updateSongParts, { isLoading: isUpdateSongPartsLoading }] =
     useBulkUpdateSongPartsMutation()

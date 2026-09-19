@@ -3,7 +3,7 @@ import {
   emptySong,
   emptySongPart,
   emptySongSettings,
-  mantineRender
+  reduxRender
 } from '../../../../../../../../test-utils.tsx'
 import SongOutlineSettingsButton from './SongOutlineSettingsButton.tsx'
 import { screen, waitFor } from '@testing-library/react'
@@ -15,6 +15,7 @@ import { BandMember } from '../../../../../../../../types/models/Artist.ts'
 import { UpdateSongSettingsRequest } from '../../../../../../../../types/requests/SongRequests.ts'
 import { UpdateAllSongPartsRequest } from '../../../parts/types/requests/SongPartRequests.ts'
 import { SongProvider } from '../../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
 
 describe('Song Parts Settings Button', () => {
@@ -64,9 +65,9 @@ describe('Song Parts Settings Button', () => {
   afterAll(() => server.close())
 
   function render(ui: ReactNode, song = emptySong) {
-    return mantineRender(
+    return reduxRender(
       <SongProvider song={song}>
-        {ui}
+        <SongOutlineProvider>{ui}</SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -74,7 +75,7 @@ describe('Song Parts Settings Button', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    const { rerender } = render(<SongOutlineSettingsButton parts={[]} />)
+    const [{ rerender }] = render(<SongOutlineSettingsButton parts={[]} />)
 
     expect(screen.getByRole('button', { name: 'settings' })).toBeInTheDocument()
 
@@ -91,7 +92,9 @@ describe('Song Parts Settings Button', () => {
 
     rerender(
       <SongProvider song={newSong}>
-        <SongOutlineSettingsButton parts={[]} />
+        <SongOutlineProvider>
+          <SongOutlineSettingsButton parts={[]} />
+        </SongOutlineProvider>
       </SongProvider>
     )
 
