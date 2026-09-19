@@ -59,7 +59,9 @@ func (s *SongSection) AfterFind(*gorm.DB) error {
 	var totalRehearsals, totalConfidence uint
 	var totalProgress uint64
 	for i, sp := range s.SectionParts {
+		sp.Part.BandMembers = []BandMember{}
 		if sp.BandMember != nil {
+			sp.BandMember.ImageURL = sp.BandMember.ImageURL.ToFullURL()
 			sp.Part.BandMembers = append(sp.Part.BandMembers, *sp.BandMember)
 		}
 		s.Parts[i] = sp.Part
