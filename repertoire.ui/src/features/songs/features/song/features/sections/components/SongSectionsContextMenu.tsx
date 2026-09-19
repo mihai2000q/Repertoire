@@ -1,7 +1,7 @@
 import { IconRefresh, IconTrash } from '@tabler/icons-react'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import { useDisclosure } from '@mantine/hooks'
-import { ReactNode, useEffect, useMemo } from 'react'
+import { ReactNode, useEffect } from 'react'
 import DeleteSongSectionsModal from './modal/DeleteSongSectionsModal.tsx'
 import { toast } from 'react-toastify'
 import plural from '../../../../../../../utils/plural.ts'
@@ -10,6 +10,7 @@ import { useClickSelect } from '../../../../../../../context/ClickSelectContext.
 import { SongSection } from '../../../../../../../types/models/Song.ts'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
+import useSelectedSectionParts from '../hooks/useSelectedSectionParts.ts'
 
 interface SongSectionsContextMenuProps {
   children: ReactNode
@@ -19,15 +20,7 @@ interface SongSectionsContextMenuProps {
 
 function SongSectionsContextMenu({ children, sections, songId }: SongSectionsContextMenuProps) {
   const { selectedIds, clearSelection } = useClickSelect()
-  const selectedSections = useMemo(
-    () => sections.filter((s) => selectedIds.includes(`section-${s.id}`)),
-    [sections, selectedIds]
-  )
-  const selectedSectionParts = useMemo(
-    () =>
-      sections.flatMap((s) => s.parts.filter((p) => selectedIds.includes(`part-${p.id}:${s.id}`))),
-    [sections, selectedIds]
-  )
+  const [selectedSections, selectedSectionParts] = useSelectedSectionParts(selectedIds, sections)
 
   const [openedMenu, { open: openMenu, close: closeMenu }] = useDisclosure(false)
 

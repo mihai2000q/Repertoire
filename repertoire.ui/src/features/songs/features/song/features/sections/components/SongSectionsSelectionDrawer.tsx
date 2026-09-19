@@ -10,6 +10,7 @@ import { SongSection } from '../../../../../../../types/models/Song.ts'
 import { useMemo } from 'react'
 import { useBulkUpdateSongPartsMutation } from '../../parts/state/api/songPartsApi.ts'
 import DeleteSongPartsModal from '../../parts/components/modal/DeleteSongPartsModal.tsx'
+import useSelectedSectionParts from '../hooks/useSelectedSectionParts.ts'
 
 interface SongSectionsSelectionDrawerProps {
   sections: SongSection[]
@@ -18,16 +19,7 @@ interface SongSectionsSelectionDrawerProps {
 
 function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelectionDrawerProps) {
   const { selectedIds, clearSelection, isClickSelectionActive } = useClickSelect()
-
-  const selectedSections = useMemo(
-    () => sections.filter((s) => selectedIds.includes(`section-${s.id}`)),
-    [sections, selectedIds]
-  )
-  const selectedSectionParts = useMemo(
-    () =>
-      sections.flatMap((s) => s.parts.filter((p) => selectedIds.includes(`part-${p.id}:${s.id}`))),
-    [sections, selectedIds]
-  )
+  const [selectedSections, selectedSectionParts] = useSelectedSectionParts(selectedIds, sections)
 
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
     useDisclosure(false)
