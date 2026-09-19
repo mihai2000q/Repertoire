@@ -51,13 +51,19 @@ func Date(t *testing.T, expected *date.Date, actual *date.Date) {
 	}
 }
 
-func FullURL(t *testing.T, p *internal.FilePath) {
+func FullURL(t *testing.T, expected, actual *internal.FilePath) {
+	if expected == nil {
+		assert.Nil(t, actual)
+		return
+	}
+
 	baseURL := os.Getenv("STORAGE_FETCH_URL")
 	require.NotEmpty(t, baseURL, "STORAGE_FETCH_URL must be set, otherwise this check proves nothing")
-	require.NotNil(t, p)
+	require.NotNil(t, actual)
 
-	assert.True(t, strings.HasPrefix(string(*p), baseURL),
-		"expected %q to start with %q", string(*p), baseURL)
+	assert.Equal(t, *expected, *actual)
+	assert.True(t, strings.HasPrefix(string(*actual), baseURL),
+		"expected %q to start with %q", string(*actual), baseURL)
 }
 
 func AssertMessage[T any](
@@ -84,8 +90,7 @@ func ResponseEnhancedAlbum(t *testing.T, album model.Album, response model.Enhan
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
 	Date(t, album.ReleaseDate, response.ReleaseDate)
-	assert.Equal(t, album.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, album.ImageURL, response.ImageURL)
 
 	if album.Artist != nil {
 		ResponseArtist(t, *album.Artist, *response.Artist, false)
@@ -105,8 +110,7 @@ func ResponseAlbum(t *testing.T, album model.Album, response model.Album, withAr
 	assert.Equal(t, album.ID, response.ID)
 	assert.Equal(t, album.Title, response.Title)
 	Date(t, album.ReleaseDate, response.ReleaseDate)
-	assert.Equal(t, album.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, album.ImageURL, response.ImageURL)
 
 	if withArtist {
 		if album.Artist != nil {
@@ -138,8 +142,7 @@ func ResponseEnhancedArtist(
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
 	assert.Equal(t, artist.IsBand, response.IsBand)
-	assert.Equal(t, artist.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, artist.ImageURL, response.ImageURL)
 
 	assert.Equal(t, len(artist.BandMembers), response.BandMembersCount)
 	assert.Equal(t, len(artist.Albums), response.AlbumsCount)
@@ -155,8 +158,7 @@ func ResponseArtist(t *testing.T, artist model.Artist, response model.Artist, wi
 	assert.Equal(t, artist.ID, response.ID)
 	assert.Equal(t, artist.Name, response.Name)
 	assert.Equal(t, artist.IsBand, response.IsBand)
-	assert.Equal(t, artist.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, artist.ImageURL, response.ImageURL)
 
 	if withBandMembers {
 		for i := 0; i < len(artist.BandMembers); i++ {
@@ -169,8 +171,7 @@ func ResponseBandMember(t *testing.T, bandMember model.BandMember, response mode
 	assert.Equal(t, bandMember.ID, response.ID)
 	assert.Equal(t, bandMember.Name, response.Name)
 	assert.Equal(t, bandMember.Color, response.Color)
-	assert.Equal(t, bandMember.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, bandMember.ImageURL, response.ImageURL)
 	if withRoles {
 		for i := 0; i < len(bandMember.Roles); i++ {
 			ResponseBandMemberRole(t, bandMember.Roles[i], response.Roles[i])
@@ -197,8 +198,7 @@ func ResponseEnhancedSong(
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
 	Date(t, song.ReleaseDate, response.ReleaseDate)
-	assert.Equal(t, song.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)
 	assert.Equal(t, song.Difficulty, response.Difficulty)
@@ -261,8 +261,7 @@ func ResponseSong(
 	assert.Equal(t, song.Title, response.Title)
 	assert.Equal(t, song.Description, response.Description)
 	Date(t, song.ReleaseDate, response.ReleaseDate)
-	assert.Equal(t, song.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, song.ImageURL, response.ImageURL)
 	assert.Equal(t, song.IsRecorded, response.IsRecorded)
 	assert.Equal(t, song.Bpm, response.Bpm)
 	assert.Equal(t, song.Difficulty, response.Difficulty)
@@ -436,8 +435,7 @@ func ResponseEnhancedPlaylist(t *testing.T, playlist model.Playlist, response mo
 	assert.Equal(t, playlist.ID, response.ID)
 	assert.Equal(t, playlist.Title, response.Title)
 	assert.Equal(t, playlist.Description, response.Description)
-	assert.Equal(t, playlist.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, playlist.ImageURL, response.ImageURL)
 
 	assert.Equal(t, response.SongsCount, len(playlist.Songs))
 }
@@ -446,8 +444,7 @@ func ResponsePlaylist(t *testing.T, playlist model.Playlist, response model.Play
 	assert.Equal(t, playlist.ID, response.ID)
 	assert.Equal(t, playlist.Title, response.Title)
 	assert.Equal(t, playlist.Description, response.Description)
-	assert.Equal(t, playlist.ImageURL, response.ImageURL)
-	FullURL(t, response.ImageURL)
+	FullURL(t, playlist.ImageURL, response.ImageURL)
 }
 
 func ResponsePlaylistSong(t *testing.T, playlistSong model.PlaylistSong, responseSong model.Song) {
@@ -469,8 +466,7 @@ func ResponsePlaylistSong(t *testing.T, playlistSong model.PlaylistSong, respons
 func ResponseUser(t *testing.T, user model.User, response model.User) {
 	assert.Equal(t, user.ID, response.ID)
 	assert.Equal(t, user.Email, response.Email)
-	assert.Equal(t, user.ProfilePictureURL, response.ProfilePictureURL)
-	FullURL(t, response.ProfilePictureURL)
+	FullURL(t, user.ProfilePictureURL, response.ProfilePictureURL)
 }
 
 func getAverageSongsStats(songs []model.Song) (float64, float64, float64, *time.Time) {
