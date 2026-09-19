@@ -25,6 +25,17 @@ describe('Delete Songs Modal', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('should close when cancelling', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    reduxRender(<DeleteSongsModal ids={['1', '2']} opened={true} onClose={onClose} />)
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
   it('should delete songs in bulk call onDelete', async () => {
     const user = userEvent.setup()
 

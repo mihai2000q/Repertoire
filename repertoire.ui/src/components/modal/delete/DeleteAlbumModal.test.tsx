@@ -38,6 +38,17 @@ describe('Delete Album Modal', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('should close when cancelling', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    reduxRender(<DeleteAlbumModal opened={true} onClose={onClose} album={album} />)
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
   it('should delete album and call onDelete', async () => {
     const user = userEvent.setup()
 

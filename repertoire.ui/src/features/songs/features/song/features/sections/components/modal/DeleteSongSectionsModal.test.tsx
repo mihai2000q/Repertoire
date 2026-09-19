@@ -58,6 +58,24 @@ describe('Delete Song Sections Modal', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('should close when cancelling', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    reduxRender(
+      <DeleteSongSectionsModal
+        sections={sections}
+        songId={'song-1'}
+        opened={true}
+        onClose={onClose}
+      />
+    )
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
   it('should disable deleting associated parts when no parts exist', () => {
     reduxRender(
       <DeleteSongSectionsModal

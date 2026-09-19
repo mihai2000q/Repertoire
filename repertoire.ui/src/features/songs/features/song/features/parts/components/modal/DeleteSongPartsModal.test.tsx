@@ -27,6 +27,19 @@ describe('Delete Song Parts Modal', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('should close when cancelling', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    reduxRender(
+      <DeleteSongPartsModal ids={['1', '2']} songId={'song-1'} opened={true} onClose={onClose} />
+    )
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
   it('should explain which duplicate parts will be ignored', () => {
     reduxRender(
       <DeleteSongPartsModal
