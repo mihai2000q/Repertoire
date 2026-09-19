@@ -1,5 +1,5 @@
 import { Card, Group, ScrollArea, Stack, Text } from '@mantine/core'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../../../../context/MainContext.tsx'
 import { ClickSelectProvider } from '../../../../../../context/ClickSelectContext.tsx'
@@ -43,7 +43,8 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
     isFetching: isPartsFetching
   } = useGetSongPartsQuery({ songId: songId }, { skip: view !== OutlineView.Parts })
 
-  const [openedAdd, { toggle: toggleAdd }] = useDisclosure(false)
+  const [openedAdd, { toggle: toggleAdd, close: closeAdd }] = useDisclosure(false)
+  useEffect(() => closeAdd(), [songId, view])
 
   const ref = useRef<HTMLDivElement>(null)
   const scrollableRef = useRef<HTMLDivElement>(null)

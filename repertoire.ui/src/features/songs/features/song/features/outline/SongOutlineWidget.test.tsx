@@ -6,17 +6,20 @@ import {
   reduxRender
 } from '../../../../../../test-utils.tsx'
 import { SongProvider } from '../../context/SongContext.tsx'
-import Song, { SongArrangement, SongPart, SongSection } from '../../../../../../types/models/Song.ts'
-import { screen } from '@testing-library/react'
+import Song, {
+  SongArrangement,
+  SongPart,
+  SongSection
+} from '../../../../../../types/models/Song.ts'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
-import { createRef } from 'react'
-import { ReactNode } from 'react'
+import { createRef, ReactNode, useState } from 'react'
 import SongOutlineWidget from './SongOutlineWidget.tsx'
 import OutlineView from './types/enums/OutlineView.ts'
-import { SongOutlineProvider } from './context/SongOutlineContext.tsx'
+import { SongOutlineProvider, useSongOutlineContext } from './context/SongOutlineContext.tsx'
 
 // Mock Main Context
 vi.mock('../../../../../../context/MainContext.tsx', () => ({
@@ -89,6 +92,9 @@ describe('Song Outline Widget', () => {
     http.get('/songs/instruments', () => {
       return HttpResponse.json([])
     }),
+    http.get('/songs/sections', () => {
+      return HttpResponse.json([])
+    }),
     http.get('/songs/sections/types', () => {
       return HttpResponse.json([])
     })
@@ -106,11 +112,7 @@ describe('Song Outline Widget', () => {
 
   afterAll(() => server.close())
 
-  function render(
-    ui: ReactNode,
-    song: Song = emptySong,
-    initialView?: OutlineView
-  ) {
+  function render(ui: ReactNode, song: Song = emptySong, initialView?: OutlineView) {
     return reduxRender(
       <SongProvider song={song}>
         <SongOutlineProvider initialView={initialView}>{ui}</SongOutlineProvider>
@@ -178,5 +180,71 @@ describe('Song Outline Widget', () => {
     expect(await screen.findByLabelText('add-new-song-part-card')).toBeInTheDocument()
     await user.click(screen.getByLabelText('add-new-song-part-card'))
     expect(screen.getByLabelText('add-new-song-part')).toBeInTheDocument()
+  })
+
+  function ChangeViewButton() {
+    const { setView } = useSongOutlineContext()
+
+    return <button data-testid={'change-view'} onClick={() => setView(OutlineView.Sections)} />
+  }
+
+  function SongOutlineWidgetTestHarness({
+    initialView = OutlineView.Sections
+  }: {
+    initialView?: OutlineView
+  }) {
+    const [song, setSong] = useState(emptySong)
+
+    return (
+      <SongProvider song={song}>
+        <SongOutlineProvider initialView={initialView}>
+          <button
+            data-testid={'change-song'}
+            onClick={() => setSong({ ...emptySong, id: 'new-id' })}
+          />
+          <ChangeViewButton />
+          <SongOutlineWidget />
+        </SongOutlineProvider>
+      </SongProvider>
+    )
+  }
+
+  it('should close add new song part card when the song is changed', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get('/songs/parts', () => {
+        return HttpResponse.json([])
+      })
+    )
+
+    render(<SongOutlineWidgetTestHarness initialView={OutlineView.Parts} />)
+
+    await user.click(await screen.findByLabelText('add-new-song-part-card'))
+    await user.click(screen.getByTestId('change-song'))
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('add-new-song-part')).not.toBeVisible()
+    })
+  })
+
+  it('should close add new song part card when the view is changed', async () => {
+    const user = userEvent.setup()
+
+    server.use(
+      http.get('/songs/parts', () => {
+        return HttpResponse.json([])
+      })
+    )
+
+    render(<SongOutlineWidgetTestHarness initialView={OutlineView.Parts} />)
+
+    await user.click(await screen.findByLabelText('add-new-song-part-card'))
+    await user.click(screen.getByTestId('change-view'))
+
+    await waitFor(() => {
+      expect(screen.queryByLabelText('add-new-song-part')).not.toBeInTheDocument()
+      expect(screen.getByLabelText('add-new-song-section')).not.toBeVisible()
+    })
   })
 })
