@@ -424,9 +424,9 @@ func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *te
 		{
 			"Maximal",
 			requests.BulkDeleteSongSectionsRequest{
-				IDs:       []uuid.UUID{uuid.New()},
-				SongID:    uuid.New(),
-				WithParts: true,
+				IDs:     []uuid.UUID{uuid.New()},
+				SongID:  uuid.New(),
+				PartIDs: []uuid.UUID{uuid.New()},
 			},
 		},
 	}
