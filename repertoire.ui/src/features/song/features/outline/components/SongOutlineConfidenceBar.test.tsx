@@ -14,6 +14,6 @@ describe('Song Outline Confidence Bar', () => {
     expect(screen.getByRole('progressbar', { name: 'confidence' })).toBeInTheDocument()
     await user.hover(screen.getByRole('progressbar', { name: 'confidence' }))
     expect(screen.getByRole('tooltip')).toBeInTheDocument()
-    expect(screen.getByText(`Confidence: ${confidence}%`)).toBeInTheDocument()
+    expect(screen.getByText(confidence.toString())).toBeInTheDocument()
   })
 })

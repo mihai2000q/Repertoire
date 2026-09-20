@@ -70,7 +70,7 @@ function AddNewSongArrangementButton({
         </Tooltip>
       </Popover.Target>
 
-      <Popover.Dropdown w={250}>
+      <Popover.Dropdown w={250} aria-label={'add-new-arrangement'}>
         <Stack gap={'xxs'}>
           <Text fz={'xs'} fw={500}>
             New Arrangement

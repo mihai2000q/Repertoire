@@ -10,9 +10,10 @@ import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { MoveSongPartInSongRequest } from './types/requests/SongPartRequests.ts'
 import { createRef, ReactNode } from 'react'
+import { ClickSelectProvider } from '../../../../context/ClickSelectContext.tsx'
 
 // Mock Main Context
-vi.mock('../../../../../../context/MainContext.tsx', () => ({
+vi.mock('../../../../context/MainContext.tsx', () => ({
   useMain: vi.fn(() => ({
     ref: createRef(),
     mainScroll: { ref: createRef() }
@@ -70,7 +71,9 @@ describe('Song Parts', () => {
   function render(ui: ReactNode, song: Song = emptySong) {
     return reduxRender(
       <SongProvider song={song}>
-        <SongOutlineProvider>{ui}</SongOutlineProvider>
+        <SongOutlineProvider>
+          <ClickSelectProvider data={parts}>{ui}</ClickSelectProvider>
+        </SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -164,6 +167,7 @@ describe('Song Parts', () => {
     await user.click(screen.getByLabelText(`song-part-${parts[0].name}`))
     await user.keyboard('{/Control}')
     expect(screen.getByLabelText('song-parts-selection-drawer')).toBeInTheDocument()
+    screen.debug(document.body, Infinity)
 
     // context menu
     await user.pointer({

@@ -19,7 +19,7 @@ import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.ts
 import { ReactNode } from 'react'
 
 // Mock Context
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 

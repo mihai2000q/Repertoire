@@ -3,7 +3,7 @@ import {
   emptySong,
   emptySongSection,
   emptySongSettings,
-  mantineRender,
+  reduxRender,
   withToastify
 } from '../../../../../test-utils.tsx'
 import { SongProvider } from '../../../context/SongContext.tsx'
@@ -77,11 +77,7 @@ describe('Add New Song Part', () => {
   afterAll(() => server.close())
 
   function render(ui: ReactNode, song: Song = emptySong) {
-    return mantineRender(
-      <SongProvider song={song}>
-        {ui}
-      </SongProvider>
-    )
+    return reduxRender(<SongProvider song={song}>{ui}</SongProvider>)
   }
 
   it('should render', async () => {
@@ -169,15 +165,12 @@ describe('Add New Song Part', () => {
       })
     )
 
-    render(
-      withToastify(<AddNewSongPart opened={true} onClose={onClose} />),
-      {
-        ...emptySong,
-        id: songId,
-        artist: { ...emptyArtist, isBand: true, bandMembers },
-        settings: emptySongSettings
-      }
-    )
+    render(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      ...emptySong,
+      id: songId,
+      artist: { ...emptyArtist, isBand: true, bandMembers },
+      settings: emptySongSettings
+    })
 
     await user.type(screen.getByRole('textbox', { name: /name/i }), newName)
 
@@ -213,15 +206,12 @@ describe('Add New Song Part', () => {
       })
     )
 
-    render(
-      withToastify(<AddNewSongPart opened={true} onClose={onClose} />),
-      {
-        ...emptySong,
-        id: songId,
-        artist: { ...emptyArtist, isBand: true, bandMembers },
-        settings: emptySongSettings
-      }
-    )
+    render(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      ...emptySong,
+      id: songId,
+      artist: { ...emptyArtist, isBand: true, bandMembers },
+      settings: emptySongSettings
+    })
 
     // fill fields
     await user.click(screen.getByRole('combobox', { name: 'song-section' }))
@@ -278,15 +268,12 @@ describe('Add New Song Part', () => {
       })
     )
 
-    render(
-      withToastify(<AddNewSongPart opened={true} onClose={onClose} />),
-      {
-        ...emptySong,
-        id: songId,
-        artist: { ...emptyArtist, isBand: true, bandMembers },
-        settings
-      }
-    )
+    render(withToastify(<AddNewSongPart opened={true} onClose={onClose} />), {
+      ...emptySong,
+      id: songId,
+      artist: { ...emptyArtist, isBand: true, bandMembers },
+      settings
+    })
 
     // fill fields
     await user.click(screen.getByRole('combobox', { name: 'song-section' }))
@@ -368,7 +355,7 @@ describe('Add New Song Part', () => {
 
     const uut = (opened = true) => <AddNewSongPart opened={opened} onClose={() => {}} />
 
-    const { rerender } = render(uut(), {
+    const [{ rerender }] = render(uut(), {
       ...emptySong,
       artist: { ...emptyArtist, isBand: true, bandMembers },
       settings: emptySongSettings
@@ -383,16 +370,8 @@ describe('Add New Song Part', () => {
       artist: { ...emptyArtist, isBand: true, bandMembers },
       settings: emptySongSettings
     }
-    rerender(
-      <SongProvider song={song}>
-        {uut(false)}
-      </SongProvider>
-    )
-    rerender(
-      <SongProvider song={song}>
-        {uut()}
-      </SongProvider>
-    )
+    rerender(<SongProvider song={song}>{uut(false)}</SongProvider>)
+    rerender(<SongProvider song={song}>{uut()}</SongProvider>)
 
     expect(screen.getByRole('textbox', { name: /name/i })).not.toBeInvalid()
   })

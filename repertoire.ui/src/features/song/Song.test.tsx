@@ -10,7 +10,7 @@ import { SearchBase } from '../../types/models/Search.ts'
 import { createRef } from 'react'
 
 // Mock Main Context
-vi.mock('../../../../context/MainContext.tsx', () => ({
+vi.mock('../../context/MainContext.tsx', () => ({
   useMain: vi.fn(() => ({
     ref: createRef(),
     mainScroll: { ref: createRef() }
@@ -69,7 +69,7 @@ describe('Song', () => {
     expect(screen.getByLabelText('overall-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('links-widget')).toBeInTheDocument()
     expect(screen.getByLabelText('description-widget')).toBeInTheDocument()
-    expect(screen.getByLabelText('outline-widget')).toBeInTheDocument()
+    expect(await screen.findByLabelText('outline-widget')).toBeInTheDocument()
     expect((store.getState() as RootState).global.documentTitle).toBe(song.title)
   })
 })

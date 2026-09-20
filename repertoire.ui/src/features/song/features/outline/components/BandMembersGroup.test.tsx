@@ -41,10 +41,8 @@ describe('Band Members Group', () => {
 
     await user.hover(screen.getByRole('img', { name: bandMembers[1].name }))
 
-    const tooltip = await screen.findByRole('tooltip')
-
-    bandMembers.forEach((bandMember) => {
-      expect(tooltip).toHaveTextContent(bandMember.name)
-    })
+    for (const bandMember of bandMembers) {
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(bandMember.name)
+    }
   })
 })

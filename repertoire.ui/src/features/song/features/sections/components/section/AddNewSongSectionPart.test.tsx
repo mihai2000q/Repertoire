@@ -51,13 +51,18 @@ describe('Add New Song Section Part', () => {
   it('should render the add card', () => {
     render(<AddNewSongSectionPart section={section} />)
 
-    expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)
+    ).toBeInTheDocument()
   })
 
   it('should open the form and focus the name input when the add card is clicked', async () => {
     const user = userEvent.setup()
 
-    render(<AddNewSongSectionPart section={section} />)
+    render(<AddNewSongSectionPart section={section} />, {
+      ...emptySong,
+      artist: { ...emptyArtist, isBand: true, bandMembers }
+    })
 
     await user.click(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`))
 
@@ -78,7 +83,9 @@ describe('Add New Song Section Part', () => {
     await user.click(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`))
     await user.click(screen.getByRole('button', { name: 'close' }))
 
-    expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)
+    ).toBeInTheDocument()
     expect(screen.queryByRole('textbox', { name: /name/i })).not.toBeInTheDocument()
   })
 
@@ -147,11 +154,13 @@ describe('Add New Song Section Part', () => {
 
     expect(capturedRequest).toStrictEqual({
       name: newName,
-      songId,
+      songId: songId,
       sectionId: section.id
     })
     expect(screen.getByText(`${newName} added!`)).toBeInTheDocument()
-    expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)
+    ).toBeInTheDocument()
   })
 
   it('should send the create request when a part is added band member and instrument', async () => {
@@ -188,7 +197,7 @@ describe('Add New Song Section Part', () => {
 
     expect(capturedRequest).toStrictEqual({
       name: newName,
-      songId,
+      songId: songId,
       sectionId: section.id,
       bandMemberId: bandMembers[0].id,
       instrumentId: instruments[0].id

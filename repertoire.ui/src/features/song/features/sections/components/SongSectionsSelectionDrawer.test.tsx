@@ -14,7 +14,7 @@ import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import { SongSection } from '../../../../../types/models/Song.ts'
 
 // Mock the context
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
@@ -137,15 +137,18 @@ describe('Song Sections Selection Drawer', () => {
   })
 
   it('should display both selected sections and parts', () => {
+    const selectedSecIds = selectedSectionIds.slice(0, 2)
     const selectedPartIds = sections
       .slice(0, 2)
       .map((section) => `part-${section.parts[0].id}:${section.id}`)
-    mockSelectedIds([...selectedSectionIds.slice(0, 2), ...selectedPartIds])
+    mockSelectedIds([...selectedSecIds, ...selectedPartIds])
 
     reduxRender(<SongSectionsSelectionDrawer sections={sections} songId={'1'} />)
 
     expect(
-      screen.getByText(`${sections} sections and ${selectedPartIds} parts selected`)
+      screen.getByText(
+        `${selectedSecIds.length} sections and ${selectedPartIds.length} parts selected`
+      )
     ).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'add-rehearsals' })).toBeEnabled()
   })

@@ -12,7 +12,7 @@ import { AlbumSearch } from '../../../../types/models/Search.ts'
 import { createRef } from 'react'
 
 // Mock Main Context
-vi.mock('../../../../../../context/MainContext.tsx', () => ({
+vi.mock('../../../../context/MainContext.tsx', () => ({
   useMain: vi.fn(() => ({
     ref: createRef()
   }))
@@ -211,7 +211,7 @@ describe('Artist Albums Widget', () => {
     // context menu
     await user.pointer({
       keys: '[MouseRight>]',
-      target: screen.getByLabelText(`albums-card-${albumModels[0].title}`)
+      target: screen.getByLabelText(`album-card-${albumModels[0].title}`)
     })
     expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
   })

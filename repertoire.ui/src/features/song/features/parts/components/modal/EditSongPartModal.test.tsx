@@ -2,7 +2,7 @@ import {
   emptyArtist,
   emptySong,
   emptySongPart,
-  mantineRender,
+  reduxRender,
   withToastify
 } from '../../../../../../test-utils.tsx'
 import { Instrument, SongPart } from '../../../../../../types/models/Song.ts'
@@ -15,8 +15,9 @@ import EditSongPartModal from './EditSongPartModal.tsx'
 import { BandMember } from '../../../../../../types/models/Artist.ts'
 import { ReactNode } from 'react'
 import { SongProvider } from '../../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../../outline/context/SongOutlineContext.tsx'
 
-describe('Edit Song Description Modal', () => {
+describe('Edit Song Part Modal', () => {
   const bandMembers: BandMember[] = [
     {
       id: '1',
@@ -65,14 +66,14 @@ describe('Edit Song Description Modal', () => {
   afterAll(() => server.close())
 
   const render = (ui: ReactNode) => {
-    const song = {
-      ...emptySong,
-      artist: { ...emptyArtist, isBand: true, bandMembers }
-    }
-
-    return mantineRender(
-      <SongProvider song={song}>
-        {ui}
+    return reduxRender(
+      <SongProvider
+        song={{
+          ...emptySong,
+          artist: { ...emptyArtist, isBand: true, bandMembers }
+        }}
+      >
+        <SongOutlineProvider>{ui}</SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -80,7 +81,7 @@ describe('Edit Song Description Modal', () => {
   it('should render', async () => {
     const user = userEvent.setup()
 
-    const { rerender } = render(
+    const [{ rerender }] = render(
       <EditSongPartModal opened={true} onClose={() => {}} part={part} sectionId={'section-1'} />
     )
 
@@ -116,9 +117,7 @@ describe('Edit Song Description Modal', () => {
     expect(await screen.findByText(/need to make a change/i)).toBeInTheDocument()
 
     // without section
-    rerender(
-      <EditSongPartModal opened={true} onClose={() => {}} part={part} />
-    )
+    rerender(<EditSongPartModal opened={true} onClose={() => {}} part={part} />)
 
     expect(screen.queryByRole('combobox', { name: /band member/i })).not.toBeInTheDocument()
   })
@@ -139,10 +138,8 @@ describe('Edit Song Description Modal', () => {
       })
     )
 
-    const { rerender } = render(
-      withToastify(
-        <EditSongPartModal opened={true} onClose={onClose} part={part} />
-      )
+    const [{ rerender }] = render(
+      withToastify(<EditSongPartModal opened={true} onClose={onClose} part={part} />)
     )
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
@@ -204,7 +201,7 @@ describe('Edit Song Description Modal', () => {
       })
     )
 
-    const { rerender } = render(
+    const [{ rerender }] = render(
       withToastify(
         <EditSongPartModal opened={true} onClose={onClose} part={part} sectionId={sectionId} />
       )
@@ -319,9 +316,7 @@ describe('Edit Song Description Modal', () => {
   it('should validate fields', async () => {
     const user = userEvent.setup()
 
-    render(
-      <EditSongPartModal opened={true} onClose={() => {}} part={part} />
-    )
+    render(<EditSongPartModal opened={true} onClose={() => {}} part={part} />)
 
     const nameField = screen.getByRole('textbox', { name: /name/i })
     const rehearsalsField = screen.getByRole('textbox', { name: /rehearsals/i })
@@ -345,7 +340,7 @@ describe('Edit Song Description Modal', () => {
   })
 
   it('should keep fields updated', async () => {
-    const { rerender } = render(
+    const [{ rerender }] = render(
       <EditSongPartModal opened={true} onClose={() => {}} part={part} sectionId={'section-1'} />
     )
 

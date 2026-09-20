@@ -15,7 +15,7 @@ function SongOutlineConfidenceBar({
       role={'tooltip'}
       label={
         <>
-          <NumberFormatter value={confidence} />%
+          Confidence: <NumberFormatter value={confidence} />%
         </>
       }
     >

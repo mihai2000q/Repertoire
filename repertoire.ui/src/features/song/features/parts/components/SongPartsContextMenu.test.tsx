@@ -9,7 +9,7 @@ import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import { SongPart } from '../../../../../types/models/Song.ts'
 
 // Mock the context
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 

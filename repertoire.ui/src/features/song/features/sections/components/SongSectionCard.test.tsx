@@ -20,7 +20,7 @@ import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.ts
 import { ReactNode } from 'react'
 
 // Mock Context
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
@@ -77,7 +77,7 @@ describe('Song Section Card', () => {
     return reduxRender(
       <SongProvider song={song}>
         <SongOutlineProvider initialShowDetails={initialShowDetails}>{ui}</SongOutlineProvider>
-      </SongProvider>,
+      </SongProvider>
     )
   }
 
@@ -170,9 +170,9 @@ describe('Song Section Card', () => {
       expect(within(instrumentsEl).getByLabelText(instrument.name)).toBeInTheDocument()
     })
     await user.hover(instrumentsEl)
-    expect(
-      await screen.findByRole('tooltip', { name: `${instruments[0].name}, ${instruments[1].name}` })
-    ).toBeInTheDocument()
+    for (const instrument of instruments) {
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(instrument.name)
+    }
 
     const bandMembersEl = screen.getByLabelText('band-members')
     expect(bandMembersEl).toBeInTheDocument()
@@ -187,6 +187,10 @@ describe('Song Section Card', () => {
         ).toBeInTheDocument()
       }
     })
+    await user.hover(bandMembersEl)
+    for (const bandMember of bandMembers) {
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(bandMember.name)
+    }
 
     // when artist is not a band
     const newSong = { ...emptySong, artist: { ...emptyArtist, isBand: false } }
@@ -211,7 +215,9 @@ describe('Song Section Card', () => {
     section.parts.forEach((part) => {
       expect(screen.getByLabelText(`song-section-part-${part.name}`)).toBeInTheDocument()
     })
-    expect(screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)).toBeInTheDocument()
+    expect(
+      screen.getByLabelText(`add-new-song-section-part-card-${section.name}`)
+    ).toBeInTheDocument()
   })
 
   it('should show details from context', async () => {

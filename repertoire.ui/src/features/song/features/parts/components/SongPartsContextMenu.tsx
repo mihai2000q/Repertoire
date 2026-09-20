@@ -58,8 +58,6 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
         <ContextMenu.Dropdown aria-label={'song-parts-context-menu'}>
-          <ContextMenu.Label></ContextMenu.Label>
-
           <MenuItemConfirmation
             isLoading={bulkUpdateIsLoading}
             onConfirm={handleAddRehearsals}

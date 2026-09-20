@@ -26,7 +26,7 @@ describe('Instruments Group', () => {
     await user.hover(screen.getByLabelText(instruments[0].name))
 
     for (const instrument of instruments) {
-      expect(await screen.findByRole('tooltip', { name: instrument.name })).toBeInTheDocument()
+      expect(await screen.findByRole('tooltip')).toHaveTextContent(instrument.name)
     }
   })
 })

@@ -13,7 +13,7 @@ import { BulkUpdateSongPartsRequest } from '../../parts/types/requests/SongPartR
 import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import { SongSection } from '../../../../../types/models/Song.ts'
 
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
