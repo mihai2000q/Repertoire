@@ -56,8 +56,8 @@ describe('Songs Filters', () => {
     minSolosCount: 0,
     maxSolosCount: 4,
 
-    minRiffsCount: 1,
-    maxRiffsCount: 6,
+    minPartsCount: 1,
+    maxPartsCount: 6,
 
     minRehearsals: 4,
     maxRehearsals: 55,
@@ -117,14 +117,14 @@ describe('Songs Filters', () => {
 
   const instrumentKey = SongProperty.InstrumentId + FilterOperator.In
 
+  const minPartsKey = SongProperty.Parts + FilterOperator.GreaterThanOrEqual
+  const maxPartsKey = SongProperty.Parts + FilterOperator.LessThanOrEqual
+
   const minSectionsKey = SongProperty.Sections + FilterOperator.GreaterThanOrEqual
   const maxSectionsKey = SongProperty.Sections + FilterOperator.LessThanOrEqual
 
   const minSolosKey = SongProperty.Solos + FilterOperator.GreaterThanOrEqual
   const maxSolosKey = SongProperty.Solos + FilterOperator.LessThanOrEqual
-
-  const minRiffsKey = SongProperty.Riffs + FilterOperator.GreaterThanOrEqual
-  const maxRiffsKey = SongProperty.Riffs + FilterOperator.LessThanOrEqual
 
   const minRehearsalsKey = SongProperty.Rehearsals + FilterOperator.GreaterThanOrEqual
   const maxRehearsalsKey = SongProperty.Rehearsals + FilterOperator.LessThanOrEqual
@@ -202,14 +202,14 @@ describe('Songs Filters', () => {
       within(screen.getByLabelText(/is recorded/i)).getByRole('checkbox', { name: /no/i })
     ).toBeDisabled()
 
+    expect(screen.getByRole('textbox', { name: /min parts/i })).toBeDisabled()
+    expect(screen.getByRole('textbox', { name: /max parts/i })).toBeDisabled()
+
     expect(screen.getByRole('textbox', { name: /min sections/i })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: /max sections/i })).toBeDisabled()
 
     expect(screen.getByRole('textbox', { name: /min solos/i })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: /max solos/i })).toBeDisabled()
-
-    expect(screen.getByRole('textbox', { name: /min riffs/i })).toBeDisabled()
-    expect(screen.getByRole('textbox', { name: /max riffs/i })).toBeDisabled()
 
     expect(screen.getByRole('textbox', { name: /min rehearsals/i })).toBeDisabled()
     expect(screen.getByRole('textbox', { name: /max rehearsals/i })).toBeDisabled()
@@ -279,6 +279,11 @@ describe('Songs Filters', () => {
     expect(updatedFilters.get(equalIsRecordedKey).isSet).toBeFalsy()
     expect(updatedFilters.get(notEqualIsRecordedKey).isSet).toBeFalsy()
 
+    expect(updatedFilters.get(minPartsKey).value).toBe(filtersMetadata.minPartsCount)
+    expect(updatedFilters.get(minPartsKey).isSet).toBeFalsy()
+    expect(updatedFilters.get(maxPartsKey).value).toBe(filtersMetadata.maxPartsCount)
+    expect(updatedFilters.get(maxPartsKey).isSet).toBeFalsy()
+
     expect(updatedFilters.get(minSectionsKey).value).toBe(filtersMetadata.minSectionsCount)
     expect(updatedFilters.get(minSectionsKey).isSet).toBeFalsy()
     expect(updatedFilters.get(maxSectionsKey).value).toBe(filtersMetadata.maxSectionsCount)
@@ -288,11 +293,6 @@ describe('Songs Filters', () => {
     expect(updatedFilters.get(minSolosKey).isSet).toBeFalsy()
     expect(updatedFilters.get(maxSolosKey).value).toBe(filtersMetadata.maxSolosCount)
     expect(updatedFilters.get(maxSolosKey).isSet).toBeFalsy()
-
-    expect(updatedFilters.get(minRiffsKey).value).toBe(filtersMetadata.minRiffsCount)
-    expect(updatedFilters.get(minRiffsKey).isSet).toBeFalsy()
-    expect(updatedFilters.get(maxRiffsKey).value).toBe(filtersMetadata.maxRiffsCount)
-    expect(updatedFilters.get(maxRiffsKey).isSet).toBeFalsy()
 
     expect(updatedFilters.get(minRehearsalsKey).value).toBe(filtersMetadata.minRehearsals)
     expect(updatedFilters.get(minRehearsalsKey).isSet).toBeFalsy()
@@ -342,6 +342,15 @@ describe('Songs Filters', () => {
       value: filtersMetadata.maxBpm
     })
 
+    newFilters.set(minPartsKey, {
+      ...newFilters.get(minPartsKey),
+      value: filtersMetadata.minPartsCount
+    })
+    newFilters.set(maxPartsKey, {
+      ...newFilters.get(maxPartsKey),
+      value: filtersMetadata.maxPartsCount
+    })
+
     newFilters.set(minSectionsKey, {
       ...newFilters.get(minSectionsKey),
       value: filtersMetadata.minSectionsCount
@@ -358,15 +367,6 @@ describe('Songs Filters', () => {
     newFilters.set(maxSolosKey, {
       ...newFilters.get(maxSolosKey),
       value: filtersMetadata.maxSolosCount
-    })
-
-    newFilters.set(minRiffsKey, {
-      ...newFilters.get(minRiffsKey),
-      value: filtersMetadata.minRiffsCount
-    })
-    newFilters.set(maxRiffsKey, {
-      ...newFilters.get(maxRiffsKey),
-      value: filtersMetadata.maxRiffsCount
     })
 
     newFilters.set(minRehearsalsKey, {
@@ -413,7 +413,7 @@ describe('Songs Filters', () => {
   })
 
   describe('should update filters', () => {
-    it('should update bpm, sections, solos, riffs, rehearsals, confidence and progress fields', async () => {
+    it('should update bpm, sections, solos, parts, rehearsals, confidence and progress fields', async () => {
       const user = userEvent.setup()
 
       const setFilters = vi.fn()
@@ -421,14 +421,14 @@ describe('Songs Filters', () => {
       const newMinBpmValue = 100
       const newMaxBpmValue = 180
 
+      const newMinPartsValue = 3
+      const newMaxPartsValue = 4
+
       const newMinSectionsValue = 3
       const newMaxSectionsValue = 4
 
       const newMinSolosValue = 1
       const newMaxSolosValue = 3
-
-      const newMinRiffsValue = 3
-      const newMaxRiffsValue = 4
 
       const newMinRehearsalsValue = 6
       const newMaxRehearsalsValue = 35
@@ -456,12 +456,12 @@ describe('Songs Filters', () => {
       await fillFilterFields(
         newMinBpmValue,
         newMaxBpmValue,
+        newMinPartsValue,
+        newMaxPartsValue,
         newMinSectionsValue,
         newMaxSectionsValue,
         newMinSolosValue,
         newMaxSolosValue,
-        newMinRiffsValue,
-        newMaxRiffsValue,
         newMinRehearsalsValue,
         newMaxRehearsalsValue,
         newMinConfidenceValue,
@@ -480,6 +480,11 @@ describe('Songs Filters', () => {
       expect(updatedFilters.get(maxBpmKey).value).toBe(newMaxBpmValue)
       expect(updatedFilters.get(maxBpmKey).isSet).toBeTruthy()
 
+      expect(updatedFilters.get(minPartsKey).value).toBe(newMinPartsValue)
+      expect(updatedFilters.get(minPartsKey).isSet).toBeTruthy()
+      expect(updatedFilters.get(maxPartsKey).value).toBe(newMaxPartsValue)
+      expect(updatedFilters.get(maxPartsKey).isSet).toBeTruthy()
+
       expect(updatedFilters.get(minSectionsKey).value).toBe(newMinSectionsValue)
       expect(updatedFilters.get(minSectionsKey).isSet).toBeTruthy()
       expect(updatedFilters.get(maxSectionsKey).value).toBe(newMaxSectionsValue)
@@ -489,11 +494,6 @@ describe('Songs Filters', () => {
       expect(updatedFilters.get(minSolosKey).isSet).toBeTruthy()
       expect(updatedFilters.get(maxSolosKey).value).toBe(newMaxSolosValue)
       expect(updatedFilters.get(maxSolosKey).isSet).toBeTruthy()
-
-      expect(updatedFilters.get(minRiffsKey).value).toBe(newMinRiffsValue)
-      expect(updatedFilters.get(minRiffsKey).isSet).toBeTruthy()
-      expect(updatedFilters.get(maxRiffsKey).value).toBe(newMaxRiffsValue)
-      expect(updatedFilters.get(maxRiffsKey).isSet).toBeTruthy()
 
       expect(updatedFilters.get(minRehearsalsKey).value).toBe(newMinRehearsalsValue)
       expect(updatedFilters.get(minRehearsalsKey).isSet).toBeTruthy()
@@ -978,12 +978,12 @@ describe('Songs Filters', () => {
   async function fillFilterFields(
     newMinBpmValue: number = filtersMetadata.minBpm + 1,
     newMaxBpmValue: number = filtersMetadata.maxBpm - 1,
+    newMinPartsValue: number = filtersMetadata.minPartsCount + 1,
+    newMaxPartsValue: number = filtersMetadata.maxPartsCount - 1,
     newMinSectionsValue: number = filtersMetadata.minSectionsCount + 1,
     newMaxSectionsValue: number = filtersMetadata.maxSectionsCount - 1,
     newMinSolosValue: number = filtersMetadata.minSolosCount + 1,
     newMaxSolosValue: number = filtersMetadata.maxSolosCount - 1,
-    newMinRiffsValue: number = filtersMetadata.minRiffsCount + 1,
-    newMaxRiffsValue: number = filtersMetadata.maxRiffsCount - 1,
     newMinRehearsalsValue: number = filtersMetadata.minRehearsals + 1,
     newMaxRehearsalsValue: number = filtersMetadata.maxRehearsals - 1,
     newMinConfidenceValue: number = filtersMetadata.minConfidence + 1,
@@ -997,6 +997,17 @@ describe('Songs Filters', () => {
     await user.type(screen.getByRole('textbox', { name: /min bpm/i }), newMinBpmValue.toString())
     await user.clear(screen.getByRole('textbox', { name: /max bpm/i }))
     await user.type(screen.getByRole('textbox', { name: /max bpm/i }), newMaxBpmValue.toString())
+
+    await user.clear(screen.getByRole('textbox', { name: /min parts/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /min parts/i }),
+      newMinPartsValue.toString()
+    )
+    await user.clear(screen.getByRole('textbox', { name: /max parts/i }))
+    await user.type(
+      screen.getByRole('textbox', { name: /max parts/i }),
+      newMaxPartsValue.toString()
+    )
 
     await user.clear(screen.getByRole('textbox', { name: /min sections/i }))
     await user.type(
@@ -1018,17 +1029,6 @@ describe('Songs Filters', () => {
     await user.type(
       screen.getByRole('textbox', { name: /max solos/i }),
       newMaxSolosValue.toString()
-    )
-
-    await user.clear(screen.getByRole('textbox', { name: /min riffs/i }))
-    await user.type(
-      screen.getByRole('textbox', { name: /min riffs/i }),
-      newMinRiffsValue.toString()
-    )
-    await user.clear(screen.getByRole('textbox', { name: /max riffs/i }))
-    await user.type(
-      screen.getByRole('textbox', { name: /max riffs/i }),
-      newMaxRiffsValue.toString()
     )
 
     await user.clear(screen.getByRole('textbox', { name: /min rehearsals/i }))
@@ -1079,6 +1079,13 @@ describe('Songs Filters', () => {
       filtersMetadata.maxBpm.toString()
     )
 
+    expect(screen.getByRole('textbox', { name: /min parts/i })).toHaveValue(
+      filtersMetadata.minPartsCount.toString()
+    )
+    expect(screen.getByRole('textbox', { name: /max parts/i })).toHaveValue(
+      filtersMetadata.maxPartsCount.toString()
+    )
+
     expect(screen.getByRole('textbox', { name: /min sections/i })).toHaveValue(
       filtersMetadata.minSectionsCount.toString()
     )
@@ -1091,13 +1098,6 @@ describe('Songs Filters', () => {
     )
     expect(screen.getByRole('textbox', { name: /max solos/i })).toHaveValue(
       filtersMetadata.maxSolosCount.toString()
-    )
-
-    expect(screen.getByRole('textbox', { name: /min riffs/i })).toHaveValue(
-      filtersMetadata.minRiffsCount.toString()
-    )
-    expect(screen.getByRole('textbox', { name: /max riffs/i })).toHaveValue(
-      filtersMetadata.maxRiffsCount.toString()
     )
 
     expect(screen.getByRole('textbox', { name: /min rehearsals/i })).toHaveValue(

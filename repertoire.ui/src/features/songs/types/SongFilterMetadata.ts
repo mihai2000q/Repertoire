@@ -15,14 +15,14 @@ export interface SongFiltersMetadata {
   guitarTuningIds: string[]
   instrumentIds: string[]
 
+  minPartsCount: number
+  maxPartsCount: number
+
   minSectionsCount: number
   maxSectionsCount: number
 
   minSolosCount: number
   maxSolosCount: number
-
-  minRiffsCount: number
-  maxRiffsCount: number
 
   minRehearsals: number
   maxRehearsals: number

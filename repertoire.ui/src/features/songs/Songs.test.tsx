@@ -55,8 +55,8 @@ const defaultSongFiltersMetadata: SongFiltersMetadata = {
   minSolosCount: 0,
   maxSolosCount: 5,
 
-  minRiffsCount: 1,
-  maxRiffsCount: 5,
+  minPartsCount: 1,
+  maxPartsCount: 5,
 
   minRehearsals: 0,
   maxRehearsals: 55,
