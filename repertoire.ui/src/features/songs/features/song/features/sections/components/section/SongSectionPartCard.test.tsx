@@ -18,7 +18,7 @@ import { SongProvider } from '../../../../context/SongContext.tsx'
 import { SongOutlineProvider } from '../../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
 
-vi.mock('../../../../../../../context/ClickSelectContext', () => ({
+vi.mock('../../../../../../../../context/ClickSelectContext', () => ({
   useClickSelect: vi.fn()
 }))
 
@@ -298,6 +298,30 @@ describe('Song Section Part Card', () => {
     expect(screen.queryByRole('menu')).not.toBeInTheDocument()
 
     expect(screen.getByRole('button', { name: 'add-rehearsal' })).toBeDisabled()
+  })
+
+  it('should display a checkmark, when click selected (part of the selected ids)', () => {
+    const sectionId = 'section-id'
+
+    vi.mocked(useClickSelect).mockReturnValue({
+      selectables: [],
+      addSelectable: vi.fn(),
+      removeSelectable: vi.fn(),
+      selectedIds: [`part-${part.id}:${sectionId}`],
+      isClickSelectionActive: true,
+      clearSelection: vi.fn()
+    })
+
+    render(
+      <SongSectionPartCard
+        part={part}
+        maxPartProgress={0}
+        isDragging={false}
+        showRehearsalsToast={vi.fn()}
+        sectionId={sectionId}
+      />
+    )
+    expect(screen.getByTestId('selected-checkmark')).toBeInTheDocument()
   })
 
   describe('should be selected', () => {

@@ -10,7 +10,7 @@ import {
   Text,
   Tooltip
 } from '@mantine/core'
-import { IconEdit, IconRefresh, IconTrash } from '@tabler/icons-react'
+import { IconCheck, IconEdit, IconRefresh, IconTrash } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { toast } from 'react-toastify'
@@ -142,6 +142,20 @@ function SongSectionPartCard({
           {...draggableProvided?.draggableProps}
         >
           <Group gap={'xs'}>
+            <Collapse orientation={'horizontal'} expanded={isClickSelected}>
+              <Center
+                data-testid={'selected-checkmark'}
+                w={16}
+                h={16}
+                style={(theme) => ({
+                  borderRadius: '100%',
+                  backgroundColor: alpha(theme.colors.green[2], 0.95)
+                })}
+              >
+                <IconCheck color={'white'} size={'75%'} />
+              </Center>
+            </Collapse>
+
             {/*It is expected that the part will only have a band member*/}
             {isArtistBand && part.bandMembers.length > 0 && (
               <BandMemberAvatar size={23} iconSize={14} bandMember={part.bandMembers[0]} />
