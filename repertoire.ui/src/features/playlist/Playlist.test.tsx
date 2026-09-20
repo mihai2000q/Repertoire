@@ -1,12 +1,12 @@
 import Playlist from './Playlist.tsx'
-import { emptyPlaylist, emptySong, reduxMemoryRouterRender } from '../../../../test-utils.tsx'
+import { emptyPlaylist, emptySong, reduxMemoryRouterRender } from '../../test-utils.tsx'
 import { screen } from '@testing-library/react'
-import Song from '../../../../types/models/Song.ts'
+import Song from '../../types/models/Song.ts'
 import { http, HttpResponse } from 'msw'
-import WithTotalCountResponse from '../../../../types/responses/WithTotalCountResponse.ts'
+import WithTotalCountResponse from '../../types/responses/WithTotalCountResponse.ts'
 import { setupServer } from 'msw/node'
-import { default as PlaylistType } from '../../../../types/models/Playlist.ts'
-import { RootState } from '../../../../state/store.ts'
+import { default as PlaylistType } from '../../types/models/Playlist.ts'
+import { RootState } from '../../state/store.ts'
 import { createRef } from 'react'
 
 // Mock Main Context

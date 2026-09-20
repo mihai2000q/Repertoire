@@ -1,4 +1,4 @@
-import Song from '../../../../../types/models/Song.ts'
+import Song from '../../../types/models/Song.ts'
 import {
   ActionIcon,
   alpha,
@@ -12,36 +12,36 @@ import {
   Text,
   Tooltip
 } from '@mantine/core'
-import { useAppDispatch } from '../../../../../state/store.ts'
+import { useAppDispatch } from '../../../state/store.ts'
 import {
   openAlbumDrawer,
   openArtistDrawer,
   openSongDrawer
-} from '../../../../../state/slice/drawersSlice.ts'
+} from '../../../state/slice/drawersSlice.ts'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import { MouseEvent } from 'react'
 import { IconCircleMinus, IconDisc, IconDots, IconEye, IconUser } from '@tabler/icons-react'
-import WarningModal from '../../../../../components/modal/WarningModal.tsx'
+import WarningModal from '../../../components/modal/WarningModal.tsx'
 import { useNavigate } from 'react-router-dom'
 import { DraggableProvided } from '@hello-pangea/dnd'
-import PerfectRehearsalMenuItem from '../../../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
-import CustomIconMusicNoteEighth from '../../../../../components/icons/CustomIconMusicNoteEighth.tsx'
+import PerfectRehearsalMenuItem from '../../../components/menu/item/PerfectRehearsalMenuItem.tsx'
+import CustomIconMusicNoteEighth from '../../../components/icons/CustomIconMusicNoteEighth.tsx'
 import { useRemoveSongsFromPlaylistMutation } from '../state/api/playlistApi.ts'
-import SongProperty from '../../../../../types/enums/properties/SongProperty.ts'
-import Order from '../../../../../types/Order.ts'
-import DifficultyBar from '../../../../../components/bar/DifficultyBar.tsx'
-import ConfidenceBar from '../../../../../components/bar/ConfidenceBar.tsx'
-import ProgressBar from '../../../../../components/bar/ProgressBar.tsx'
+import SongProperty from '../../../types/enums/properties/SongProperty.ts'
+import Order from '../../../types/Order.ts'
+import DifficultyBar from '../../../components/bar/DifficultyBar.tsx'
+import ConfidenceBar from '../../../components/bar/ConfidenceBar.tsx'
+import ProgressBar from '../../../components/bar/ProgressBar.tsx'
 import dayjs from 'dayjs'
-import YoutubeModal from '../../../../../components/modal/YoutubeModal.tsx'
-import OpenLinksMenuItem from '../../../../../components/menu/item/song/OpenLinksMenuItem.tsx'
-import AddToPlaylistMenuItem from '../../../../../components/menu/item/AddToPlaylistMenuItem.tsx'
-import useDoubleMenu from '../../../../../hooks/useDoubleMenu.ts'
-import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
+import YoutubeModal from '../../../components/modal/YoutubeModal.tsx'
+import OpenLinksMenuItem from '../../../components/menu/item/song/OpenLinksMenuItem.tsx'
+import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
+import useDoubleMenu from '../../../hooks/useDoubleMenu.ts'
+import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
 import { toast } from 'react-toastify'
-import useClickSelectSelectable from '../../../../../hooks/useClickSelectSelectable.ts'
-import SelectableAvatar from '../../../../../components/image/SelectableAvatar.tsx'
-import CustomRehearsalMenuItem from '../../../../../components/menu/item/song/CustomRehearsalMenuItem.tsx'
+import useClickSelectSelectable from '../../../hooks/useClickSelectSelectable.ts'
+import SelectableAvatar from '../../../components/image/SelectableAvatar.tsx'
+import CustomRehearsalMenuItem from '../../../components/menu/item/song/CustomRehearsalMenuItem.tsx'
 
 interface PlaylistSongCardProps {
   song: Song

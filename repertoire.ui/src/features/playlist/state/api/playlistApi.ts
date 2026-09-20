@@ -1,11 +1,11 @@
-import HttpMessageResponse from '../../../../../../types/responses/HttpMessageResponse.ts'
+import HttpMessageResponse from '../../../../types/responses/HttpMessageResponse.ts'
 import {
   MoveSongFromPlaylistRequest,
   RemoveSongsFromPlaylistRequest,
   ShufflePlaylistSongsRequest,
   UpdatePlaylistRequest
 } from '../../types/requests/PlaylistRequests.ts'
-import { api } from '../../../../../../state/api.ts'
+import { api } from '../../../../state/api.ts'
 
 const playlistApi = api.injectEndpoints({
   endpoints: (build) => ({

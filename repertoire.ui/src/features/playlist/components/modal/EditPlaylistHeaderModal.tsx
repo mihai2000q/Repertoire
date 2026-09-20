@@ -1,6 +1,6 @@
-import Playlist from '../../../../../../types/models/Playlist.ts'
+import Playlist from '../../../../types/models/Playlist.ts'
 import { Button, LoadingOverlay, Modal, Stack, Textarea, TextInput, Tooltip } from '@mantine/core'
-import { useSaveImageToPlaylistMutation } from '../../../../../../state/api/playlistsApi.ts'
+import { useSaveImageToPlaylistMutation } from '../../../../state/api/playlistsApi.ts'
 import {
   useDeleteImageFromPlaylistMutation,
   useUpdatePlaylistMutation
@@ -8,7 +8,7 @@ import {
 import { useEffect, useState } from 'react'
 import { schemaResolver, useForm } from '@mantine/form'
 import { EditPlaylistHeaderForm, editPlaylistHeaderSchema } from '../../validation/playlistForm.ts'
-import LargeImageDropzoneWithPreview from '../../../../../../components/image/LargeImageDropzoneWithPreview.tsx'
+import LargeImageDropzoneWithPreview from '../../../../components/image/LargeImageDropzoneWithPreview.tsx'
 import { toast } from 'react-toastify'
 import { FileWithPath } from '@mantine/dropzone'
 
