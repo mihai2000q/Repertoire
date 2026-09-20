@@ -28,7 +28,7 @@ import { useDeleteSongPartMutation, useUpdateSongPartMutation } from '../state/a
 import EditSongPartModal from './modal/EditSongPartModal.tsx'
 import WarningModal from '../../../../../components/modal/WarningModal.tsx'
 import useInstrumentIcon from '../../../../../hooks/useInstrumentIcon.tsx'
-import { MouseEvent, useEffect, useState } from 'react'
+import { MouseEvent } from 'react'
 import useDoubleMenu from '../../../../../hooks/useDoubleMenu.ts'
 import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../hooks/useClickSelectSelectable.ts'
@@ -62,7 +62,7 @@ function SongPartCard({
   const ref = useMergedRef(hoverRef, draggableProvided?.innerRef, selectableRef)
 
   const { songId, isArtistBand } = useSongContext()
-  const { showDetails } = useSongOutlineContext()
+  const { isDetailsShowing, toggleDetails } = useSongOutlineContext()
 
   const [updateSongPartMutation, { isLoading: isUpdateLoading }] = useUpdateSongPartMutation()
   const [deleteSongPartMutation, { isLoading: isDeleteLoading }] = useDeleteSongPartMutation()
@@ -70,8 +70,6 @@ function SongPartCard({
   const getInstrumentIcon = useInstrumentIcon()
 
   const { openedMenu, toggleMenu, openedContextMenu, toggleContextMenu } = useDoubleMenu()
-  const [openedDetails, setOpenedDetails] = useState(false)
-  useEffect(() => setOpenedDetails(showDetails), [showDetails])
 
   const [openedEditSongPart, { open: openEditSongPart, close: closeEditSongPart }] =
     useDisclosure(false)
@@ -83,7 +81,7 @@ function SongPartCard({
   function handleClick(e: MouseEvent) {
     if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
-    setOpenedDetails(!openedDetails)
+    toggleDetails(part.id)
   }
 
   async function handleAddRehearsal(e: MouseEvent) {
@@ -248,7 +246,7 @@ function SongPartCard({
             </Group>
           </Group>
 
-          <Collapse expanded={openedDetails}>
+          <Collapse expanded={isDetailsShowing(part.id)}>
             <Group
               aria-label={`song-part-details-${part.name}`}
               pt={'md'}

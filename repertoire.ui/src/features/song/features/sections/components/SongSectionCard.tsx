@@ -1,13 +1,10 @@
-import {
-  Instrument,
-  SongSection as SongSectionModel
-} from '../../../../../types/models/Song.ts'
+import { Instrument, SongSection as SongSectionModel } from '../../../../../types/models/Song.ts'
 import { alpha, Box, Center, Collapse, Group, Stack, Text } from '@mantine/core'
 import { IconCheck, IconChevronDown, IconEdit, IconRefresh, IconTrash } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
 import { useDisclosure, useHover, useMergedRef } from '@mantine/hooks'
 import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { MouseEvent, useMemo, useRef } from 'react'
 import { ContextMenu } from '../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../hooks/useClickSelectSelectable.ts'
 import SongSectionPartCard from './section/SongSectionPartCard.tsx'
@@ -56,14 +53,12 @@ function SongSectionCard({
   const sectionRef = useMergedRef(hoverRef)
 
   const { songId, isArtistBand } = useSongContext()
-  const { showDetails } = useSongOutlineContext()
+  const { isDetailsShowing, toggleDetails } = useSongOutlineContext()
 
   const [updateSongParts, { isLoading: isUpdateSongPartsLoading }] =
     useBulkUpdateSongPartsMutation()
 
   const [openedContextMenu, { toggle: toggleContextMenu }] = useDisclosure(false)
-  const [openedDetails, setOpenedDetails] = useState(false)
-  useEffect(() => setOpenedDetails(showDetails), [showDetails])
 
   const [openedEdit, { open: openEdit, close: closeEdit }] = useDisclosure(false)
   const [openedDeleteWarning, { open: openDeleteWarning, close: closeDeleteWarning }] =
@@ -84,7 +79,7 @@ function SongSectionCard({
     const instruments: Instrument[] = []
 
     section.parts.forEach((part) => {
-      if (part.progress > progress) progress = section.progress
+      if (part.progress > progress) progress = part.progress
       part.bandMembers.forEach((bandMember) => {
         if (!bandMembers.some((m) => m.id === bandMember.id)) bandMembers.push(bandMember)
       })
@@ -98,7 +93,7 @@ function SongSectionCard({
   function handleClick(e: MouseEvent) {
     if (e.ctrlKey || e.shiftKey) return
     e.stopPropagation()
-    setOpenedDetails(!openedDetails)
+    toggleDetails(section.id)
   }
 
   async function handleAddRehearsal() {
@@ -187,7 +182,7 @@ function SongSectionCard({
                   size={16}
                   style={{
                     transition: 'transform 200ms ease',
-                    transform: openedDetails ? 'rotate(180deg)' : 'rotate(0deg)'
+                    transform: isDetailsShowing(section.id) ? 'rotate(180deg)' : 'rotate(0deg)'
                   }}
                 />
               ) : (
@@ -274,7 +269,7 @@ function SongSectionCard({
       </ContextMenu>
 
       {!isDragStarting && (
-        <Collapse expanded={openedDetails} onTransitionEnd={scrollIntoView}>
+        <Collapse expanded={isDetailsShowing(section.id)} onTransitionEnd={scrollIntoView}>
           <Box pos={'relative'}>
             <Box
               pos={'absolute'}

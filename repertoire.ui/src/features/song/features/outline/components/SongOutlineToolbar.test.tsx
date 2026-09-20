@@ -2,23 +2,23 @@ import {
   emptySong,
   emptySongArrangement,
   emptySongPart,
+  emptySongSection,
   emptySongSettings,
   reduxRender,
   withToastify
 } from '../../../../../test-utils.tsx'
-import { SongArrangement, SongPart } from '../../../../../types/models/Song.ts'
+import { SongArrangement, SongPart, SongSection } from '../../../../../types/models/Song.ts'
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { AddPerfectSongRehearsalRequest } from '../../../../../types/requests/SongRequests.ts'
-import { createRef } from 'react'
+import { createRef, ReactNode } from 'react'
 import SongOutlineToolbar from './SongOutlineToolbar.tsx'
 import OutlineView from '../types/enums/OutlineView.ts'
 import { SongProvider } from '../../../context/SongContext.tsx'
 import { SongOutlineProvider } from '../context/SongOutlineContext.tsx'
-import { ReactNode } from 'react'
 
 // Mock Main Context
 vi.mock('../../../../../../../context/MainContext.tsx', () => ({
@@ -55,6 +55,7 @@ describe('Song Outline Toolbar', () => {
       progress: 40
     }
   ]
+  const sections: SongSection[] = [{ ...emptySongSection, id: 's1', parts }]
 
   const arrangements: SongArrangement[] = [{ ...emptySongArrangement, id: '1' }]
 
@@ -85,13 +86,15 @@ describe('Song Outline Toolbar', () => {
     return reduxRender(
       <SongProvider song={song}>
         <SongOutlineProvider initialView={initialView}>{ui}</SongOutlineProvider>
-      </SongProvider>,
+      </SongProvider>
     )
   }
 
   it('should render for sections', async () => {
-    render(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
-      ...emptySong, defaultArrangementId: '1', settings: emptySongSettings
+    render(<SongOutlineToolbar toggleAdd={vi.fn()} sections={sections} />, {
+      ...emptySong,
+      defaultArrangementId: '1',
+      settings: emptySongSettings
     })
 
     expect(screen.getByRole('button', { name: 'add-new-section' })).toBeInTheDocument()
@@ -133,12 +136,38 @@ describe('Song Outline Toolbar', () => {
     expect(screen.getByRole('radio', { name: 'parts-view' })).toBeChecked()
   })
 
-  it('should disable a few options when there are no section parts', () => {
-    render(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={[]} />, {
-      ...emptySong, defaultArrangementId: '1', settings: emptySongSettings
-    })
+  it('should disable a few options when there are no sections', () => {
+    render(
+      <SongOutlineToolbar
+        toggleAdd={vi.fn()}
+        sections={[]}
+      />,
+      {
+        ...emptySong,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      }
+    )
 
     expect(screen.getByRole('button', { name: 'show-details' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
+  })
+
+  it('should disable a few options when there are no section parts', () => {
+    render(
+      <SongOutlineToolbar
+        toggleAdd={vi.fn()}
+        sections={sections.map((s) => ({ ...s, parts: [] }))}
+      />,
+      {
+        ...emptySong,
+        defaultArrangementId: '1',
+        settings: emptySongSettings
+      }
+    )
+
+    expect(screen.getByRole('button', { name: 'show-details' })).not.toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-custom-rehearsal' })).toBeDisabled()
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
   })
@@ -157,7 +186,9 @@ describe('Song Outline Toolbar', () => {
 
   it('should disable perfect rehearsal when a default arrangement is not set', () => {
     render(<SongOutlineToolbar toggleAdd={vi.fn()} />, {
-      ...emptySong, defaultArrangementId: undefined, settings: emptySongSettings
+      ...emptySong,
+      defaultArrangementId: undefined,
+      settings: emptySongSettings
     })
 
     expect(screen.getByRole('button', { name: 'add-perfect-rehearsal' })).toBeDisabled()
@@ -169,7 +200,8 @@ describe('Song Outline Toolbar', () => {
     const toggleAdd = vi.fn()
 
     render(<SongOutlineToolbar toggleAdd={toggleAdd} />, {
-      ...emptySong, settings: emptySongSettings
+      ...emptySong,
+      settings: emptySongSettings
     })
 
     await user.click(screen.getByRole('button', { name: 'add-new-section' }))
@@ -194,10 +226,10 @@ describe('Song Outline Toolbar', () => {
   it('should show details when clicking on show details', async () => {
     const user = userEvent.setup()
 
-    render(
-      <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />,
-      { ...emptySong, settings: emptySongSettings }
-    )
+    render(<SongOutlineToolbar toggleAdd={vi.fn()} sections={sections} />, {
+      ...emptySong,
+      settings: emptySongSettings
+    })
 
     await user.click(screen.getByRole('button', { name: 'show-details' }))
     expect(screen.queryByRole('button', { name: 'show-details' })).not.toBeInTheDocument()
@@ -212,7 +244,8 @@ describe('Song Outline Toolbar', () => {
     const user = userEvent.setup()
 
     render(<SongOutlineToolbar toggleAdd={vi.fn()} />, {
-      ...emptySong, settings: emptySongSettings
+      ...emptySong,
+      settings: emptySongSettings
     })
 
     await user.click(screen.getByRole('button', { name: /song-arrangements/i }))
@@ -232,8 +265,11 @@ describe('Song Outline Toolbar', () => {
 
     const songId = 'some-id'
 
-    render(withToastify(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />), {
-      ...emptySong, id: songId, settings: emptySongSettings, defaultArrangementId: '1'
+    render(withToastify(<SongOutlineToolbar toggleAdd={vi.fn()} sections={sections} />), {
+      ...emptySong,
+      id: songId,
+      settings: emptySongSettings,
+      defaultArrangementId: '1'
     })
 
     await user.click(screen.getByRole('button', { name: 'add-perfect-rehearsal' }))
@@ -250,8 +286,9 @@ describe('Song Outline Toolbar', () => {
   it('should hide details when song changes', async () => {
     const user = userEvent.setup()
 
-    const [{ rerender }] = render(<SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />, {
-      ...emptySong, settings: emptySongSettings
+    const [{ rerender }] = render(<SongOutlineToolbar toggleAdd={vi.fn()} sections={sections} />, {
+      ...emptySong,
+      settings: emptySongSettings
     })
 
     await user.click(screen.getByRole('button', { name: 'show-details' }))
@@ -262,7 +299,7 @@ describe('Song Outline Toolbar', () => {
     rerender(
       <SongProvider song={newSong}>
         <SongOutlineProvider>
-          <SongOutlineToolbar toggleAdd={vi.fn()} sectionParts={parts} />
+          <SongOutlineToolbar toggleAdd={vi.fn()} sections={sections} />
         </SongOutlineProvider>
       </SongProvider>
     )

@@ -17,6 +17,7 @@ import { useClickSelect } from '../../../../../context/ClickSelectContext.tsx'
 import { SongProvider } from '../../../context/SongContext.tsx'
 import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
 import { ReactNode } from 'react'
+import OutlineView from '../../outline/types/enums/OutlineView.ts'
 
 // Mock Context
 vi.mock('../../../../../context/ClickSelectContext', () => ({
@@ -68,12 +69,17 @@ describe('Song Part Card', () => {
   function render(
     ui: ReactNode,
     song: Song = emptySong,
-    initialShowDetails = false
+    initialDetailsPartIds: Set<string> = new Set()
   ) {
     return reduxRender(
       <SongProvider song={song}>
-        <SongOutlineProvider initialShowDetails={initialShowDetails}>{ui}</SongOutlineProvider>
-      </SongProvider>,
+        <SongOutlineProvider
+          initialView={OutlineView.Parts}
+          initialDetailsPartIds={initialDetailsPartIds}
+        >
+          {ui}
+        </SongOutlineProvider>
+      </SongProvider>
     )
   }
 
@@ -100,7 +106,7 @@ describe('Song Part Card', () => {
       {
         id: '2',
         name: 'Leonard',
-        roles: [{ id: '2', name: 'Voice' }],
+        roles: [{ id: '2', name: 'Voice' }]
       }
     ]
 
@@ -202,7 +208,7 @@ describe('Song Part Card', () => {
     render(
       <SongPartCard part={part} maxPartProgress={maxPartProgress} isDragging={false} />,
       { ...emptySong, artist: { ...emptyArtist, isBand: false } },
-      true
+      new Set([part.id])
     )
 
     await shouldShowDetails(maxPartProgress)
@@ -256,10 +262,11 @@ describe('Song Part Card', () => {
         })
       )
 
-      render(
-        withToastify(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />),
-        { ...emptySong, id: songId, artist: { ...emptyArtist, isBand: false } }
-      )
+      render(withToastify(<SongPartCard part={part} maxPartProgress={0} isDragging={false} />), {
+        ...emptySong,
+        id: songId,
+        artist: { ...emptyArtist, isBand: false }
+      })
 
       await user.click(screen.getByRole('button', { name: 'more-menu' }))
       await user.click(screen.getByRole('menuitem', { name: /delete/i }))

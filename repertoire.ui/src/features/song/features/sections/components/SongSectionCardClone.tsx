@@ -1,7 +1,4 @@
-import {
-  Instrument,
-  SongSection as SongSectionModel
-} from '../../../../../types/models/Song.ts'
+import { Instrument, SongSection as SongSectionModel } from '../../../../../types/models/Song.ts'
 import { alpha, Group, Stack, Text } from '@mantine/core'
 import { IconChevronDown } from '@tabler/icons-react'
 import { DraggableProvided } from '@hello-pangea/dnd'
@@ -14,6 +11,7 @@ import RehearsalsBadge from '../../outline/components/RehearsalsBadge.tsx'
 import BandMembersGroup from '../../outline/components/BandMembersGroup.tsx'
 import InstrumentsGroup from './section/InstrumentsGroup.tsx'
 import { useSongContext } from '../../../context/SongContext.tsx'
+import { useSongOutlineContext } from '../../outline/context/SongOutlineContext.tsx'
 
 interface SongSectionCardCloneProps {
   section: SongSectionModel
@@ -31,6 +29,7 @@ function SongSectionCardClone({
   draggableProvided
 }: SongSectionCardCloneProps) {
   const { isArtistBand } = useSongContext()
+  const { isDetailsShowing } = useSongOutlineContext()
 
   const [bandMembers, instruments] = useMemo(() => {
     const bandMembers: BandMember[] = []
@@ -79,7 +78,14 @@ function SongSectionCardClone({
       })}
     >
       <Group gap={'sm'} pl={'sm'} pr={'md'}>
-        <IconChevronDown color={'gray'} size={16} />
+        <IconChevronDown
+          color={'gray'}
+          size={16}
+          style={{
+            transition: 'transform 200ms ease',
+            transform: isDetailsShowing(section.id) ? 'rotate(180deg)' : 'rotate(0deg)'
+          }}
+        />
 
         <Stack gap={'xs'} flex={1}>
           <Group gap={'xs'}>

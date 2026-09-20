@@ -73,10 +73,16 @@ describe('Song Section Card', () => {
     server.close()
   })
 
-  function render(ui: ReactNode, song = emptySong, initialShowDetails = false) {
+  function render(
+    ui: ReactNode,
+    song = emptySong,
+    initialDetailsSectionIds: Set<string> = new Set()
+  ) {
     return reduxRender(
       <SongProvider song={song}>
-        <SongOutlineProvider initialShowDetails={initialShowDetails}>{ui}</SongOutlineProvider>
+        <SongOutlineProvider initialDetailsSectionIds={initialDetailsSectionIds}>
+          {ui}
+        </SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -224,7 +230,7 @@ describe('Song Section Card', () => {
     render(
       <SongSectionCard section={section} maxSectionProgress={0} isDragging={false} />,
       emptySong,
-      true
+      new Set([section.id])
     )
 
     section.parts.forEach((part) => {

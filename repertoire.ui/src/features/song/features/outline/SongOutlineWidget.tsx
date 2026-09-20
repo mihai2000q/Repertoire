@@ -1,5 +1,5 @@
 import { Card, Group, ScrollArea, Stack, Text } from '@mantine/core'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import LoadingOverlayDebounced from '../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useMain } from '../../../../context/MainContext.tsx'
 import { ClickSelectProvider } from '../../../../context/ClickSelectContext.tsx'
@@ -25,7 +25,7 @@ interface SongOutlineWidgetProps {
 
 function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
   const { songId } = useSongContext()
-  const { view, showDetails } = useSongOutlineContext()
+  const { view, areAllDetailsShowing } = useSongOutlineContext()
 
   const {
     data: sections,
@@ -42,6 +42,12 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
     isLoading: isPartsLoading,
     isFetching: isPartsFetching
   } = useGetSongPartsQuery({ songId: songId }, { skip: view !== OutlineView.Parts })
+
+  const currentIds = useMemo(
+    () =>
+      (view === OutlineView.Sections ? sections?.map((s) => s.id) : parts?.map((p) => p.id)) ?? [],
+    [view, sections, parts]
+  )
 
   const [openedAdd, { toggle: toggleAdd, close: closeAdd }] = useDisclosure(false)
   useEffect(() => closeAdd(), [songId, view])
@@ -83,7 +89,7 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
             <SongOutlineToolbar
               toggleAdd={toggleAdd}
               parts={parts}
-              sectionParts={sections?.flatMap((s) => s.parts)}
+              sections={sections}
               scrollIntoView={scrollIntoView}
             />
           </Group>
@@ -93,8 +99,13 @@ function SongOutlineWidget({ isSongFetching }: SongOutlineWidgetProps) {
             scrollbars={'y'}
             scrollbarSize={7}
             mah={
-              (view === OutlineView.Sections ? (showDetails ? 2.5 : 2) : showDetails ? 2 : 1) *
-              383.35
+              (view === OutlineView.Sections
+                ? areAllDetailsShowing(currentIds)
+                  ? 2.5
+                  : 2
+                : areAllDetailsShowing(currentIds)
+                  ? 2
+                  : 1) * 383.35
             }
             style={{ transition: 'max-height 0.25s' }}
           >

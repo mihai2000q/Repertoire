@@ -5,30 +5,30 @@ import PopoverConfirmation from '../../../../../components/popover/PopoverConfir
 import SongOutlineSettingsButton from './toolbar/SongOutlineSettingsButton.tsx'
 import SongOutlineViewControl from './toolbar/SongOutlineViewControl.tsx'
 import { useAddPerfectSongRehearsalMutation } from '../../../../../state/api/songsApi.ts'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useDisclosure } from '@mantine/hooks'
 import { toast } from 'react-toastify'
 import OutlineView from '../types/enums/OutlineView.ts'
 import SongArrangementsModal from '../../arrangements/SongArrangementsModal.tsx'
-import { SongPart } from '../../../../../types/models/Song.ts'
+import { SongPart, SongSection } from '../../../../../types/models/Song.ts'
 import { useSongContext } from '../../../context/SongContext.tsx'
 import { useSongOutlineContext } from '../context/SongOutlineContext.tsx'
 
 interface SongOutlineToolbarProps {
   toggleAdd: () => void
   parts?: SongPart[]
-  sectionParts?: SongPart[]
+  sections?: SongSection[]
   scrollIntoView?: () => void
 }
 
 function SongOutlineToolbar({
   toggleAdd,
   parts,
-  sectionParts,
+  sections,
   scrollIntoView
 }: SongOutlineToolbarProps) {
   const { songId, defaultArrangementId: defaultSongArrangementId } = useSongContext()
-  const { view: outlineView, showDetails, setShowDetails } = useSongOutlineContext()
+  const { view: outlineView, areAllDetailsShowing, toggleAllDetails } = useSongOutlineContext()
 
   const [addPerfectRehearsal, { isLoading: isPerfectRehearsalLoading }] =
     useAddPerfectSongRehearsalMutation()
@@ -37,10 +37,19 @@ function SongOutlineToolbar({
   const [openedArrangements, { open: openArrangements, close: closeArrangements }] =
     useDisclosure(false)
 
+  const currentIds = useMemo(
+    () =>
+      (outlineView === OutlineView.Sections
+        ? sections?.map((s) => s.id)
+        : parts?.map((p) => p.id)) ?? [],
+    [outlineView, sections, parts]
+  )
+
+  const sectionParts = sections?.flatMap((s) => s.parts)
   const currentParts = (outlineView === OutlineView.Sections ? sectionParts : parts) ?? []
   function handleShowDetails() {
-    setShowDetails(!showDetails)
-    if (!showDetails && scrollIntoView) setTimeout(scrollIntoView, 250)
+    toggleAllDetails(currentIds)
+    if (!areAllDetailsShowing && scrollIntoView) setTimeout(scrollIntoView, 250)
   }
 
   async function handleAddPerfectRehearsal() {
@@ -65,21 +74,21 @@ function SongOutlineToolbar({
 
         <Tooltip
           label={
-            currentParts.length > 0
-              ? showDetails
+            currentIds.length > 0
+              ? `To show details you need ${outlineView === OutlineView.Sections ? 'sections' : 'parts'}`
+              : areAllDetailsShowing(currentIds)
                 ? 'Hide details'
                 : 'Show Details'
-              : `To show details you need parts`
           }
         >
           <ActionIcon
-            aria-label={showDetails ? 'hide-details' : 'show-details'}
+            aria-label={areAllDetailsShowing(currentIds) ? 'hide-details' : 'show-details'}
             variant={'grey'}
             size={'sm'}
-            disabled={currentParts.length === 0}
+            disabled={currentIds.length === 0}
             onClick={handleShowDetails}
           >
-            {showDetails ? <IconEyeOff size={16} /> : <IconEye size={16} />}
+            {areAllDetailsShowing(currentIds) ? <IconEyeOff size={16} /> : <IconEye size={16} />}
           </ActionIcon>
         </Tooltip>
 
