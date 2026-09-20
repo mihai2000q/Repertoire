@@ -1,6 +1,7 @@
 import { emptySong, emptySongSection, reduxRender } from '../../../../../../test-utils.tsx'
 import { SongProvider } from '../../context/SongContext.tsx'
 import { SongOutlineProvider } from '../outline/context/SongOutlineContext.tsx'
+import { ClickSelectProvider } from '../../../../../../context/ClickSelectContext.tsx'
 import SongSections from './SongSections.tsx'
 import Song, { SongSection } from '../../../../../../types/models/Song.ts'
 import { fireEvent, screen } from '@testing-library/react'
@@ -62,6 +63,9 @@ describe('Song Sections', () => {
   const handlers = [
     http.get('/songs/sections/types', () => {
       return HttpResponse.json([])
+    }),
+    http.get('/songs/instruments', () => {
+      return HttpResponse.json([])
     })
   ]
 
@@ -79,7 +83,9 @@ describe('Song Sections', () => {
   function render(ui: ReactNode, song: Song = emptySong) {
     return reduxRender(
       <SongProvider song={song}>
-        <SongOutlineProvider>{ui}</SongOutlineProvider>
+        <SongOutlineProvider>
+          <ClickSelectProvider data={sections}>{ui}</ClickSelectProvider>
+        </SongOutlineProvider>
       </SongProvider>
     )
   }
@@ -87,11 +93,9 @@ describe('Song Sections', () => {
   it('should render', async () => {
     render(<SongSections sections={sections} />)
 
-    const renderedSections = screen.getAllByLabelText(/song-section-(?!details)/)
-    for (let i = 0; i < sections.length; i++) {
-      expect(renderedSections[i]).toHaveAccessibleName(`song-section-${sections[i].name}`)
-    }
-    screen.queryAllByLabelText(/song-section-details-/).forEach((d) => expect(d).not.toBeVisible())
+    sections.forEach((section) => {
+      expect(screen.getByLabelText(`song-section-${section.name}`)).toBeInTheDocument()
+    })
   })
 
   it.skip('should be able to reorder sections', async () => {

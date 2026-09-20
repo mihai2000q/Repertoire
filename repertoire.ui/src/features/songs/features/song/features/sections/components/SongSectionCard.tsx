@@ -10,7 +10,7 @@ import EditSongSectionModal from './modal/EditSongSectionModal.tsx'
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { ContextMenu } from '../../../../../../../components/menu/ContextMenu.tsx'
 import useClickSelectSelectable from '../../../../../../../hooks/useClickSelectSelectable.ts'
-import SongSectionPartCard from './SongSectionPartCard.tsx'
+import SongSectionPartCard from './section/SongSectionPartCard.tsx'
 import { BandMember } from '../../../../../../../types/models/Artist.ts'
 import SongSectionTypeBadge from './section/SongSectionTypeBadge.tsx'
 import SongOutlineConfidenceBar from '../../outline/components/SongOutlineConfidenceBar.tsx'
@@ -31,6 +31,7 @@ interface SongSectionCardProps {
   section: SongSectionModel
   maxSectionProgress: number
   isDragging: boolean
+  isDragStarting?: boolean
   draggableProvided?: DraggableProvided
   scrollIntoView?: () => void
 }
@@ -39,6 +40,7 @@ function SongSectionCard({
   section,
   maxSectionProgress,
   isDragging,
+  isDragStarting,
   draggableProvided,
   scrollIntoView
 }: SongSectionCardProps) {
@@ -204,7 +206,7 @@ function SongSectionCard({
 
               <Stack gap={'xs'} flex={1}>
                 <Group gap={'xs'}>
-                  <Text fw={600} fz={'13px'} truncate={'end'}>
+                  <Text fw={600} fz={13} truncate={'end'}>
                     {section.name}
                   </Text>
                   <SongSectionTypeBadge songSectionType={section.songSectionType} />
@@ -271,33 +273,35 @@ function SongSectionCard({
         />
       </ContextMenu>
 
-      <Collapse expanded={openedDetails} onTransitionEnd={scrollIntoView}>
-        <Box pos={'relative'}>
-          <Box
-            pos={'absolute'}
-            top={0}
-            left={35}
-            bottom={0}
-            my={'4px'}
-            style={(theme) => ({
-              borderLeft: `2px solid ${theme.colors.gray[1]}`
-            })}
-          />
-          <Stack gap={0} pl={35}>
-            {section.parts.map((part) => (
-              <SongSectionPartCard
-                key={part.id}
-                part={part}
-                sectionId={section.id}
-                maxPartProgress={maxPartProgress}
-                isDragging={false}
-                showRehearsalsToast={showRehearsalsToast}
-              />
-            ))}
-            <AddNewSongSectionPart section={section} />
-          </Stack>
-        </Box>
-      </Collapse>
+      {!isDragStarting && (
+        <Collapse expanded={openedDetails} onTransitionEnd={scrollIntoView}>
+          <Box pos={'relative'}>
+            <Box
+              pos={'absolute'}
+              top={0}
+              left={35}
+              bottom={0}
+              my={'4px'}
+              style={(theme) => ({
+                borderLeft: `2px solid ${theme.colors.gray[1]}`
+              })}
+            />
+            <Stack gap={0} pl={35}>
+              {section.parts.map((part) => (
+                <SongSectionPartCard
+                  key={part.id}
+                  part={part}
+                  sectionId={section.id}
+                  maxPartProgress={maxPartProgress}
+                  isDragging={false}
+                  showRehearsalsToast={showRehearsalsToast}
+                />
+              ))}
+              <AddNewSongSectionPart section={section} />
+            </Stack>
+          </Box>
+        </Collapse>
+      )}
     </Stack>
   )
 }

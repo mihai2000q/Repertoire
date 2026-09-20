@@ -4,12 +4,14 @@ import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd'
 import { useDidUpdate, useListState } from '@mantine/hooks'
 import { SongSection } from '../../../../../../types/models/Song.ts'
 import SongSectionCard from './components/SongSectionCard.tsx'
-import { useMemo } from 'react'
+import { flushSync } from 'react-dom'
+import { useMemo, useState } from 'react'
 import SongSectionsContextMenu from './components/SongSectionsContextMenu.tsx'
 import SongSectionsSelectionDrawer from './components/SongSectionsSelectionDrawer.tsx'
 import { useClickSelect } from '../../../../../../context/ClickSelectContext.tsx'
 import LoadingOverlayDebounced from '../../../../../../components/loader/LoadingOverlayDebounced.tsx'
 import { useSongContext } from '../../context/SongContext.tsx'
+import SongSectionCardClone from './components/SongSectionCardClone.tsx'
 
 interface SongSectionsWidgetProps {
   sections: SongSection[]
@@ -27,6 +29,7 @@ function SongSections({
   const { songId } = useSongContext()
 
   const [moveSongSection, { isLoading: isMoveLoading }] = useMoveSongSectionMutation()
+  const [isDragStarting, setIsDragStarting] = useState(false)
 
   const [internalSections, { reorder, setState }] = useListState<SongSection>(sections)
   useDidUpdate(() => setState(sections), [sections])
@@ -41,7 +44,13 @@ function SongSections({
     return [progress]
   }, [sections])
 
+  function onBeforeCapture() {
+    flushSync(() => setIsDragStarting(true))
+  }
+
   function onSectionsDragEnd({ source, destination }) {
+    setIsDragStarting(false)
+
     if (!destination || source.index === destination.index) return
 
     reorder({ from: source.index, to: destination.index })
@@ -57,8 +66,20 @@ function SongSections({
       <LoadingOverlayDebounced visible={isSectionsFetching && !isSongFetching} timeout={750} />
       <SongSectionsContextMenu sections={sections} songId={songId}>
         <span style={{ display: 'contents' }}>
-          <DragDropContext onDragEnd={onSectionsDragEnd}>
-            <Droppable droppableId="dnd-list" direction="vertical">
+          <DragDropContext onBeforeCapture={onBeforeCapture} onDragEnd={onSectionsDragEnd}>
+            <Droppable
+              droppableId="dnd-list"
+              direction="vertical"
+              renderClone={(provided, snapshot, rubric) => (
+                <SongSectionCardClone
+                  section={internalSections[rubric.source.index]}
+                  isDragging={snapshot.isDragging}
+                  isDropAnimating={snapshot.isDropAnimating}
+                  maxSectionProgress={maxSectionProgress}
+                  draggableProvided={provided}
+                />
+              )}
+            >
               {(provided) => (
                 <Box ref={provided.innerRef} {...provided.droppableProps}>
                   {internalSections.map((section, index) => {
@@ -81,6 +102,7 @@ function SongSections({
                             section={section}
                             maxSectionProgress={maxSectionProgress}
                             isDragging={snapshot.isDragging}
+                            isDragStarting={isDragStarting}
                             draggableProvided={provided}
                             scrollIntoView={scrollIntoView}
                           />
