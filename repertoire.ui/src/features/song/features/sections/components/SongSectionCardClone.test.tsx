@@ -10,6 +10,7 @@ import { Instrument, SongSection } from '../../../../../types/models/Song.ts'
 import { BandMember } from '../../../../../types/models/Artist.ts'
 import { screen, within } from '@testing-library/react'
 import { SongProvider } from '../../../context/SongContext.tsx'
+import { SongOutlineProvider } from '../../outline/context/SongOutlineContext.tsx'
 
 describe('Song Section Card Clone', () => {
   const section: SongSection = {
@@ -33,12 +34,14 @@ describe('Song Section Card Clone', () => {
   ) {
     return mantineRender(
       <SongProvider song={song}>
-        <SongSectionCardClone
-          section={cloneSection}
-          isDragging={isDragging}
-          isDropAnimating={isDropAnimating}
-          maxSectionProgress={200}
-        />
+        <SongOutlineProvider>
+          <SongSectionCardClone
+            section={cloneSection}
+            isDragging={isDragging}
+            isDropAnimating={isDropAnimating}
+            maxSectionProgress={200}
+          />
+        </SongOutlineProvider>
       </SongProvider>
     )
   }
