@@ -60,7 +60,7 @@ function SongSectionsContextMenu({ children, sections, songId }: SongSectionsCon
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'song-sections-context-menu'}>
           <MenuItemConfirmation
             isLoading={bulkUpdateIsLoading}
             onConfirm={handleAddRehearsals}

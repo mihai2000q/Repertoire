@@ -209,7 +209,10 @@ describe('Artist Albums Widget', () => {
     expect(screen.getByLabelText('albums-selection-drawer')).toBeInTheDocument()
 
     // context menu
-    // await user.pointer({ keys: '[MouseRight>]', target: screen.getByLabelText(`albums-card-${albumModels[0].title}`) })
-    // expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`albums-card-${albumModels[0].title}`)
+    })
+    expect(await screen.findByRole('menu', { name: 'albums-context-menu' })).toBeInTheDocument()
   })
 })

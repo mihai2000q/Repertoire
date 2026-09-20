@@ -22,7 +22,6 @@ function AlbumsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
-        aria-label={'albums-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -30,7 +29,7 @@ function AlbumsContextMenu({ children }: { children: ReactNode }) {
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'albums-context-menu'}>
           <AddToPlaylistMenuItem
             ids={selectedIds}
             type={'albums'}

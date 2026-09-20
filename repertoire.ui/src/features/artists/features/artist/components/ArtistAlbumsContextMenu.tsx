@@ -35,7 +35,6 @@ function ArtistAlbumsContextMenu({
   return (
     <>
       <ContextMenu
-        aria-label={'albums-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -43,7 +42,7 @@ function ArtistAlbumsContextMenu({
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'albums-context-menu'}>
           <AddToPlaylistMenuItem
             ids={selectedIds}
             type={'albums'}

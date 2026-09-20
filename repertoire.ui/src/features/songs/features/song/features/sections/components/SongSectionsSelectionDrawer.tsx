@@ -62,7 +62,14 @@ function SongSectionsSelectionDrawer({ sections, songId }: SongSectionsSelection
         text={selectionText}
         actionIcons={
           <Tooltip.Group openDelay={200}>
-            <Tooltip label={'Add Rehearsals'} openDelay={200}>
+            <Tooltip
+              label={
+                selectedSectionParts.length === 0
+                  ? 'You need to select at least a part'
+                  : 'Add Rehearsals'
+              }
+              openDelay={200}
+            >
               <ActionIcon
                 aria-label={'add-rehearsals'}
                 variant={'grey-primary'}

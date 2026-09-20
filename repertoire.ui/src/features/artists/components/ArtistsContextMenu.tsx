@@ -22,7 +22,6 @@ function ArtistsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
-        aria-label={'artists-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -30,7 +29,7 @@ function ArtistsContextMenu({ children }: { children: ReactNode }) {
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'artists-context-menu'}>
           <AddToPlaylistMenuItem
             ids={selectedIds}
             type={'artists'}

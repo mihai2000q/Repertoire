@@ -21,7 +21,6 @@ function PlaylistsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
-        aria-label={'playlists-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -29,7 +28,7 @@ function PlaylistsContextMenu({ children }: { children: ReactNode }) {
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'playlists-context-menu'}>
           <PerfectRehearsalsMenuItem
             ids={selectedIds}
             closeMenu={closeMenu}

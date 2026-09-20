@@ -38,7 +38,6 @@ function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongs
   return (
     <>
       <ContextMenu
-        aria-label={'songs-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -46,7 +45,7 @@ function PlaylistSongsContextMenu({ children, playlistId, songs }: PlaylistSongs
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'songs-context-menu'}>
           <AddToPlaylistMenuItem
             ids={selectedSongIds}
             type={'songs'}

@@ -50,7 +50,6 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
   return (
     <>
       <ContextMenu
-        aria-label={'song-parts-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -58,7 +57,7 @@ function SongPartsContextMenu({ children, songId, parts }: SongPartsContextMenuP
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'song-parts-context-menu'}>
           <ContextMenu.Label></ContextMenu.Label>
 
           <MenuItemConfirmation

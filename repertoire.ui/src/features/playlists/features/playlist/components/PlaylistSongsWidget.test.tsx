@@ -245,10 +245,10 @@ describe('Playlist Songs Card', () => {
     expect(screen.getByLabelText('songs-selection-drawer')).toBeInTheDocument()
 
     // context menu
-    // await user.pointer({
-    //   keys: '[MouseRight>]',
-    //   target: screen.getByLabelText(`song-card-${songs[0].title}`)
-    // })
-    // expect(await screen.findByRole('menu', { name: 'songs-context-menu' })).toBeInTheDocument()
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`song-card-${songs[0].title}`)
+    })
+    expect(await screen.findByRole('menu', { name: 'songs-context-menu' })).toBeInTheDocument()
   })
 })

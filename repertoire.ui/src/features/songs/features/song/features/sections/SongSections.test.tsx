@@ -145,10 +145,13 @@ describe('Song Sections', () => {
     expect(screen.getByLabelText('song-sections-selection-drawer')).toBeInTheDocument()
 
     // context menu
-    // await user.pointer({
-    //   keys: '[MouseRight>]',
-    //   target: screen.getByLabelText(`song-section-card-${songs[0].title}`)
-    // })
-    // expect(await screen.findByRole('menu', { name: 'song-sections-context-menu' })).toBeInTheDocument()
+    await user.pointer({
+      keys: '[MouseRight>]',
+      target: screen.getByLabelText(`song-section-${sections[0].name}`)
+    })
+
+    expect(
+      await screen.findByRole('menu', { name: 'song-sections-context-menu' })
+    ).toBeInTheDocument()
   })
 })
