@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
+	"repertoire/server/domain/validator"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
@@ -13,20 +14,20 @@ import (
 )
 
 type UpdateAllSongParts struct {
-	songRepository     repository.SongRepository
-	artistRepository   repository.ArtistRepository
-	transactionManager transaction.Manager
+	songRepository      repository.SongRepository
+	bandMemberValidator validator.BandMemberValidator
+	transactionManager  transaction.Manager
 }
 
 func NewUpdateAllSongParts(
 	songRepository repository.SongRepository,
-	artistRepository repository.ArtistRepository,
+	bandMemberValidator validator.BandMemberValidator,
 	transactionManager transaction.Manager,
 ) UpdateAllSongParts {
 	return UpdateAllSongParts{
-		songRepository:     songRepository,
-		artistRepository:   artistRepository,
-		transactionManager: transactionManager,
+		songRepository:      songRepository,
+		bandMemberValidator: bandMemberValidator,
+		transactionManager:  transactionManager,
 	}
 }
 
@@ -39,10 +40,13 @@ func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *
 		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
+	var bandMemberIDs []uuid.UUID
 	if request.BandMemberID != nil {
-		if errCode := u.validateBandMember(*request.BandMemberID, song); errCode != nil {
-			return errCode
-		}
+		bandMemberIDs = []uuid.UUID{*request.BandMemberID}
+	}
+	bandMembers, errCode := u.bandMemberValidator.Validate(bandMemberIDs, song)
+	if errCode != nil {
+		return errCode
 	}
 
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
@@ -63,18 +67,17 @@ func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *
 			}
 		}
 
-		if request.BandMemberID != nil {
+		// no band members in the request means leaving the current ones untouched
+		if len(bandMembers) > 0 {
 			var sectionParts []model.SongSectionPart
 			if err := txSongSectionRepo.GetAllSectionPartsByPartIDs(&sectionParts, partIDs); err != nil {
 				return err
 			}
 
 			for i := range sectionParts {
-				sectionParts[i].BandMemberID = request.BandMemberID
-			}
-
-			if err := txSongSectionRepo.UpdateAllSectionParts(&sectionParts); err != nil {
-				return err
+				if err := txSongSectionRepo.ReplaceSectionPartBandMembers(&sectionParts[i], bandMembers); err != nil {
+					return err
+				}
 			}
 		}
 
@@ -84,22 +87,5 @@ func (u UpdateAllSongParts) Handle(request requests.UpdateAllSongPartsRequest) *
 		return httperror.DatabaseError(err)
 	}
 
-	return nil
-}
-
-func (u UpdateAllSongParts) validateBandMember(
-	bandMemberID uuid.UUID,
-	song model.Song,
-) *httperror.ErrorCode {
-	var member model.BandMember
-	if err := u.artistRepository.GetBandMember(&member, bandMemberID); err != nil {
-		return httperror.DatabaseError(err)
-	}
-	if reflect.ValueOf(member).IsZero() {
-		return httperror.NotFoundError(errors.New("band member not found"))
-	}
-	if song.ArtistID == nil || *song.ArtistID != member.ArtistID {
-		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
-	}
 	return nil
 }

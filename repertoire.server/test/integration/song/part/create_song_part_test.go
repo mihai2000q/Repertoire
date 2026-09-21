@@ -86,15 +86,15 @@ func TestCreateSongPart_WhenSectionDoesNotBelongToSong_ShouldReturnConflictError
 	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
-func TestCreateSongPart_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestCreateSongPart_WhenBandMembersAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.CreateSongPartRequest{
-		SongID:       songData.Songs[0].ID,
-		Name:         "Chorus 1-New",
-		SectionID:    &songData.SongSections[0].ID,
-		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+		SongID:        songData.Songs[0].ID,
+		Name:          "Chorus 1-New",
+		SectionID:     &songData.SongSections[0].ID,
+		BandMemberIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
@@ -110,10 +110,10 @@ func TestCreateSongPart_WhenWithBandMemberButSongHasNoArtist_ShouldReturnConflic
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.CreateSongPartRequest{
-		SongID:       songData.Songs[4].ID,
-		Name:         "Chorus 1-New",
-		SectionID:    &songData.SongSections[4].ID,
-		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
+		SongID:        songData.Songs[4].ID,
+		Name:          "Chorus 1-New",
+		SectionID:     &songData.SongSections[4].ID,
+		BandMemberIDs: []uuid.UUID{songData.Artists[1].BandMembers[0].ID},
 	}
 
 	// when
@@ -129,10 +129,10 @@ func TestCreateSongPart_WhenWithBandMemberButItIsNotAssociated_ShouldReturnConfl
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	request := requests.CreateSongPartRequest{
-		SongID:       songData.Songs[0].ID,
-		Name:         "Chorus 1-New",
-		SectionID:    &songData.SongSections[0].ID,
-		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
+		SongID:        songData.Songs[0].ID,
+		Name:          "Chorus 1-New",
+		SectionID:     &songData.SongSections[0].ID,
+		BandMemberIDs: []uuid.UUID{songData.Artists[1].BandMembers[0].ID},
 	}
 
 	// when
@@ -167,12 +167,12 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 			songData.Songs[0],
 		},
 		{
-			"With Band Member and Section",
+			"With Band Members and Section",
 			requests.CreateSongPartRequest{
-				SongID:       songData.Songs[0].ID,
-				Name:         "Chorus 1-New",
-				SectionID:    &songData.SongSections[0].ID,
-				BandMemberID: &songData.Artists[0].BandMembers[0].ID,
+				SongID:        songData.Songs[0].ID,
+				Name:          "Chorus 1-New",
+				SectionID:     &songData.SongSections[0].ID,
+				BandMemberIDs: []uuid.UUID{songData.Artists[0].BandMembers[0].ID},
 			},
 			songData.Songs[0],
 		},
@@ -215,7 +215,7 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 				}).
 				Preload("Song.Arrangements.PartOccurrences.Part").
 				Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-					return db.Order("\"order\"")
+					return db.Preload("BandMembers").Order("\"order\"")
 				}).
 				Find(&part, &model.SongPart{Name: test.request.Name})
 
@@ -235,7 +235,7 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 				assert.Zero(t, newOccurrence.Occurrences)
 			}
 
-			// updateBandMember
+			// updateBandMembers
 			if test.request.SectionID == nil {
 				assert.Empty(t, part.SectionParts)
 				return
@@ -245,7 +245,12 @@ func TestCreateSongPart_WhenSuccessful_ShouldCreatePart(t *testing.T) {
 			newSectionPart := part.SectionParts[0]
 			assert.Equal(t, part.ID, newSectionPart.PartID)
 			assert.Equal(t, *test.request.SectionID, newSectionPart.SectionID)
-			assert.Equal(t, test.request.BandMemberID, newSectionPart.BandMemberID)
+			assert.Len(t, newSectionPart.BandMembers, len(test.request.BandMemberIDs))
+			bandMemberIDs := make([]uuid.UUID, len(newSectionPart.BandMembers))
+			for i, bm := range newSectionPart.BandMembers {
+				bandMemberIDs[i] = bm.ID
+			}
+			assert.ElementsMatch(t, test.request.BandMemberIDs, bandMemberIDs)
 			assert.Equal(t, uint(sectionPartsCount), newSectionPart.Order)
 		})
 	}

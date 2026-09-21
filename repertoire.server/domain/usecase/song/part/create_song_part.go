@@ -6,6 +6,7 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
+	"repertoire/server/domain/validator"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 
@@ -15,7 +16,7 @@ import (
 type CreateSongPart struct {
 	songSectionRepository repository.SongSectionRepository
 	songRepository        repository.SongRepository
-	artistRepository      repository.ArtistRepository
+	bandMemberValidator   validator.BandMemberValidator
 	transactionManager    transaction.Manager
 
 	txSongRepo            repository.SongRepository
@@ -27,13 +28,13 @@ type CreateSongPart struct {
 func NewCreateSongPart(
 	songSectionRepository repository.SongSectionRepository,
 	songRepository repository.SongRepository,
-	artistRepository repository.ArtistRepository,
+	bandMemberValidator validator.BandMemberValidator,
 	transactionManager transaction.Manager,
 ) CreateSongPart {
 	return CreateSongPart{
 		songSectionRepository: songSectionRepository,
 		songRepository:        songRepository,
-		artistRepository:      artistRepository,
+		bandMemberValidator:   bandMemberValidator,
 		transactionManager:    transactionManager,
 	}
 }
@@ -53,10 +54,9 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *httperro
 		}
 	}
 
-	if request.BandMemberID != nil {
-		if errCode := c.validateBandMember(*request.BandMemberID, song); errCode != nil {
-			return errCode
-		}
+	bandMembers, errCode := c.bandMemberValidator.Validate(request.BandMemberIDs, song)
+	if errCode != nil {
+		return errCode
 	}
 
 	err := c.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
@@ -87,10 +87,10 @@ func (c CreateSongPart) Handle(request requests.CreateSongPartRequest) *httperro
 
 			part.SectionParts = []model.SongSectionPart{
 				{
-					PartID:       part.ID,
-					SectionID:    *request.SectionID,
-					Order:        uint(sectionPartsCount),
-					BandMemberID: request.BandMemberID,
+					PartID:      part.ID,
+					SectionID:   *request.SectionID,
+					Order:       uint(sectionPartsCount),
+					BandMembers: bandMembers,
 				},
 			}
 		}
@@ -126,20 +126,6 @@ func (c CreateSongPart) validateSection(sectionID uuid.UUID, song model.Song) *h
 	}
 	if section.SongID != song.ID {
 		return httperror.ConflictError(errors.New("section does not belong to the same song"))
-	}
-	return nil
-}
-
-func (c CreateSongPart) validateBandMember(id uuid.UUID, song model.Song) *httperror.ErrorCode {
-	var member model.BandMember
-	if err := c.artistRepository.GetBandMember(&member, id); err != nil {
-		return httperror.DatabaseError(err)
-	}
-	if reflect.ValueOf(member).IsZero() {
-		return httperror.NotFoundError(errors.New("band member not found"))
-	}
-	if song.ArtistID == nil || *song.ArtistID != member.ArtistID {
-		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
 	}
 	return nil
 }

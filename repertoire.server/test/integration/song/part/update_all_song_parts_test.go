@@ -87,12 +87,14 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldUpdateAllSongParts(t *testing.T
 	var updatedSong model.Song
 	db.Preload("Parts").
 		Preload("Parts.SectionParts").
+		Preload("Parts.SectionParts.BandMembers").
 		Find(&updatedSong, request.SongID)
 
 	for _, part := range updatedSong.Parts {
 		assert.Equal(t, request.InstrumentID, part.InstrumentID)
 		for _, sectionPart := range part.SectionParts {
-			assert.Equal(t, request.BandMemberID, sectionPart.BandMemberID)
+			assert.Len(t, sectionPart.BandMembers, 1)
+			assert.Equal(t, request.BandMemberID, sectionPart.BandMembers[0])
 		}
 	}
 }

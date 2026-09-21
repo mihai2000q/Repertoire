@@ -7,6 +7,7 @@ import (
 	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
 	"repertoire/server/domain/processor"
+	"repertoire/server/domain/validator"
 	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"time"
@@ -15,10 +16,10 @@ import (
 )
 
 type UpdateSongPart struct {
-	songPartRepository repository.SongPartRepository
-	artistRepository   repository.ArtistRepository
-	progressProcessor  processor.ProgressProcessor
-	transactionManager transaction.Manager
+	songPartRepository  repository.SongPartRepository
+	bandMemberValidator validator.BandMemberValidator
+	progressProcessor   processor.ProgressProcessor
+	transactionManager  transaction.Manager
 
 	txSongRepo        repository.SongRepository
 	txSongPartRepo    repository.SongPartRepository
@@ -27,15 +28,15 @@ type UpdateSongPart struct {
 
 func NewUpdateSongPart(
 	songPartRepository repository.SongPartRepository,
-	artistRepository repository.ArtistRepository,
+	bandMemberValidator validator.BandMemberValidator,
 	progressProcessor processor.ProgressProcessor,
 	transactionManager transaction.Manager,
 ) UpdateSongPart {
 	return UpdateSongPart{
-		songPartRepository: songPartRepository,
-		artistRepository:   artistRepository,
-		progressProcessor:  progressProcessor,
-		transactionManager: transactionManager,
+		songPartRepository:  songPartRepository,
+		bandMemberValidator: bandMemberValidator,
+		progressProcessor:   progressProcessor,
+		transactionManager:  transactionManager,
 	}
 }
 
@@ -54,13 +55,11 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 	hasRehearsalsChanged := part.Rehearsals != request.Rehearsals
 	hasConfidenceChanged := part.Confidence != request.Confidence
 
-	if request.SectionID != nil {
-		if errCode := u.validateBandMember(request, part); errCode != nil {
-			return errCode
-		}
+	bandMembers, errCode := u.bandMemberValidator.Validate(request.BandMemberIDs, part.Song)
+	if errCode != nil {
+		return errCode
 	}
 
-	var errCode *httperror.ErrorCode
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		u.txSongRepo = factory.NewSongRepository()
 		u.txSongPartRepo = factory.NewSongPartRepository()
@@ -77,7 +76,7 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 		part.Name = request.Name
 		part.InstrumentID = request.InstrumentID
 
-		if errCode = u.updateBandMember(request, part); errCode != nil {
+		if errCode = u.updateBandMembers(request, part, bandMembers); errCode != nil {
 			return errCode.Error
 		}
 
@@ -113,58 +112,50 @@ func (u UpdateSongPart) Handle(request requests.UpdateSongPartRequest) *httperro
 	return nil
 }
 
-func (u UpdateSongPart) validateBandMember(
+func (u UpdateSongPart) updateBandMembers(
 	request requests.UpdateSongPartRequest,
 	part model.SongPart,
-) *httperror.ErrorCode {
-	if request.BandMemberID == nil {
-		return nil
-	}
-
-	var member model.BandMember
-	if err := u.artistRepository.GetBandMember(&member, *request.BandMemberID); err != nil {
-		return httperror.DatabaseError(err)
-	}
-	if reflect.ValueOf(member).IsZero() {
-		return httperror.NotFoundError(errors.New("band member not found"))
-	}
-	if part.Song.ArtistID == nil || *part.Song.ArtistID != member.ArtistID {
-		return httperror.ConflictError(errors.New("band member is not part of the artist associated with this song"))
-	}
-
-	return nil
-}
-
-func (u UpdateSongPart) updateBandMember(
-	request requests.UpdateSongPartRequest,
-	part model.SongPart,
+	bandMembers []model.BandMember,
 ) *httperror.ErrorCode {
 	if request.SectionID == nil {
 		return nil
 	}
 
 	var sectionPart model.SongSectionPart
-	if err := u.txSongSectionRepo.GetSectionPart(&sectionPart, *request.SectionID, part.ID); err != nil {
+	if err := u.txSongSectionRepo.GetSectionPartWithBandMembers(&sectionPart, *request.SectionID, part.ID); err != nil {
 		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(sectionPart).IsZero() {
 		return httperror.ConflictError(errors.New("section does not belong to this song part"))
 	}
 
-	hasBandMemberChanged := sectionPart.BandMemberID != nil && request.BandMemberID == nil ||
-		sectionPart.BandMemberID == nil && request.BandMemberID != nil ||
-		sectionPart.BandMemberID != nil && request.BandMemberID != nil && *sectionPart.BandMemberID != *request.BandMemberID
-
-	if !hasBandMemberChanged {
+	if hasSameBandMembers(sectionPart.BandMembers, bandMembers) {
 		return nil
 	}
 
-	sectionPart.BandMemberID = request.BandMemberID
-	if err := u.txSongSectionRepo.UpdateSectionPart(&sectionPart); err != nil {
+	if err := u.txSongSectionRepo.ReplaceSectionPartBandMembers(&sectionPart, bandMembers); err != nil {
 		return httperror.DatabaseError(err)
 	}
 
 	return nil
+}
+
+func hasSameBandMembers(current []model.BandMember, requested []model.BandMember) bool {
+	if len(current) != len(requested) {
+		return false
+	}
+
+	currentIDs := make(map[uuid.UUID]struct{}, len(current))
+	for _, bandMember := range current {
+		currentIDs[bandMember.ID] = struct{}{}
+	}
+	for _, bandMember := range requested {
+		if _, ok := currentIDs[bandMember.ID]; !ok {
+			return false
+		}
+	}
+
+	return true
 }
 
 func (u UpdateSongPart) updateRehearsals(

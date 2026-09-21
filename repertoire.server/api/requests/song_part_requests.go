@@ -7,21 +7,21 @@ type GetSongPartsRequest struct {
 }
 
 type CreateSongPartRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	InstrumentID *uuid.UUID
-	SectionID    *uuid.UUID `validate:"required_with=BandMemberID"`
-	BandMemberID *uuid.UUID
+	SongID        uuid.UUID `validate:"required"`
+	Name          string    `validate:"required,max=30"`
+	InstrumentID  *uuid.UUID
+	SectionID     *uuid.UUID  `validate:"required_with=BandMemberIDs"`
+	BandMemberIDs []uuid.UUID `validate:"unique"`
 }
 
 type UpdateSongPartRequest struct {
-	ID           uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	Confidence   uint      `validate:"max=100"`
-	Rehearsals   uint
-	InstrumentID *uuid.UUID
-	SectionID    *uuid.UUID `validate:"required_with=BandMemberID"`
-	BandMemberID *uuid.UUID
+	ID            uuid.UUID `validate:"required"`
+	Name          string    `validate:"required,max=30"`
+	Confidence    uint      `validate:"max=100"`
+	Rehearsals    uint
+	InstrumentID  *uuid.UUID
+	SectionID     *uuid.UUID  `validate:"required_with=BandMemberIDs"`
+	BandMemberIDs []uuid.UUID `validate:"unique"`
 }
 
 type UpdateAllSongPartsRequest struct {

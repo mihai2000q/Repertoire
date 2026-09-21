@@ -86,13 +86,13 @@ func TestValidateCreateSongPartRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 			},
 		},
 		{
-			"With Section ID and Band Member ID",
+			"With Section ID and Band Member IDs",
 			requests.CreateSongPartRequest{
-				SongID:       uuid.New(),
-				Name:         validPartName,
-				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
-				SectionID:    &[]uuid.UUID{uuid.New()}[0],
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				SongID:        uuid.New(),
+				Name:          validPartName,
+				InstrumentID:  &[]uuid.UUID{uuid.New()}[0],
+				SectionID:     &[]uuid.UUID{uuid.New()}[0],
+				BandMemberIDs: []uuid.UUID{uuid.New()},
 			},
 		},
 	}
@@ -112,6 +112,8 @@ func TestValidateCreateSongPartRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 }
 
 func TestValidateCreateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	bandMemberID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.CreateSongPartRequest
@@ -149,14 +151,26 @@ func TestValidateCreateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 		},
 		// Section ID Test Cases
 		{
-			"Section ID is invalid because Band Member ID is required with it",
+			"Section ID is invalid because Band Member IDs is required with it",
 			requests.CreateSongPartRequest{
-				SongID:       uuid.New(),
-				Name:         validName,
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				SongID:        uuid.New(),
+				Name:          validName,
+				BandMemberIDs: []uuid.UUID{uuid.New()},
 			},
 			"SectionID",
 			"required_with",
+		},
+		// Band Member IDs Test Cases
+		{
+			"Band Member IDs is invalid because it requires the ids to be unique",
+			requests.CreateSongPartRequest{
+				SongID:        uuid.New(),
+				Name:          validPartName,
+				SectionID:     &[]uuid.UUID{uuid.New()}[0],
+				BandMemberIDs: []uuid.UUID{bandMemberID, bandMemberID},
+			},
+			"BandMemberIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -205,13 +219,13 @@ func TestValidateUpdateSongPartRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 		{
 			"With Section ID and Band Member ID",
 			requests.UpdateSongPartRequest{
-				ID:           uuid.New(),
-				Name:         validPartName,
-				Confidence:   100,
-				Rehearsals:   23,
-				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
-				SectionID:    &[]uuid.UUID{uuid.New()}[0],
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				ID:            uuid.New(),
+				Name:          validPartName,
+				Confidence:    100,
+				Rehearsals:    23,
+				InstrumentID:  &[]uuid.UUID{uuid.New()}[0],
+				SectionID:     &[]uuid.UUID{uuid.New()}[0],
+				BandMemberIDs: []uuid.UUID{uuid.New()},
 			},
 		},
 	}
@@ -231,6 +245,8 @@ func TestValidateUpdateSongPartRequest_WhenIsValid_ShouldReturnNil(t *testing.T)
 }
 
 func TestValidateUpdateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	bandMemberID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.UpdateSongPartRequest
@@ -279,14 +295,26 @@ func TestValidateUpdateSongPartRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 		},
 		// Section ID Test Cases
 		{
-			"Section ID is invalid because Band Member ID is required with it",
+			"Section ID is invalid because Band Member IDs is required with it",
 			requests.UpdateSongPartRequest{
-				ID:           uuid.New(),
-				Name:         validPartName,
-				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+				ID:            uuid.New(),
+				Name:          validPartName,
+				BandMemberIDs: []uuid.UUID{uuid.New()},
 			},
 			"SectionID",
 			"required_with",
+		},
+		// Band Member IDs Test Cases
+		{
+			"Band Member IDs is invalid because it requires the ids to be unique",
+			requests.UpdateSongPartRequest{
+				ID:            uuid.New(),
+				Name:          validPartName,
+				SectionID:     &[]uuid.UUID{uuid.New()}[0],
+				BandMemberIDs: []uuid.UUID{bandMemberID, bandMemberID},
+			},
+			"BandMemberIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {

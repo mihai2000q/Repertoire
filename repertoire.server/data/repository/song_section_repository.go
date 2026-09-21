@@ -23,12 +23,13 @@ type SongSectionRepository interface {
 	UpdateAllWithAssociations(sections *[]model.SongSection) error
 	Delete(ids []uuid.UUID) error
 
-	GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error
+	GetSectionPartWithBandMembers(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error
 	GetAllSectionPartsByPartIDs(sectionParts *[]model.SongSectionPart, partIDs []uuid.UUID) error
 	CountAllSectionPartsBySectionID(count *int64, sectionID uuid.UUID) error
 	CreateAllSectionParts(sectionParts *[]model.SongSectionPart) error
 	UpdateSectionPart(sectionPart *model.SongSectionPart) error
 	UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error
+	ReplaceSectionPartBandMembers(sectionPart *model.SongSectionPart, bandMembers []model.BandMember) error
 	DeleteSectionParts(sectionParts *[]model.SongSectionPart) error
 
 	GetTypes(types *[]model.SongSectionType, userID uuid.UUID) error
@@ -148,12 +149,13 @@ func (s songSectionRepository) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
-func (s songSectionRepository) GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error {
+func (s songSectionRepository) GetSectionPartWithBandMembers(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error {
 	return s.client.
 		Where(&model.SongSectionPart{
 			PartID:    partID,
 			SectionID: sectionID,
 		}).
+		Preload("BandMembers").
 		Find(sectionPart).
 		Error
 }
@@ -196,6 +198,13 @@ func (s songSectionRepository) UpdateAllSectionParts(sectionParts *[]model.SongS
 		}
 		return nil
 	})
+}
+
+func (s songSectionRepository) ReplaceSectionPartBandMembers(
+	sectionPart *model.SongSectionPart,
+	bandMembers []model.BandMember,
+) error {
+	return s.client.Model(sectionPart).Association("BandMembers").Replace(bandMembers)
 }
 
 func (s songSectionRepository) DeleteSectionParts(sectionParts *[]model.SongSectionPart) error {

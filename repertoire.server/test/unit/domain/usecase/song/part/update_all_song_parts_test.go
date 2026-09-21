@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/part"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/database/transaction"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/domain/validator"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,6 +17,15 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
+
+// expectedValidatedBandMemberIDs is the ids argument the use case hands to the band member validator:
+// only the request's band member, or nothing at all (nil or empty) when the request has none.
+func expectedValidatedBandMemberIDs(request requests.UpdateAllSongPartsRequest) any {
+	if request.BandMemberID == nil {
+		return mock.MatchedBy(func(ids []uuid.UUID) bool { return len(ids) == 0 })
+	}
+	return []uuid.UUID{*request.BandMemberID}
+}
 
 func TestUpdateAllSongParts_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
@@ -57,136 +68,41 @@ func TestUpdateAllSongParts_WhenSongNotFound_ShouldReturnNotFoundError(t *testin
 	songRepository.AssertExpectations(t)
 }
 
-func TestUpdateAllSongParts_WhenGetBandMemberFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateAllSongParts_WhenBandMemberValidationFails_ShouldReturnItsError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, nil)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
+	_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, nil)
 
-	memberID := uuid.New()
 	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
-		BandMemberID: &memberID,
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 	}
 
-	artistID := uuid.New()
-	mockSong := &model.Song{ID: request.SongID, ArtistID: &artistID}
+	mockSong := &model.Song{ID: request.SongID}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).Once()
 
-	internalError := errors.New("get band member error")
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(internalError).Once()
+	validationError := httperror.ConflictError(errors.New("band member is not valid"))
+	bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(request), *mockSong).
+		Return(nil, validationError).Once()
 
 	// when
 	errCode := _uut.Handle(request)
 
 	// then
 	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
-	assert.Equal(t, internalError, errCode.Error)
+	assert.Equal(t, validationError, errCode)
 	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
-}
-
-func TestUpdateAllSongParts_WhenBandMemberNotFound_ShouldReturnNotFoundError(t *testing.T) {
-	// given
-	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, nil)
-
-	memberID := uuid.New()
-	request := requests.UpdateAllSongPartsRequest{
-		SongID:       uuid.New(),
-		BandMemberID: &memberID,
-	}
-
-	artistID := uuid.New()
-	mockSong := &model.Song{ID: request.SongID, ArtistID: &artistID}
-	songRepository.On("GetWithParts", new(model.Song), request.SongID).
-		Return(nil, mockSong).Once()
-
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(nil).Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "band member not found", errCode.Error.Error())
-	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
-}
-
-func TestUpdateAllSongParts_WhenSongHasNoArtist_ShouldReturnConflictError(t *testing.T) {
-	// given
-	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, nil)
-
-	memberID := uuid.New()
-	request := requests.UpdateAllSongPartsRequest{
-		SongID:       uuid.New(),
-		BandMemberID: &memberID,
-	}
-
-	mockSong := &model.Song{ID: request.SongID, ArtistID: nil}
-	songRepository.On("GetWithParts", new(model.Song), request.SongID).
-		Return(nil, mockSong).Once()
-
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(nil, &model.BandMember{ID: memberID}).Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
-	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
-}
-
-func TestUpdateAllSongParts_WhenBandMemberNotAssociated_ShouldReturnConflictError(t *testing.T) {
-	// given
-	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, nil)
-
-	memberID := uuid.New()
-	request := requests.UpdateAllSongPartsRequest{
-		SongID:       uuid.New(),
-		BandMemberID: &memberID,
-	}
-
-	artistID := uuid.New()
-	mockSong := &model.Song{ID: request.SongID, ArtistID: &artistID}
-	songRepository.On("GetWithParts", new(model.Song), request.SongID).
-		Return(nil, mockSong).Once()
-
-	differentArtistID := uuid.New()
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(nil, &model.BandMember{ID: memberID, ArtistID: differentArtistID}).Once()
-
-	// when
-	errCode := _uut.Handle(request)
-
-	// then
-	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "band member is not part of the artist associated with this song", errCode.Error.Error())
-	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 }
 
 func TestUpdateAllSongParts_WhenTransactionExecuteFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
 	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, nil, transactionManager)
+	_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, transactionManager)
 
 	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
@@ -196,6 +112,9 @@ func TestUpdateAllSongParts_WhenTransactionExecuteFails_ShouldReturnInternalServ
 	mockSong := &model.Song{ID: request.SongID}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).Once()
+
+	bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(request), *mockSong).
+		Return(nil, nil).Once()
 
 	internalError := errors.New("transaction error")
 	transactionManager.On("Execute", mock.Anything).Return(internalError).Once()
@@ -208,14 +127,16 @@ func TestUpdateAllSongParts_WhenTransactionExecuteFails_ShouldReturnInternalServ
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 }
 
 func TestUpdateAllSongParts_WhenUpdateWithAssociationsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
 	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, nil, transactionManager)
+	_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, transactionManager)
 
 	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
@@ -230,6 +151,9 @@ func TestUpdateAllSongParts_WhenUpdateWithAssociationsFails_ShouldReturnInternal
 	}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).Once()
+
+	bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(request), *mockSong).
+		Return(nil, nil).Once()
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
@@ -251,6 +175,7 @@ func TestUpdateAllSongParts_WhenUpdateWithAssociationsFails_ShouldReturnInternal
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
@@ -260,29 +185,28 @@ func TestUpdateAllSongParts_WhenUpdateWithAssociationsFails_ShouldReturnInternal
 func TestUpdateAllSongParts_WhenGetAllSectionPartsFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
 	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, transactionManager)
+	_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, transactionManager)
 
-	memberID := uuid.New()
 	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
-		BandMemberID: &memberID,
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 	}
 
-	artistID := uuid.New()
 	partID := uuid.New()
 	mockSong := &model.Song{
-		ID:       request.SongID,
-		ArtistID: &artistID,
+		ID: request.SongID,
 		Parts: []model.SongPart{
 			{ID: partID},
 		},
 	}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).Once()
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(nil, &model.BandMember{ID: memberID, ArtistID: artistID}).Once()
+
+	bandMembers := []model.BandMember{{ID: *request.BandMemberID}}
+	bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(request), *mockSong).
+		Return(bandMembers, nil).Once()
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
@@ -304,39 +228,38 @@ func TestUpdateAllSongParts_WhenGetAllSectionPartsFails_ShouldReturnInternalServ
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
 	txSongSectionRepo.AssertExpectations(t)
 }
 
-func TestUpdateAllSongParts_WhenUpdateAllSectionPartsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestUpdateAllSongParts_WhenReplaceSectionPartBandMembersFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songRepository := new(repository.SongRepositoryMock)
-	artistRepository := new(repository.ArtistRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
 	transactionManager := new(transaction.ManagerMock)
-	_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, transactionManager)
+	_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, transactionManager)
 
-	memberID := uuid.New()
 	request := requests.UpdateAllSongPartsRequest{
 		SongID:       uuid.New(),
-		BandMemberID: &memberID,
+		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 	}
 
-	artistID := uuid.New()
 	partID := uuid.New()
 	mockSong := &model.Song{
-		ID:       request.SongID,
-		ArtistID: &artistID,
+		ID: request.SongID,
 		Parts: []model.SongPart{
 			{ID: partID},
 		},
 	}
 	songRepository.On("GetWithParts", new(model.Song), request.SongID).
 		Return(nil, mockSong).Once()
-	artistRepository.On("GetBandMember", new(model.BandMember), memberID).
-		Return(nil, &model.BandMember{ID: memberID, ArtistID: artistID}).Once()
+
+	bandMembers := []model.BandMember{{ID: *request.BandMemberID}}
+	bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(request), *mockSong).
+		Return(bandMembers, nil).Once()
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
 	txSongRepo := new(repository.SongRepositoryMock)
@@ -352,8 +275,8 @@ func TestUpdateAllSongParts_WhenUpdateAllSectionPartsFails_ShouldReturnInternalS
 	txSongSectionRepo.On("GetAllSectionPartsByPartIDs", new([]model.SongSectionPart), []uuid.UUID{partID}).
 		Return(nil, &sectionParts).Once()
 
-	internalError := errors.New("update section parts error")
-	txSongSectionRepo.On("UpdateAllSectionParts", mock.IsType(&sectionParts)).
+	internalError := errors.New("replace band members error")
+	txSongSectionRepo.On("ReplaceSectionPartBandMembers", mock.IsType(new(model.SongSectionPart)), bandMembers).
 		Return(internalError).Once()
 
 	// when
@@ -364,7 +287,7 @@ func TestUpdateAllSongParts_WhenUpdateAllSectionPartsFails_ShouldReturnInternalS
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 	songRepository.AssertExpectations(t)
-	artistRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
 	txSongRepo.AssertExpectations(t)
@@ -377,9 +300,8 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 	tests := []struct {
 		name         string
 		request      requests.UpdateAllSongPartsRequest
-		member       *model.BandMember // only when BandMemberID is set
-		withParts    bool              // true → mock GetAllSectionPartsByPartIDs + UpdateAllSectionParts
-		withSongSave bool              // true → mock UpdateWithAssociations
+		withParts    bool // true → mock GetAllSectionPartsByPartIDs + ReplaceSectionPartBandMembers
+		withSongSave bool // true → mock UpdateWithAssociations
 	}{
 		{
 			name: "Only instrument",
@@ -395,7 +317,6 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 				SongID:       uuid.New(),
 				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 			},
-			member:    &model.BandMember{ArtistID: uuid.New()},
 			withParts: true,
 		},
 		{
@@ -405,7 +326,6 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 				InstrumentID: &[]uuid.UUID{uuid.New()}[0],
 				BandMemberID: &[]uuid.UUID{uuid.New()}[0],
 			},
-			member:       &model.BandMember{ArtistID: uuid.New()},
 			withParts:    true,
 			withSongSave: true,
 		},
@@ -421,26 +341,26 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 		t.Run(tt.name, func(t *testing.T) {
 			// given
 			songRepository := new(repository.SongRepositoryMock)
-			artistRepository := new(repository.ArtistRepositoryMock)
+			bandMemberValidator := new(validator.BandMemberValidatorMock)
 			transactionManager := new(transaction.ManagerMock)
-			_uut := part.NewUpdateAllSongParts(songRepository, artistRepository, transactionManager)
+			_uut := part.NewUpdateAllSongParts(songRepository, bandMemberValidator, transactionManager)
 
 			parts := make([]model.SongPart, len(partIDs))
 			for i, pid := range partIDs {
 				parts[i] = model.SongPart{ID: pid}
 			}
 			mockSong := &model.Song{ID: tt.request.SongID, Parts: parts}
-			if tt.request.BandMemberID != nil {
-				mockSong.ArtistID = &tt.member.ArtistID
-			}
 
 			songRepository.On("GetWithParts", new(model.Song), tt.request.SongID).
 				Return(nil, mockSong).Once()
 
+			// validation
+			var bandMembers []model.BandMember
 			if tt.request.BandMemberID != nil {
-				artistRepository.On("GetBandMember", new(model.BandMember), *tt.request.BandMemberID).
-					Return(nil, tt.member).Once()
+				bandMembers = []model.BandMember{{ID: *tt.request.BandMemberID}}
 			}
+			bandMemberValidator.On("Validate", expectedValidatedBandMemberIDs(tt.request), *mockSong).
+				Return(bandMembers, nil).Once()
 
 			repositoryFactory := new(transaction.RepositoryFactoryMock)
 			txSongRepo := new(repository.SongRepositoryMock)
@@ -461,6 +381,7 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 					Return(nil).Once()
 			}
 
+			var replacedPartIDs []uuid.UUID
 			if tt.withParts {
 				sectionParts := make([]model.SongSectionPart, len(partIDs))
 				for i, pid := range partIDs {
@@ -469,14 +390,17 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 				txSongSectionRepo.On("GetAllSectionPartsByPartIDs", new([]model.SongSectionPart), partIDs).
 					Return(nil, &sectionParts).Once()
 
-				txSongSectionRepo.On("UpdateAllSectionParts", mock.IsType(&sectionParts)).
+				txSongSectionRepo.On("ReplaceSectionPartBandMembers", mock.IsType(new(model.SongSectionPart)), mock.Anything).
 					Run(func(args mock.Arguments) {
-						updated := args.Get(0).(*[]model.SongSectionPart)
-						for _, sp := range *updated {
-							assert.Equal(t, tt.request.BandMemberID, sp.BandMemberID)
-						}
+						sp := args.Get(0).(*model.SongSectionPart)
+						replacedPartIDs = append(replacedPartIDs, sp.PartID)
+
+						// every section part ends up with exactly the requested band member
+						newBandMembers := args.Get(1).([]model.BandMember)
+						require.Len(t, newBandMembers, 1)
+						assert.Equal(t, *tt.request.BandMemberID, newBandMembers[0].ID)
 					}).
-					Return(nil).Once()
+					Return(nil).Times(len(partIDs))
 			}
 
 			// when
@@ -484,9 +408,12 @@ func TestUpdateAllSongParts_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T)
 
 			// then
 			assert.Nil(t, errCode)
+			if tt.withParts {
+				assert.ElementsMatch(t, partIDs, replacedPartIDs)
+			}
 
 			songRepository.AssertExpectations(t)
-			artistRepository.AssertExpectations(t)
+			bandMemberValidator.AssertExpectations(t)
 			transactionManager.AssertExpectations(t)
 			repositoryFactory.AssertExpectations(t)
 			txSongRepo.AssertExpectations(t)

@@ -119,7 +119,11 @@ func (s *SongSectionRepositoryMock) Delete(ids []uuid.UUID) error {
 
 // Section Parts
 
-func (s *SongSectionRepositoryMock) GetSectionPart(sectionPart *model.SongSectionPart, sectionID, partID uuid.UUID) error {
+func (s *SongSectionRepositoryMock) GetSectionPartWithBandMembers(
+	sectionPart *model.SongSectionPart,
+	sectionID,
+	partID uuid.UUID,
+) error {
 	args := s.Called(sectionPart, sectionID, partID)
 
 	if len(args) > 1 {
@@ -129,7 +133,10 @@ func (s *SongSectionRepositoryMock) GetSectionPart(sectionPart *model.SongSectio
 	return args.Error(0)
 }
 
-func (s *SongSectionRepositoryMock) GetAllSectionPartsByPartIDs(sectionParts *[]model.SongSectionPart, partIDs []uuid.UUID) error {
+func (s *SongSectionRepositoryMock) GetAllSectionPartsByPartIDs(
+	sectionParts *[]model.SongSectionPart,
+	partIDs []uuid.UUID,
+) error {
 	args := s.Called(sectionParts, partIDs)
 
 	if len(args) > 1 {
@@ -161,6 +168,14 @@ func (s *SongSectionRepositoryMock) UpdateSectionPart(sectionPart *model.SongSec
 
 func (s *SongSectionRepositoryMock) UpdateAllSectionParts(sectionParts *[]model.SongSectionPart) error {
 	args := s.Called(sectionParts)
+	return args.Error(0)
+}
+
+func (s *SongSectionRepositoryMock) ReplaceSectionPartBandMembers(
+	sectionPart *model.SongSectionPart,
+	bandMembers []model.BandMember,
+) error {
+	args := s.Called(sectionPart, bandMembers)
 	return args.Error(0)
 }
 

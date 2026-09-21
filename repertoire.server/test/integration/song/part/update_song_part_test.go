@@ -96,18 +96,18 @@ func TestUpdateSongPart_WhenSectionDoesNotBelong_ShouldReturnConflictError(t *te
 	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
-func TestUpdateSongPart_WhenBandMemberIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestUpdateSongPart_WhenBandMembersAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	part := songData.SongParts[0]
 
 	request := requests.UpdateSongPartRequest{
-		ID:           part.ID,
-		Name:         "New Chorus Name",
-		Rehearsals:   part.Rehearsals,
-		SectionID:    &songData.SongSections[0].ID,
-		BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+		ID:            part.ID,
+		Name:          "New Chorus Name",
+		Rehearsals:    part.Rehearsals,
+		SectionID:     &songData.SongSections[0].ID,
+		BandMemberIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
@@ -125,11 +125,11 @@ func TestUpdateSongPart_WhenWithBandMemberButSongHasNoArtist_ShouldReturnConflic
 	part := songData.SongParts[0]
 
 	request := requests.UpdateSongPartRequest{
-		ID:           part.ID,
-		Name:         "New Chorus Name",
-		Rehearsals:   part.Rehearsals,
-		SectionID:    &songData.SongSections[0].ID,
-		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
+		ID:            part.ID,
+		Name:          "New Chorus Name",
+		Rehearsals:    part.Rehearsals,
+		SectionID:     &songData.SongSections[0].ID,
+		BandMemberIDs: []uuid.UUID{songData.Artists[1].BandMembers[0].ID},
 	}
 
 	// when
@@ -147,11 +147,11 @@ func TestUpdateSongPart_WhenWithBandMemberButItIsNotAssociated_ShouldReturnConfl
 	part := songData.SongParts[0]
 
 	request := requests.UpdateSongPartRequest{
-		ID:           part.ID,
-		Name:         "New Chorus Name",
-		Rehearsals:   part.Rehearsals,
-		SectionID:    &songData.SongSections[0].ID,
-		BandMemberID: &songData.Artists[1].BandMembers[0].ID,
+		ID:            part.ID,
+		Name:          "New Chorus Name",
+		Rehearsals:    part.Rehearsals,
+		SectionID:     &songData.SongSections[0].ID,
+		BandMemberIDs: []uuid.UUID{songData.Artists[1].BandMembers[0].ID},
 	}
 
 	// when
@@ -206,17 +206,17 @@ func TestUpdateSongPart_WhenSuccessful_ShouldUpdatePart(t *testing.T) {
 	assertUpdatedSongPart(t, part, request)
 }
 
-func TestUpdateSongPart_WhenWithBandMember_ShouldUpdatePartAndSectionPart(t *testing.T) {
+func TestUpdateSongPart_WhenWithBandMembers_ShouldUpdatePartAndSectionPart(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, songData.Users, songData.SeedData)
 
 	part := songData.SongParts[0]
 	request := requests.UpdateSongPartRequest{
-		ID:           part.ID,
-		Name:         "New Chorus Name",
-		Rehearsals:   part.Rehearsals,
-		SectionID:    &songData.SongSectionParts[0].SectionID,
-		BandMemberID: &songData.Artists[0].BandMembers[1].ID,
+		ID:            part.ID,
+		Name:          "New Chorus Name",
+		Rehearsals:    part.Rehearsals,
+		SectionID:     &songData.SongSectionParts[0].SectionID,
+		BandMemberIDs: []uuid.UUID{songData.Artists[0].BandMembers[1].ID},
 	}
 
 	// when
@@ -236,7 +236,12 @@ func TestUpdateSongPart_WhenWithBandMember_ShouldUpdatePartAndSectionPart(t *tes
 	var sectionPart model.SongSectionPart
 	db.Find(&sectionPart, &model.SongSectionPart{PartID: request.ID, SectionID: *request.SectionID})
 
-	assert.Equal(t, request.BandMemberID, sectionPart.BandMemberID)
+	assert.Len(t, sectionPart.BandMembers, len(request.BandMemberIDs))
+	bandMemberIDs := make([]uuid.UUID, len(sectionPart.BandMembers))
+	for i, bm := range sectionPart.BandMembers {
+		bandMemberIDs[i] = bm.ID
+	}
+	assert.ElementsMatch(t, request.BandMemberIDs, bandMemberIDs)
 }
 
 func TestUpdateSongPart_WhenSuccessfulWithRehearsals_ShouldUpdatePartUpdateSongAddHistoryAndChangeScore(t *testing.T) {
