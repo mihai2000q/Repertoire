@@ -34,15 +34,14 @@ type songSectionDerivedFields struct {
 }
 
 type SongSectionPart struct {
-	PartID       uuid.UUID  `gorm:"primaryKey; type:uuid"`
-	SectionID    uuid.UUID  `gorm:"primaryKey; type:uuid"`
-	Order        uint       `gorm:"not null"`
-	CreatedAt    time.Time  `gorm:"default:current_timestamp; not null; <-:create"`
-	BandMemberID *uuid.UUID `json:"-"`
+	PartID    uuid.UUID `gorm:"primaryKey; type:uuid"`
+	SectionID uuid.UUID `gorm:"primaryKey; type:uuid"`
+	Order     uint      `gorm:"not null"`
+	CreatedAt time.Time `gorm:"default:current_timestamp; not null; <-:create"`
 
-	BandMember *BandMember `json:"bandMember"`
-	Part       SongPart    `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE"`
-	Section    SongSection `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE"`
+	BandMembers []BandMember `gorm:"many2many:song_section_part_band_members; joinForeignKey:PartID,SectionID; constraint:OnDelete:CASCADE" json:"bandMembers"`
+	Part        SongPart     `gorm:"foreignKey:PartID; constraint:OnDelete:CASCADE"`
+	Section     SongSection  `gorm:"foreignKey:SectionID; constraint:OnDelete:CASCADE"`
 }
 
 func (s *SongSection) AfterFind(*gorm.DB) error {
@@ -59,10 +58,10 @@ func (s *SongSection) AfterFind(*gorm.DB) error {
 	var totalRehearsals, totalConfidence uint
 	var totalProgress uint64
 	for i, sp := range s.SectionParts {
-		sp.Part.BandMembers = []BandMember{}
-		if sp.BandMember != nil {
-			sp.BandMember.ImageURL = sp.BandMember.ImageURL.ToFullURL()
-			sp.Part.BandMembers = append(sp.Part.BandMembers, *sp.BandMember)
+		sp.Part.BandMembers = make([]BandMember, len(sp.BandMembers))
+		for j, bandMember := range sp.BandMembers {
+			bandMember.ImageURL = bandMember.ImageURL.ToFullURL()
+			sp.Part.BandMembers[j] = bandMember
 		}
 		s.Parts[i] = sp.Part
 		totalRehearsals += sp.Part.Rehearsals

@@ -56,12 +56,13 @@ func (s *SongPart) AfterFind(*gorm.DB) error {
 
 	seenBm := make(map[uuid.UUID]bool)
 	s.BandMembers = make([]BandMember, 0)
-
 	for _, sp := range s.SectionParts {
-		if sp.BandMember != nil && !seenBm[sp.BandMember.ID] {
-			seenBm[sp.BandMember.ID] = true
-			sp.BandMember.ImageURL = sp.BandMember.ImageURL.ToFullURL()
-			s.BandMembers = append(s.BandMembers, *sp.BandMember)
+		for _, bm := range sp.BandMembers {
+			if !seenBm[bm.ID] {
+				seenBm[bm.ID] = true
+				bm.ImageURL = bm.ImageURL.ToFullURL()
+				s.BandMembers = append(s.BandMembers, bm)
+			}
 		}
 	}
 	return nil
