@@ -34,20 +34,19 @@ func (u UpdateBandMember) Handle(request requests.UpdateBandMemberRequest) *http
 		return httperror.NotFoundError(errors.New("band member not found"))
 	}
 
+	var roles []model.BandMemberRole
+	if err := u.artistRepository.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
+		return httperror.DatabaseError(err)
+	}
+	if len(roles) != len(request.RoleIDs) {
+		return httperror.NotFoundError(errors.New("roles not found"))
+	}
+
 	var errCode *httperror.ErrorCode
 	err := u.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
 		txArtistRepo := factory.NewArtistRepository()
 
-		var roles []model.BandMemberRole
-		if err := txArtistRepo.GetBandMemberRolesByIDs(&roles, request.RoleIDs); err != nil {
-			return err
-		}
-		if len(roles) != len(request.RoleIDs) {
-			errCode = httperror.NotFoundError(errors.New("roles not found"))
-			return errCode.Error
-		}
-
-		if err := txArtistRepo.ReplaceRolesFromBandMember(roles, &bandMember); err != nil {
+		if err := txArtistRepo.ReplaceBandMemberRoles(&bandMember, roles); err != nil {
 			return err
 		}
 
