@@ -38,8 +38,8 @@ func TestGetAllSongSections_WhenSuccessful_ShouldReturnSongSections(t *testing.T
 		Joins("SongSectionType").
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("BandMember").
-				Preload("BandMember.Roles").
+				Preload("BandMembers", func(db *gorm.DB) *gorm.DB { return db.Order("name") }).
+				Preload("BandMembers.Roles").
 				Joins("Part").
 				Joins("Part.Instrument").
 				Order("song_section_parts.order")

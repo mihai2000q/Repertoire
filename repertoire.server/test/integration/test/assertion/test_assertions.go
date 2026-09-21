@@ -379,9 +379,7 @@ func ResponseSongSection(
 		var totalRehearsals, totalConfidence uint
 		var totalProgress uint64
 		for _, sectionPart := range songSection.SectionParts {
-			if sectionPart.BandMember != nil {
-				sectionPart.Part.BandMembers = append(sectionPart.Part.BandMembers, *sectionPart.BandMember)
-			}
+			sectionPart.Part.BandMembers = sectionPart.BandMembers
 			parts = append(parts, sectionPart.Part)
 			totalRehearsals += sectionPart.Part.Rehearsals
 			totalConfidence += sectionPart.Part.Confidence
