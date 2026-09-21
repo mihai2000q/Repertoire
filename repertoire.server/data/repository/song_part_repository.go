@@ -49,8 +49,8 @@ func (s songPartRepository) GetAllBySong(parts *[]model.SongPart, songID uuid.UU
 	return s.client.Model(&model.SongPart{}).
 		Joins("Instrument").
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-			return db.Joins("BandMember").
-				Preload("BandMember.Roles").
+			return db.Preload("BandMembers", func(db *gorm.DB) *gorm.DB { return db.Order("name") }).
+				Preload("BandMembers.Roles").
 				Order("song_section_parts.order")
 		}).
 		Where(model.SongPart{SongID: songID}).

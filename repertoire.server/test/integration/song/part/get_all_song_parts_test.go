@@ -37,8 +37,8 @@ func TestGetAllSongParts_WhenSuccessful_ShouldReturnSongParts(t *testing.T) {
 	db.Where(&model.SongPart{}).
 		Joins("Instrument").
 		Preload("SectionParts", func(db *gorm.DB) *gorm.DB {
-			return db.Joins("BandMember").
-				Preload("BandMember.Roles").
+			return db.Preload("BandMembers", func(db *gorm.DB) *gorm.DB { return db.Order("name") }).
+				Preload("BandMembers.Roles").
 				Order("song_section_parts.order")
 		}).
 		Where(model.SongPart{SongID: songID}).
