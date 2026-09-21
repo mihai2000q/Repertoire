@@ -36,7 +36,7 @@ func (b BulkDeleteAlbums) Handle(request requests.BulkDeleteAlbumsRequest) *http
 	if err != nil {
 		return httperror.DatabaseError(err)
 	}
-	if len(albums) == 0 {
+	if len(albums) != len(request.IDs) {
 		return httperror.NotFoundError(errors.New("albums not found"))
 	}
 

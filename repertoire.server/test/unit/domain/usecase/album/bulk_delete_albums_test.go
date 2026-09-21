@@ -67,17 +67,20 @@ func TestBulkDeleteAlbums_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServer
 	albumRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteAlbums_WhenAlbumsAreLen0_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteAlbums_WhenAlbumsLenIsNotTheSameAsRequestLen_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewBulkDeleteAlbums(albumRepository, nil)
 
 	request := requests.BulkDeleteAlbumsRequest{
-		IDs: []uuid.UUID{uuid.New()},
+		IDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
+	mockAlbums := []model.Album{
+		{ID: request.IDs[0]},
+	}
 	albumRepository.On("GetAllByIDs", new([]model.Album), request.IDs).
-		Return(nil).
+		Return(nil, &mockAlbums).
 		Once()
 
 	// when
