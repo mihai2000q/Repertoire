@@ -180,6 +180,16 @@ func (a *ArtistRepositoryMock) GetBandMemberWithArtist(bandMember *model.BandMem
 	return args.Error(0)
 }
 
+func (a *ArtistRepositoryMock) GetBandMembersByIDs(bandMembers *[]model.BandMember, ids []uuid.UUID) error {
+	args := a.Called(bandMembers, ids)
+
+	if len(args) > 1 {
+		*bandMembers = *args.Get(1).(*[]model.BandMember)
+	}
+
+	return args.Error(0)
+}
+
 func (a *ArtistRepositoryMock) CreateBandMember(bandMember *model.BandMember) error {
 	args := a.Called(bandMember)
 	return args.Error(0)

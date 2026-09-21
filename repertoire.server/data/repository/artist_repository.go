@@ -35,6 +35,7 @@ type ArtistRepository interface {
 
 	GetBandMember(bandMember *model.BandMember, id uuid.UUID) error
 	GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error
+	GetBandMembersByIDs(bandMembers *[]model.BandMember, ids []uuid.UUID) error
 	CreateBandMember(bandMember *model.BandMember) error
 	UpdateBandMember(bandMember *model.BandMember) error
 	ReplaceRolesFromBandMember(roles []model.BandMemberRole, bandMember *model.BandMember) error
@@ -246,6 +247,10 @@ func (a artistRepository) GetBandMember(bandMember *model.BandMember, id uuid.UU
 
 func (a artistRepository) GetBandMemberWithArtist(bandMember *model.BandMember, id uuid.UUID) error {
 	return a.client.Preload("Artist").Find(bandMember, id).Error
+}
+
+func (a artistRepository) GetBandMembersByIDs(bandMembers *[]model.BandMember, ids []uuid.UUID) error {
+	return a.client.Find(bandMembers, ids).Error
 }
 
 func (a artistRepository) CreateBandMember(bandMember *model.BandMember) error {
