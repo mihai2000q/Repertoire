@@ -410,16 +410,16 @@ var SongSections = []model.SongSection{
 
 var SongSectionParts = []model.SongSectionPart{
 	{
-		SectionID:    SongSections[0].ID,
-		PartID:       SongParts[0].ID,
-		BandMemberID: &Artists[0].BandMembers[0].ID,
-		Order:        0,
+		SectionID:   SongSections[0].ID,
+		PartID:      SongParts[0].ID,
+		BandMembers: []model.BandMember{Artists[0].BandMembers[0]},
+		Order:       0,
 	},
 	{
-		SectionID:    SongSections[0].ID,
-		PartID:       SongParts[1].ID,
-		BandMemberID: &Artists[0].BandMembers[1].ID,
-		Order:        1,
+		SectionID:   SongSections[0].ID,
+		PartID:      SongParts[1].ID,
+		BandMembers: []model.BandMember{Artists[0].BandMembers[1]},
+		Order:       1,
 	},
 
 	{
