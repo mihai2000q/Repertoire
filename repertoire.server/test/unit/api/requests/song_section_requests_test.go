@@ -310,6 +310,8 @@ func TestValidateUpdateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	partID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.UpdateSongSectionRequest
@@ -358,6 +360,18 @@ func TestValidateUpdateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			},
 			"TypeID",
 			"required",
+		},
+		// Part IDs Test Cases
+		{
+			"Part IDs is invalid because it requires the ids to be unique",
+			requests.UpdateSongSectionRequest{
+				ID:      uuid.New(),
+				Name:    validSectionName,
+				TypeID:  uuid.New(),
+				PartIDs: []uuid.UUID{partID, partID},
+			},
+			"PartIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {

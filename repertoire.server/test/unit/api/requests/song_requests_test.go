@@ -521,6 +521,8 @@ func TestValidateAddCustomSongRehearsalsRequest_WhenIsValid_ShouldReturnNil(t *t
 }
 
 func TestValidateAddCustomSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddCustomSongRehearsalsRequest
@@ -529,10 +531,21 @@ func TestValidateAddCustomSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldR
 	}{
 		// Requests Test Cases
 		{
-			"Requests is invalid because it requires at least one Request",
+			"Requests are invalid because it requires at least one Request",
 			requests.AddCustomSongRehearsalsRequest{Requests: []requests.AddCustomSongRehearsalRequest{}},
 			"Requests",
 			"min",
+		},
+		{
+			"Requests are invalid because it requires the ids to be unique",
+			requests.AddCustomSongRehearsalsRequest{
+				Requests: []requests.AddCustomSongRehearsalRequest{
+					{ID: id, ArrangementID: uuid.New()},
+					{ID: id, ArrangementID: uuid.New()},
+				},
+			},
+			"Requests",
+			"unique_ids",
 		},
 		// Requests - ID Test Cases
 		{

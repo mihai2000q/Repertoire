@@ -14,10 +14,10 @@ type CreateSongSectionRequest struct {
 }
 
 type UpdateSongSectionRequest struct {
-	ID      uuid.UUID `validate:"required"`
-	Name    string    `validate:"required,max=30"`
-	TypeID  uuid.UUID `validate:"required"`
-	PartIDs []uuid.UUID
+	ID      uuid.UUID   `validate:"required"`
+	Name    string      `validate:"required,max=30"`
+	TypeID  uuid.UUID   `validate:"required"`
+	PartIDs []uuid.UUID `validate:"unique"`
 }
 
 type MoveSongSectionRequest struct {
