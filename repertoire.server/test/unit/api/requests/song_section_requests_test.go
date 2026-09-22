@@ -117,6 +117,7 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	partID := &[]uuid.UUID{uuid.New()}[0]
 	tests := []struct {
 		name                  string
 		request               requests.CreateSongSectionRequest
@@ -165,6 +166,21 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			},
 			[]string{"TypeID"},
 			[]string{"required"},
+		},
+		// Parts Test Cases
+		{
+			"Parts is invalid because the ids on Part ID must be unique",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{PartID: partID},
+					{PartID: partID},
+				},
+			},
+			[]string{"Parts"},
+			[]string{"unique_ids"},
 		},
 		// Parts Test Cases - Part ID and New Part
 		{
@@ -446,6 +462,8 @@ func TestValidateBulkDeleteSongSectionsRequest_WhenIsValid_ShouldReturnNil(t *te
 }
 
 func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkDeleteSongSectionsRequest
@@ -454,10 +472,16 @@ func TestValidateBulkDeleteSongSectionsRequest_WhenSingleFieldIsInvalid_ShouldRe
 	}{
 		// IDs Test Cases
 		{
-			"IDs is invalid because it requirest at least 1 ID",
+			"IDs is invalid because it requires at least 1 ID",
 			requests.BulkDeleteSongSectionsRequest{IDs: []uuid.UUID{}, SongID: uuid.New()},
 			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.BulkDeleteSongSectionsRequest{IDs: []uuid.UUID{id, id}, SongID: uuid.New()},
+			"IDs",
+			"unique",
 		},
 		// Song ID Test Cases
 		{

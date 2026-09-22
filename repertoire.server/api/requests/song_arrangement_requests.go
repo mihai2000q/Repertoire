@@ -12,14 +12,14 @@ type CreateSongArrangementRequest struct {
 }
 
 type BulkUpdateSongArrangementsRequest struct {
-	Requests []UpdateSongArrangementRequest `validate:"min=1,dive"`
+	Requests []UpdateSongArrangementRequest `validate:"min=1,unique_ids,dive"`
 	SongID   uuid.UUID                      `validate:"required"`
 }
 
 type UpdateSongArrangementRequest struct {
 	ID          uuid.UUID                          `validate:"required"`
 	Name        string                             `validate:"required,max=30"`
-	Occurrences []UpdateSongPartOccurrencesRequest `validate:"omitempty,dive"`
+	Occurrences []UpdateSongPartOccurrencesRequest `validate:"unique_ids=PartID,dive"`
 }
 
 type UpdateSongPartOccurrencesRequest struct {

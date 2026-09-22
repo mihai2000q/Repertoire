@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"reflect"
 	"regexp"
 	"repertoire/server/internal/enums"
 	"slices"
@@ -8,6 +9,7 @@ import (
 	"unicode"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/google/uuid"
 )
 
 func HasUpper(fl validator.FieldLevel) bool {
@@ -116,6 +118,34 @@ func SearchFilter(fl validator.FieldLevel) bool {
 			return false
 		}
 	}
+	return true
+}
+
+func UniqueIDs(fl validator.FieldLevel) bool {
+	field := fl.Field()
+	if field.Kind() != reflect.Slice {
+		return true
+	}
+
+	idField := fl.Param()
+	if idField == "" {
+		idField = "PartID"
+	}
+
+	seen := make(map[uuid.UUID]struct{}, field.Len())
+	for i := 0; i < field.Len(); i++ {
+		idValue := field.Index(i).FieldByName(idField)
+		if !idValue.IsValid() || idValue.IsNil() {
+			continue
+		}
+
+		id := idValue.Interface().(*uuid.UUID)
+		if _, duplicated := seen[*id]; duplicated {
+			return false
+		}
+		seen[*id] = struct{}{}
+	}
+
 	return true
 }
 

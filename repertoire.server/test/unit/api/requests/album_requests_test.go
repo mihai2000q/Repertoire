@@ -376,6 +376,8 @@ func TestValidateAddSongsToAlbumRequest_WhenIsValid_ShouldReturnNil(t *testing.T
 }
 
 func TestValidateAddSongsToAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddSongsToAlbumRequest
@@ -393,8 +395,14 @@ func TestValidateAddSongsToAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 		{
 			"Song IDs is invalid because it requires at least 1 ID",
 			requests.AddSongsToAlbumRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
-			"SongID",
+			"SongIDs",
 			"min",
+		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.AddSongsToAlbumRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -431,6 +439,8 @@ func TestAddPerfectRehearsalsToAlbumRequest_WhenIsValid_ShouldReturnNil(t *testi
 }
 
 func TestAddPerfectRehearsalsToAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddPerfectRehearsalsToAlbumsRequest
@@ -443,6 +453,12 @@ func TestAddPerfectRehearsalsToAlbumRequest_WhenSingleFieldIsInvalid_ShouldRetur
 			requests.AddPerfectRehearsalsToAlbumsRequest{IDs: []uuid.UUID{}},
 			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.AddPerfectRehearsalsToAlbumsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -638,6 +654,8 @@ func TestValidateRemoveSongsFromAlbumRequest_WhenIsValid_ShouldReturnNil(t *test
 }
 
 func TestValidateRemoveSongsFromAlbumRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.RemoveSongsFromAlbumRequest
@@ -655,8 +673,14 @@ func TestValidateRemoveSongsFromAlbumRequest_WhenSingleFieldIsInvalid_ShouldRetu
 		{
 			"Song IDs is invalid because it requires at least 1 ID",
 			requests.RemoveSongsFromAlbumRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
-			"SongID",
+			"SongIDs",
 			"min",
+		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.RemoveSongsFromAlbumRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -694,6 +718,8 @@ func TestValidateBulkDeleteAlbumsRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateBulkDeleteAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkDeleteAlbumsRequest
@@ -706,6 +732,12 @@ func TestValidateBulkDeleteAlbumsRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			requests.BulkDeleteAlbumsRequest{IDs: []uuid.UUID{}},
 			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.BulkDeleteAlbumsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {

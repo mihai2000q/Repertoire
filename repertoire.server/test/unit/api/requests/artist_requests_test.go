@@ -250,6 +250,8 @@ func TestValidateAddAlbumsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	albumID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddAlbumsToArtistRequest
@@ -269,6 +271,12 @@ func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			requests.AddAlbumsToArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
 			"AlbumIDs",
 			"min",
+		},
+		{
+			"Album IDs is invalid because it requires the ids to be unique",
+			requests.AddAlbumsToArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{albumID, albumID}},
+			"AlbumIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -306,6 +314,8 @@ func TestValidateAddSongsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddSongsToArtistRequest
@@ -325,6 +335,12 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			requests.AddSongsToArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
 			"SongIDs",
 			"min",
+		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.AddSongsToArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -361,6 +377,8 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenIsValid_ShouldReturnNil(t *tes
 }
 
 func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddPerfectRehearsalsToArtistsRequest
@@ -373,6 +391,12 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.AddPerfectRehearsalsToArtistsRequest{IDs: []uuid.UUID{}},
 			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.AddPerfectRehearsalsToArtistsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -492,6 +516,8 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *te
 }
 
 func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	albumID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.RemoveAlbumsFromArtistRequest
@@ -511,6 +537,12 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRe
 			requests.RemoveAlbumsFromArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{}},
 			"AlbumIDs",
 			"min",
+		},
+		{
+			"Album IDs is invalid because it requires the ids to be unique",
+			requests.RemoveAlbumsFromArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{albumID, albumID}},
+			"AlbumIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -548,6 +580,8 @@ func TestValidateRemoveSongsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *tes
 }
 
 func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.RemoveSongsFromArtistRequest
@@ -567,6 +601,12 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			requests.RemoveSongsFromArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{}},
 			"SongIDs",
 			"min",
+		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.RemoveSongsFromArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -605,6 +645,8 @@ func TestValidateBulkDeleteArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkDeleteArtistsRequest
@@ -617,6 +659,12 @@ func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			requests.BulkDeleteArtistsRequest{IDs: []uuid.UUID{}},
 			"ID",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.BulkDeleteArtistsRequest{IDs: []uuid.UUID{id, id}},
+			"ID",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -747,6 +795,8 @@ func TestValidateCreateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	roleID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.CreateBandMemberRequest
@@ -830,6 +880,16 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			"RoleIDs",
 			"min",
 		},
+		{
+			"Role IDs is invalid because it requires the ids to be unique",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{roleID, roleID},
+				ArtistID: uuid.New(),
+			},
+			"RoleIDs",
+			"unique",
+		},
 		// Artist ID Test Cases
 		{
 			"Artist ID is invalid because it's required",
@@ -878,6 +938,8 @@ func TestValidateUpdateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	roleID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.UpdateBandMemberRequest
@@ -926,6 +988,16 @@ func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			},
 			"RoleIDs",
 			"min",
+		},
+		{
+			"Role IDs is invalid because it requires the ids to be unique",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.New(),
+				Name:    validBandMemberName,
+				RoleIDs: []uuid.UUID{roleID, roleID},
+			},
+			"RoleIDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {

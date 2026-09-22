@@ -186,6 +186,9 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenIsValid_ShouldReturnNil(t
 }
 
 func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+	partID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkUpdateSongArrangementsRequest
@@ -216,6 +219,18 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 			},
 			"Requests",
 			"min",
+		},
+		{
+			"Requests are invalid because it requires the ids to be unique",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{ID: id, Name: validArrangementName},
+					{ID: id, Name: validArrangementName},
+				},
+			},
+			"Requests",
+			"unique_ids",
 		},
 		// Requests - ID Test Cases
 		{
@@ -260,6 +275,25 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 			},
 			"Requests[0].Name",
 			"max",
+		},
+		// Requests - Occurrences
+		{
+			"Occurrences are invalid because it requires the part ids to be unique",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: validArrangementName,
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+							{PartID: partID},
+							{PartID: partID},
+						},
+					},
+				},
+			},
+			"Requests[0].Occurrences",
+			"unique_ids",
 		},
 		// Requests - Occurrences - ID Test Cases
 		{

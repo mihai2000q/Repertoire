@@ -27,7 +27,7 @@ type MoveSongSectionRequest struct {
 }
 
 type BulkDeleteSongSectionsRequest struct {
-	IDs     []uuid.UUID `validate:"min=1"`
+	IDs     []uuid.UUID `validate:"unique,min=1"`
 	SongID  uuid.UUID   `validate:"required"`
 	PartIDs []uuid.UUID
 }

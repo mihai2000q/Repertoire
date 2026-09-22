@@ -547,6 +547,8 @@ func TestValidateBulkUpdateSongPartsRequest_WhenIsValid_ShouldReturnNil(t *testi
 }
 
 func TestValidateBulkUpdateSongPartsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkUpdateSongPartsRequest
@@ -565,13 +567,25 @@ func TestValidateBulkUpdateSongPartsRequest_WhenSingleFieldIsInvalid_ShouldRetur
 		},
 		// Requests Test Cases
 		{
-			"Requests is invalid because it requires at least 1 part",
+			"Requests are invalid because it requires at least 1 part",
 			requests.BulkUpdateSongPartsRequest{
 				Requests: []requests.BulkUpdateSongPartRequest{},
 				SongID:   uuid.New(),
 			},
 			"Requests",
 			"min",
+		},
+		{
+			"Requests are invalid because it requires the ids to be unique",
+			requests.BulkUpdateSongPartsRequest{
+				Requests: []requests.BulkUpdateSongPartRequest{
+					{ID: id},
+					{ID: id},
+				},
+				SongID: uuid.New(),
+			},
+			"Requests",
+			"unique_ids",
 		},
 		// Requests - ID Test Cases
 		{

@@ -41,7 +41,7 @@ type AddCustomSongRehearsalRequest struct {
 }
 
 type AddCustomSongRehearsalsRequest struct {
-	Requests []AddCustomSongRehearsalRequest `validate:"min=1,dive"`
+	Requests []AddCustomSongRehearsalRequest `validate:"min=1,unique_ids,dive"`
 }
 
 type AddPerfectSongRehearsalRequest struct {
@@ -49,7 +49,7 @@ type AddPerfectSongRehearsalRequest struct {
 }
 
 type AddPerfectSongRehearsalsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type UpdateSongRequest struct {
@@ -74,7 +74,7 @@ type UpdateSongSettingsRequest struct {
 }
 
 type BulkDeleteSongsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type CreatePartRequest struct {

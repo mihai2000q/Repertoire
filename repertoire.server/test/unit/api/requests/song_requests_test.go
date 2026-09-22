@@ -647,6 +647,8 @@ func TestValidateAddPerfectSongRehearsalsRequest_WhenIsValid_ShouldReturnNil(t *
 }
 
 func TestValidateAddPerfectSongRehearsalsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddPerfectSongRehearsalsRequest
@@ -657,8 +659,14 @@ func TestValidateAddPerfectSongRehearsalsRequest_WhenSingleFieldIsInvalid_Should
 		{
 			"IDs is invalid because it requires at least one ID",
 			requests.AddPerfectSongRehearsalsRequest{IDs: []uuid.UUID{}},
-			"ID",
+			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.AddPerfectSongRehearsalsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {
@@ -916,6 +924,8 @@ func TestValidateBulkDeleteSongsRequest_WhenIsValid_ShouldReturnNil(t *testing.T
 }
 
 func TestValidateBulkDeleteSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkDeleteSongsRequest
@@ -928,6 +938,12 @@ func TestValidateBulkDeleteSongsRequest_WhenSingleFieldIsInvalid_ShouldReturnBad
 			requests.BulkDeleteSongsRequest{IDs: []uuid.UUID{}},
 			"IDs",
 			"min",
+		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.BulkDeleteSongsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
 		},
 	}
 	for _, tt := range tests {

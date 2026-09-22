@@ -24,8 +24,7 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 			},
 		})
 	} else {
-		err := registerCustomValidators(validate)
-		if err != nil {
+		if err := registerCustomValidators(validate); err != nil {
 			panic(err)
 		}
 	}
@@ -36,71 +35,62 @@ func NewValidator(lc fx.Lifecycle) *Validator {
 }
 
 func (v *Validator) Validate(request any) *httperror.ErrorCode {
-	err := v.validate.Struct(request)
-	if err != nil {
+	if err := v.validate.Struct(request); err != nil {
 		return httperror.BadRequestError(err)
 	}
 	return nil
 }
 
 func registerCustomValidators(validate *validator.Validate) error {
-	err := validate.RegisterValidation("has_upper", HasUpper)
-	if err != nil {
+	if err := validate.RegisterValidation("has_upper", HasUpper); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("has_lower", HasLower)
-	if err != nil {
+	if err := validate.RegisterValidation("has_lower", HasLower); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("has_digit", HasDigit)
-	if err != nil {
+	if err := validate.RegisterValidation("has_digit", HasDigit); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("difficulty_enum", DifficultyEnum)
-	if err != nil {
+	if err := validate.RegisterValidation("difficulty_enum", DifficultyEnum); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("search_type_enum", SearchTypeEnum)
-	if err != nil {
+	if err := validate.RegisterValidation("search_type_enum", SearchTypeEnum); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("youtube_link", YoutubeLink)
-	if err != nil {
+	if err := validate.RegisterValidation("youtube_link", YoutubeLink); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("color", Color)
-	if err != nil {
+	if err := validate.RegisterValidation("color", Color); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("order_by", OrderBy)
-	if err != nil {
+	if err := validate.RegisterValidation("order_by", OrderBy); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("search_order", SearchOrder)
-	if err != nil {
+	if err := validate.RegisterValidation("search_order", SearchOrder); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("search_by", SearchBy)
-	if err != nil {
+	if err := validate.RegisterValidation("search_by", SearchBy); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("search_filter", SearchFilter)
-	if err != nil {
+	if err := validate.RegisterValidation("search_filter", SearchFilter); err != nil {
 		return err
 	}
 
-	err = validate.RegisterValidation("notblank", validators.NotBlank)
-	if err != nil {
+	if err := validate.RegisterValidation("unique_ids", UniqueIDs); err != nil {
+		return err
+	}
+
+	if err := validate.RegisterValidation("notblank", validators.NotBlank); err != nil {
 		return err
 	}
 	return nil

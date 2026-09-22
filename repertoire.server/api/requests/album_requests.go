@@ -31,11 +31,11 @@ type CreateAlbumRequest struct {
 
 type AddSongsToAlbumRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type AddPerfectRehearsalsToAlbumsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type UpdateAlbumRequest struct {
@@ -53,11 +53,11 @@ type MoveSongFromAlbumRequest struct {
 
 type RemoveSongsFromAlbumRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type BulkDeleteAlbumsRequest struct {
-	IDs       []uuid.UUID `validate:"min=1"`
+	IDs       []uuid.UUID `validate:"unique,min=1"`
 	WithSongs bool
 }
 

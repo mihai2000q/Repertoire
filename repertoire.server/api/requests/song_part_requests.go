@@ -43,7 +43,7 @@ type MoveSongPartInSectionRequest struct {
 }
 
 type BulkUpdateSongPartsRequest struct {
-	Requests []BulkUpdateSongPartRequest `validate:"min=1,dive"`
+	Requests []BulkUpdateSongPartRequest `validate:"min=1,unique_ids,dive"`
 	SongID   uuid.UUID                   `validate:"required"`
 }
 
