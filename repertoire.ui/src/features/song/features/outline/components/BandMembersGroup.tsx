@@ -1,12 +1,15 @@
-import { Avatar, AvatarGroup, AvatarGroupProps, Box, Group, Stack, Text, Tooltip } from '@mantine/core'
+import { Avatar, AvatarGroup, AvatarGroupProps, AvatarProps, Box, Group, Stack, Text, Tooltip } from '@mantine/core'
 import { IconUser } from '@tabler/icons-react'
 import { BandMember } from '../../../../../types/models/Artist.ts'
 
 interface BandMembersGroupProps extends AvatarGroupProps {
   bandMembers: BandMember[]
+  avatarProps?: AvatarProps & {
+    iconSize?: number
+  }
 }
 
-function BandMembersGroup({ bandMembers, ...props }: BandMembersGroupProps) {
+function BandMembersGroup({ bandMembers, avatarProps, ...props }: BandMembersGroupProps) {
   return (
     <Tooltip
       label={
@@ -43,8 +46,9 @@ function BandMembersGroup({ bandMembers, ...props }: BandMembersGroupProps) {
             color={bandMember.color}
             src={bandMember.imageUrl}
             alt={bandMember.imageUrl && bandMember.name}
+            {...avatarProps}
           >
-            <IconUser aria-label={`default-icon-${bandMember.name}`} size={15} />
+            <IconUser aria-label={`default-icon-${bandMember.name}`} size={avatarProps.iconSize ?? 15} />
           </Avatar>
         ))}
       </AvatarGroup>
