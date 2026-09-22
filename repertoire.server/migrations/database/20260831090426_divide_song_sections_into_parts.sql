@@ -22,16 +22,29 @@ CREATE INDEX idx_song_parts_song_id ON song_parts (song_id);
 
 CREATE TABLE public.song_section_parts
 (
-    section_id     uuid                                               not null
+    section_id uuid                                               not null
         constraint fk_song_sections_song_section_parts references public.song_sections on delete cascade,
-    part_id        uuid                                               not null
+    part_id    uuid                                               not null
         constraint fk_song_parts_song_section_parts references public.song_parts on delete cascade,
-    "order"        bigint                                             not null,
-    band_member_id uuid
-        constraint fk_band_members_song_section_parts references public.band_members on delete set null,
-    created_at     timestamp with time zone default CURRENT_TIMESTAMP not null,
+    "order"    bigint                                             not null,
+    created_at timestamp with time zone default CURRENT_TIMESTAMP not null,
     PRIMARY KEY (part_id, section_id)
 );
+
+-- Band members that play a part inside a section (many per section part)
+CREATE TABLE public.song_section_part_band_members
+(
+    part_id        uuid not null,
+    section_id     uuid not null,
+    band_member_id uuid not null
+        constraint fk_band_members_song_section_part_band_members references public.band_members on delete cascade,
+    PRIMARY KEY (part_id, section_id, band_member_id),
+    CONSTRAINT fk_song_section_parts_song_section_part_band_members
+        FOREIGN KEY (part_id, section_id) REFERENCES public.song_section_parts (part_id, section_id)
+            ON DELETE CASCADE
+);
+CREATE INDEX idx_song_section_part_band_members_band_member_id
+    ON public.song_section_part_band_members (band_member_id);
 
 -- Rename Section History and Occurrences to Part History and Occurrences
 ALTER TABLE public.song_section_histories
@@ -99,9 +112,15 @@ $$
                 RETURNING id INTO current_part_id;
 
                 -- If the section type is NOT 'Riff', create a SongSectionPart
+                -- (and its band member, if the section had one)
                 IF sec.song_section_type_id IS DISTINCT FROM riff_type_id THEN
-                    INSERT INTO public.song_section_parts (section_id, part_id, band_member_id, "order", created_at)
-                    VALUES (sec.id, current_part_id, sec.band_member_id, 0, sec.created_at);
+                    INSERT INTO public.song_section_parts (section_id, part_id, "order", created_at)
+                    VALUES (sec.id, current_part_id, 0, sec.created_at);
+
+                    IF sec.band_member_id IS NOT NULL THEN
+                        INSERT INTO public.song_section_part_band_members (part_id, section_id, band_member_id)
+                        VALUES (current_part_id, sec.id, sec.band_member_id);
+                    END IF;
                 END IF;
 
                 -- Migrate histories for this section to the new part
@@ -286,15 +305,11 @@ WHERE name = 'Solo';
 DO
 $$
     DECLARE
-        part_record         RECORD;
-        sec_id              uuid;
-        -- FIX: renamed from `band_member_id` — it shadowed song_section_parts.band_member_id
-        -- and was referenced unqualified in a SELECT list, which plpgsql's default
-        -- variable_conflict = error setting rejects at runtime as ambiguous
-        part_band_member_id uuid;
-        next_order          bigint;
-        found_user_id       uuid;
-        riff_type_id        uuid;
+        part_record   RECORD;
+        sec_id        uuid;
+        next_order    bigint;
+        found_user_id uuid;
+        riff_type_id  uuid;
     BEGIN
         -- Loop over all parts
         FOR part_record IN
@@ -303,8 +318,8 @@ $$
             ORDER BY p.song_id, p.song_order
             LOOP
                 -- Step 1: Find section via song_section_parts (linked part)
-                SELECT ssp.section_id, ssp.band_member_id
-                INTO sec_id, part_band_member_id
+                SELECT ssp.section_id
+                INTO sec_id
                 FROM public.song_section_parts ssp
                 WHERE ssp.part_id = part_record.id
                 ORDER BY ssp."order"
@@ -324,6 +339,7 @@ $$
                 END IF;
 
                 -- Step 3: Still NULL? Create a new section for this part (estrangement)
+                -- An estranged part has no song_section_parts row, so it has no band member either.
                 IF sec_id IS NULL THEN
                     -- Get user_id and riff_type_id for this song
                     SELECT s.user_id
@@ -354,7 +370,7 @@ $$
                             next_order,
                             part_record.song_id,
                             riff_type_id,
-                            part_band_member_id,
+                            NULL,
                             part_record.instrument_id,
                             part_record.rehearsals,
                             part_record.rehearsals_score,
@@ -379,11 +395,15 @@ $$
                                  AVG(p.confidence)::bigint       AS avg_confidence,
                                  AVG(p.confidence_score)::bigint AS avg_confidence_score,
                                  AVG(p.progress)::bigint         AS avg_progress,
-                                 -- pick the band member from the part with the smallest "order"
-                                 (SELECT ssp2.band_member_id
-                                  FROM public.song_section_parts ssp2
-                                  WHERE ssp2.section_id = ssp.section_id
-                                  ORDER BY ssp2."order"
+                                 -- sections only hold one band member: pick one from the first part
+                                 -- (by "order") that has any
+                                 (SELECT bm.band_member_id
+                                  FROM public.song_section_part_band_members bm
+                                           JOIN public.song_section_parts ssp2
+                                                ON ssp2.part_id = bm.part_id
+                                                    AND ssp2.section_id = bm.section_id
+                                  WHERE bm.section_id = ssp.section_id
+                                  ORDER BY ssp2."order", bm.band_member_id
                                   LIMIT 1)                       AS band_member_id
                           FROM public.song_section_parts ssp
                                    JOIN public.song_parts p ON p.id = ssp.part_id
@@ -405,16 +425,18 @@ $$
     END
 $$;
 
--- Keep only the most recent occurrence per (section_id, arrangement_id)
+-- Keep a single occurrence per (section_id, arrangement_id): the one from the part with the lowest "order".
+-- LEFT JOIN so that sections without a song_section_parts row (estranged parts) are deduplicated too,
+-- otherwise the primary key below fails when two parts end up in the same section.
 WITH ranked AS (SELECT o.ctid,
                        ROW_NUMBER() OVER (
                            PARTITION BY o.section_id, o.arrangement_id
-                           ORDER BY ssp."order", o.part_id
+                           ORDER BY COALESCE(ssp."order", 0), o.part_id
                            ) AS rn
                 FROM public.song_section_occurrences o
-                         JOIN public.song_section_parts ssp
-                              ON ssp.part_id = o.part_id
-                                  AND ssp.section_id = o.section_id)
+                         LEFT JOIN public.song_section_parts ssp
+                                   ON ssp.part_id = o.part_id
+                                       AND ssp.section_id = o.section_id)
 DELETE
 FROM public.song_section_occurrences
 WHERE ctid IN (SELECT ctid FROM ranked WHERE rn > 1);
@@ -426,6 +448,8 @@ ALTER TABLE public.song_section_occurrences
     DROP COLUMN part_id CASCADE,
     ADD PRIMARY KEY (arrangement_id, section_id);
 
+-- The join table references song_section_parts, so it has to go first
+DROP TABLE public.song_section_part_band_members;
 DROP TABLE public.song_section_parts;
 DROP INDEX idx_song_parts_song_id;
 DROP TABLE public.song_parts;
