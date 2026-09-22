@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/song/section"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
+	"repertoire/server/test/unit/domain/validator"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,24 +17,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateSongSection_WhenGetPartsFails_ShouldReturnInternalServerError(t *testing.T) {
+func TestCreateSongSection_WhenGetSongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songPartRepository := new(repository.SongPartRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, songPartRepository)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := section.NewCreateSongSection(nil, nil, songRepository, nil, nil)
 
-	partID := uuid.New()
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Section",
 		TypeID: uuid.New(),
-		Parts: []requests.CreateSongSectionPartRequest{
-			{PartID: &partID},
-		},
 	}
 
 	internalError := errors.New("internal error")
-	songPartRepository.On("GetAllByIDs", new([]model.SongPart), []uuid.UUID{partID}).
+	songRepository.On("Get", new(model.Song), request.SongID).
 		Return(internalError).
 		Once()
 
@@ -44,27 +41,21 @@ func TestCreateSongSection_WhenGetPartsFails_ShouldReturnInternalServerError(t *
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
-	songSectionRepository.AssertExpectations(t)
-	songPartRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 }
 
-func TestCreateSongSection_WhenPartsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+func TestCreateSongSection_WhenSongNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songPartRepository := new(repository.SongPartRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, songPartRepository)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := section.NewCreateSongSection(nil, nil, songRepository, nil, nil)
 
-	partID := uuid.New()
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Section",
 		TypeID: uuid.New(),
-		Parts: []requests.CreateSongSectionPartRequest{
-			{PartID: &partID},
-		},
 	}
 
-	songPartRepository.On("GetAllByIDs", new([]model.SongPart), []uuid.UUID{partID}).
+	songRepository.On("Get", new(model.Song), request.SongID).
 		Return(nil).
 		Once()
 
@@ -74,17 +65,16 @@ func TestCreateSongSection_WhenPartsLenIsNotTheSameAsRequest_ShouldReturnNotFoun
 	// then
 	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
-	assert.Equal(t, "parts not found", errCode.Error.Error())
+	assert.Equal(t, "song not found", errCode.Error.Error())
 
-	songSectionRepository.AssertExpectations(t)
-	songPartRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
 }
 
-func TestCreateSongSection_WhenPartsDoNotBelongToSameSong_ShouldReturnConflictError(t *testing.T) {
+func TestCreateSongSection_WhenSongPartValidationFails_ShouldReturnItsError(t *testing.T) {
 	// given
-	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	songPartRepository := new(repository.SongPartRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, songPartRepository)
+	songRepository := new(repository.SongRepositoryMock)
+	songPartValidator := new(validator.SongPartValidatorMock)
+	_uut := section.NewCreateSongSection(nil, nil, songRepository, nil, songPartValidator)
 
 	partID := uuid.New()
 	request := requests.CreateSongSectionRequest{
@@ -96,11 +86,14 @@ func TestCreateSongSection_WhenPartsDoNotBelongToSameSong_ShouldReturnConflictEr
 		},
 	}
 
-	mockParts := &[]model.SongPart{
-		{ID: partID, SongID: uuid.New()},
-	}
-	songPartRepository.On("GetAllByIDs", new([]model.SongPart), []uuid.UUID{partID}).
-		Return(nil, mockParts).
+	mockSong := &model.Song{ID: request.SongID}
+	songRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	validationError := httperror.NotFoundError(errors.New("parts not found"))
+	songPartValidator.On("Validate", []uuid.UUID{partID}, request.SongID).
+		Return(validationError).
 		Once()
 
 	// when
@@ -108,23 +101,75 @@ func TestCreateSongSection_WhenPartsDoNotBelongToSameSong_ShouldReturnConflictEr
 
 	// then
 	require.NotNil(t, errCode)
-	assert.Equal(t, http.StatusConflict, errCode.Code)
-	assert.Equal(t, "song part does not belong to the same song as the section", errCode.Error.Error())
+	assert.Equal(t, validationError, errCode)
 
-	songSectionRepository.AssertExpectations(t)
-	songPartRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+	songPartValidator.AssertExpectations(t)
+}
+
+func TestCreateSongSection_WhenBandMemberValidationFails_ShouldReturnItsError(t *testing.T) {
+	// given
+	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
+	_uut := section.NewCreateSongSection(nil, nil, songRepository, bandMemberValidator, nil)
+
+	bandMemberID := uuid.New()
+	request := requests.CreateSongSectionRequest{
+		SongID: uuid.New(),
+		Name:   "Some Section",
+		TypeID: uuid.New(),
+		Parts: []requests.CreateSongSectionPartRequest{
+			{
+				NewPart:       &requests.CreateNewSongPartRequest{Name: "Verse Riff"},
+				BandMemberIDs: []uuid.UUID{bandMemberID},
+			},
+		},
+	}
+
+	mockSong := &model.Song{ID: request.SongID}
+	songRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	validationError := httperror.ConflictError(
+		errors.New("band member is not part of the artist associated with this song"),
+	)
+	bandMemberValidator.On("Validate", []uuid.UUID{bandMemberID}, *mockSong).
+		Return(nil, validationError).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, validationError, errCode)
+
+	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 }
 
 func TestCreateSongSection_WhenCountSectionsBySongFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, nil)
+	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
+	_uut := section.NewCreateSongSection(songSectionRepository, nil, songRepository, bandMemberValidator, nil)
 
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Section",
 		TypeID: uuid.New(),
 	}
+
+	mockSong := &model.Song{ID: request.SongID}
+	songRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	bandMemberValidator.On("Validate", []uuid.UUID{}, *mockSong).
+		Return(nil, nil).
+		Once()
 
 	internalError := errors.New("internal error")
 	songSectionRepository.On("CountAllBySong", new(int64), request.SongID).
@@ -139,6 +184,8 @@ func TestCreateSongSection_WhenCountSectionsBySongFails_ShouldReturnInternalServ
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	songSectionRepository.AssertExpectations(t)
 }
 
@@ -146,7 +193,15 @@ func TestCreateSongSection_WhenCountPartsBySongFails_ShouldReturnInternalServerE
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
 	songPartRepository := new(repository.SongPartRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, songPartRepository)
+	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
+	_uut := section.NewCreateSongSection(
+		songSectionRepository,
+		songPartRepository,
+		songRepository,
+		bandMemberValidator,
+		nil,
+	)
 
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
@@ -156,6 +211,15 @@ func TestCreateSongSection_WhenCountPartsBySongFails_ShouldReturnInternalServerE
 			{NewPart: &requests.CreateNewSongPartRequest{Name: "Verse Riff"}},
 		},
 	}
+
+	mockSong := &model.Song{ID: request.SongID}
+	songRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	bandMemberValidator.On("Validate", []uuid.UUID{}, *mockSong).
+		Return(nil, nil).
+		Once()
 
 	sectionsCount := int64(2)
 	songSectionRepository.On("CountAllBySong", new(int64), request.SongID).
@@ -175,6 +239,8 @@ func TestCreateSongSection_WhenCountPartsBySongFails_ShouldReturnInternalServerE
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	songSectionRepository.AssertExpectations(t)
 	songPartRepository.AssertExpectations(t)
 }
@@ -182,13 +248,24 @@ func TestCreateSongSection_WhenCountPartsBySongFails_ShouldReturnInternalServerE
 func TestCreateSongSection_WhenCreateSectionFails_ShouldReturnInternalServerError(t *testing.T) {
 	// given
 	songSectionRepository := new(repository.SongSectionRepositoryMock)
-	_uut := section.NewCreateSongSection(songSectionRepository, nil)
+	songRepository := new(repository.SongRepositoryMock)
+	bandMemberValidator := new(validator.BandMemberValidatorMock)
+	_uut := section.NewCreateSongSection(songSectionRepository, nil, songRepository, bandMemberValidator, nil)
 
 	request := requests.CreateSongSectionRequest{
 		SongID: uuid.New(),
 		Name:   "Some Section",
 		TypeID: uuid.New(),
 	}
+
+	mockSong := &model.Song{ID: request.SongID}
+	songRepository.On("Get", new(model.Song), request.SongID).
+		Return(nil, mockSong).
+		Once()
+
+	bandMemberValidator.On("Validate", []uuid.UUID{}, *mockSong).
+		Return(nil, nil).
+		Once()
 
 	sectionsCount := int64(5)
 	songSectionRepository.On("CountAllBySong", new(int64), request.SongID).
@@ -208,13 +285,16 @@ func TestCreateSongSection_WhenCreateSectionFails_ShouldReturnInternalServerErro
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
+	songRepository.AssertExpectations(t)
+	bandMemberValidator.AssertExpectations(t)
 	songSectionRepository.AssertExpectations(t)
 }
 
 func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) {
 	existingPartID1 := uuid.New()
 	existingPartID2 := uuid.New()
-	bandMemberID := uuid.New()
+	bandMemberID1 := uuid.New()
+	bandMemberID2 := uuid.New()
 	instrumentID := uuid.New()
 
 	tests := []struct {
@@ -238,7 +318,7 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 				TypeID: uuid.New(),
 				Parts: []requests.CreateSongSectionPartRequest{
 					{PartID: &existingPartID1},
-					{PartID: &existingPartID2, BandMemberID: &bandMemberID},
+					{PartID: &existingPartID2, BandMemberIDs: []uuid.UUID{bandMemberID1, bandMemberID2}},
 				},
 			},
 		},
@@ -250,7 +330,10 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 				TypeID: uuid.New(),
 				Parts: []requests.CreateSongSectionPartRequest{
 					{NewPart: &requests.CreateNewSongPartRequest{Name: "Verse Riff", InstrumentID: &instrumentID}},
-					{NewPart: &requests.CreateNewSongPartRequest{Name: "Chorus Riff"}, BandMemberID: &bandMemberID},
+					{
+						NewPart:       &requests.CreateNewSongPartRequest{Name: "Chorus Riff"},
+						BandMemberIDs: []uuid.UUID{bandMemberID1},
+					},
 				},
 			},
 			partsCount: 3,
@@ -275,8 +358,23 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			// given
 			songSectionRepository := new(repository.SongSectionRepositoryMock)
 			songPartRepository := new(repository.SongPartRepositoryMock)
-			_uut := section.NewCreateSongSection(songSectionRepository, songPartRepository)
+			songRepository := new(repository.SongRepositoryMock)
+			bandMemberValidator := new(validator.BandMemberValidatorMock)
+			songPartValidator := new(validator.SongPartValidatorMock)
+			_uut := section.NewCreateSongSection(
+				songSectionRepository,
+				songPartRepository,
+				songRepository,
+				bandMemberValidator,
+				songPartValidator,
+			)
 
+			mockSong := &model.Song{ID: tt.request.SongID}
+			songRepository.On("Get", new(model.Song), tt.request.SongID).
+				Return(nil, mockSong).
+				Once()
+
+			// existing-part validation: only called when the request references at least one PartID
 			var partIDs []uuid.UUID
 			hasNewParts := false
 			for _, p := range tt.request.Parts {
@@ -286,16 +384,35 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 					hasNewParts = true
 				}
 			}
-
 			if len(partIDs) > 0 {
-				var mockParts []model.SongPart
-				for _, pid := range partIDs {
-					mockParts = append(mockParts, model.SongPart{ID: pid, SongID: tt.request.SongID})
-				}
-				songPartRepository.On("GetAllByIDs", new([]model.SongPart), partIDs).
-					Return(nil, &mockParts).
+				songPartValidator.On("Validate", partIDs, tt.request.SongID).
+					Return(nil).
 					Once()
 			}
+
+			// band member validation: called once with the distinct ids across every part,
+			// in first-seen order - always called, even with an empty (non-nil) slice
+			var bandMemberIDs []uuid.UUID
+			seen := make(map[uuid.UUID]bool)
+			for _, p := range tt.request.Parts {
+				for _, id := range p.BandMemberIDs {
+					if !seen[id] {
+						seen[id] = true
+						bandMemberIDs = append(bandMemberIDs, id)
+					}
+				}
+			}
+			expectedBandMemberIDs := bandMemberIDs
+			if expectedBandMemberIDs == nil {
+				expectedBandMemberIDs = []uuid.UUID{}
+			}
+			bandMembers := make([]model.BandMember, len(bandMemberIDs))
+			for i, id := range bandMemberIDs {
+				bandMembers[i] = model.BandMember{ID: id}
+			}
+			bandMemberValidator.On("Validate", expectedBandMemberIDs, *mockSong).
+				Return(bandMembers, nil).
+				Once()
 
 			sectionsCount := int64(3)
 			songSectionRepository.On("CountAllBySong", new(int64), tt.request.SongID).
@@ -323,6 +440,9 @@ func TestCreateSongSection_WhenSuccessful_ShouldNotReturnAnyError(t *testing.T) 
 			// then
 			assert.Nil(t, errCode)
 
+			songRepository.AssertExpectations(t)
+			bandMemberValidator.AssertExpectations(t)
+			songPartValidator.AssertExpectations(t)
 			songSectionRepository.AssertExpectations(t)
 			songPartRepository.AssertExpectations(t)
 		})
@@ -349,7 +469,12 @@ func assertCreatedSongSection(
 		req := request.Parts[i]
 
 		assert.Equal(t, uint(i), sp.Order)
-		assert.Equal(t, req.BandMemberID, sp.BandMemberID)
+
+		bandMemberIDs := make([]uuid.UUID, len(sp.BandMembers))
+		for j, bm := range sp.BandMembers {
+			bandMemberIDs[j] = bm.ID
+		}
+		assert.ElementsMatch(t, req.BandMemberIDs, bandMemberIDs)
 
 		if req.PartID != nil {
 			assert.Equal(t, *req.PartID, sp.PartID)

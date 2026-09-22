@@ -85,7 +85,7 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 				TypeID: uuid.New(),
 				Parts: []requests.CreateSongSectionPartRequest{
 					{PartID: &[]uuid.UUID{uuid.New()}[0]},
-					{PartID: &[]uuid.UUID{uuid.New()}[0], BandMemberID: &[]uuid.UUID{uuid.New()}[0]},
+					{PartID: &[]uuid.UUID{uuid.New()}[0], BandMemberIDs: []uuid.UUID{uuid.New()}},
 					{NewPart: &requests.CreateNewSongPartRequest{Name: "Chorus-1"}},
 					{
 						NewPart: &requests.CreateNewSongPartRequest{
@@ -94,8 +94,8 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 						},
 					},
 					{
-						NewPart:      &requests.CreateNewSongPartRequest{Name: "Chorus-1"},
-						BandMemberID: &[]uuid.UUID{uuid.New()}[0],
+						NewPart:       &requests.CreateNewSongPartRequest{Name: "Chorus-1"},
+						BandMemberIDs: []uuid.UUID{uuid.New()},
 					},
 				},
 			},
@@ -118,6 +118,9 @@ func TestValidateCreateSongSectionRequest_WhenIsValid_ShouldReturnNil(t *testing
 
 func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
 	partID := &[]uuid.UUID{uuid.New()}[0]
+
+	bandMemberID := uuid.New()
+
 	tests := []struct {
 		name                  string
 		request               requests.CreateSongSectionRequest
@@ -216,7 +219,7 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			[]string{"Parts[0].PartID", "Parts[0].NewPart"},
 			[]string{"excluded_with", "excluded_with"},
 		},
-		// Parts Test Cases - Band Member ID
+		// Parts Test Cases - Band Member IDs
 		{
 			"Parts is invalid because Band Member ID requires either Part ID or New Part to be set",
 			requests.CreateSongSectionRequest{
@@ -224,11 +227,25 @@ func TestValidateCreateSongSectionRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 				Name:   validSectionName,
 				TypeID: uuid.New(),
 				Parts: []requests.CreateSongSectionPartRequest{
-					{BandMemberID: &[]uuid.UUID{uuid.New()}[0]},
+					{BandMemberIDs: []uuid.UUID{uuid.New()}},
 				},
 			},
-			[]string{"Parts[0].BandMemberID"},
+			[]string{"Parts[0].BandMemberIDs"},
 			[]string{"excluded_without_all"},
+		},
+		// Parts Test Cases - Band Member IDs
+		{
+			"Parts is invalid because Band Member IDs requires the ids to be unique",
+			requests.CreateSongSectionRequest{
+				SongID: uuid.New(),
+				Name:   validSectionName,
+				TypeID: uuid.New(),
+				Parts: []requests.CreateSongSectionPartRequest{
+					{PartID: &[]uuid.UUID{uuid.New()}[0], BandMemberIDs: []uuid.UUID{bandMemberID, bandMemberID}},
+				},
+			},
+			[]string{"Parts[0].BandMemberIDs"},
+			[]string{"unique"},
 		},
 	}
 	for _, tt := range tests {
