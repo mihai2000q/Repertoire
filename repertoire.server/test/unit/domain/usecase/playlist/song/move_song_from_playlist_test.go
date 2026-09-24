@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -37,9 +38,36 @@ func TestMoveSongFromPlaylist_WhenGetPlaylistSongsFails_ShouldReturnInternalServ
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	playlistRepository.AssertExpectations(t)
+}
+
+func TestMoveSongFromPlaylist_WhenGetPlaylistSongsReturnsEmpty_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	playlistRepository := new(repository.PlaylistRepositoryMock)
+	_uut := song.NewMoveSongFromPlaylist(playlistRepository)
+
+	request := requests.MoveSongFromPlaylistRequest{
+		ID:                 uuid.New(),
+		PlaylistSongID:     uuid.New(),
+		OverPlaylistSongID: uuid.New(),
+	}
+
+	// given - mocking
+	playlistRepository.On("GetPlaylistSongs", new([]model.PlaylistSong), request.ID).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "playlist not found", errCode.Error.Error())
 
 	playlistRepository.AssertExpectations(t)
 }
@@ -67,7 +95,7 @@ func TestMoveSongFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "song not found", errCode.Error.Error())
 
@@ -97,7 +125,7 @@ func TestMoveSongFromPlaylist_WhenOverSongIsNotFound_ShouldReturnNotFoundError(t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "over song not found", errCode.Error.Error())
 
@@ -133,7 +161,7 @@ func TestMoveSongFromPlaylist_WhenUpdateAllFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

@@ -229,6 +229,30 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
         />
 
         <NumberInputRange
+          label={'Parts'}
+          isLoading={isLoading}
+          value1={
+            internalFilters.get(SongProperty.Parts + FilterOperator.GreaterThanOrEqual).value as
+              | string
+              | number
+          }
+          onChange1={(value) =>
+            handleValueChange(SongProperty.Parts + FilterOperator.GreaterThanOrEqual, value)
+          }
+          value2={
+            internalFilters.get(SongProperty.Parts + FilterOperator.LessThanOrEqual).value as
+              | string
+              | number
+          }
+          onChange2={(value) =>
+            handleValueChange(SongProperty.Parts + FilterOperator.LessThanOrEqual, value)
+          }
+          max={
+            initialFilters.get(SongProperty.Parts + FilterOperator.LessThanOrEqual).value as number
+          }
+        />
+
+        <NumberInputRange
           label={'Sections'}
           isLoading={isLoading}
           value1={
@@ -274,30 +298,6 @@ function SongsFilters({ opened, onClose, filters, setFilters, isSongsLoading }: 
           }
           max={
             initialFilters.get(SongProperty.Solos + FilterOperator.LessThanOrEqual).value as number
-          }
-        />
-
-        <NumberInputRange
-          label={'Riffs'}
-          isLoading={isLoading}
-          value1={
-            internalFilters.get(SongProperty.Riffs + FilterOperator.GreaterThanOrEqual).value as
-              | string
-              | number
-          }
-          onChange1={(value) =>
-            handleValueChange(SongProperty.Riffs + FilterOperator.GreaterThanOrEqual, value)
-          }
-          value2={
-            internalFilters.get(SongProperty.Riffs + FilterOperator.LessThanOrEqual).value as
-              | string
-              | number
-          }
-          onChange2={(value) =>
-            handleValueChange(SongProperty.Riffs + FilterOperator.LessThanOrEqual, value)
-          }
-          max={
-            initialFilters.get(SongProperty.Riffs + FilterOperator.LessThanOrEqual).value as number
           }
         />
 

@@ -6,47 +6,44 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 )
 
 type UpdatePlaylist struct {
-	repository              repository.PlaylistRepository
+	playlistRepository      repository.PlaylistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewUpdatePlaylist(
-	repository repository.PlaylistRepository,
+	playlistRepository repository.PlaylistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) UpdatePlaylist {
 	return UpdatePlaylist{
-		repository:              repository,
+		playlistRepository:      playlistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *wrapper.ErrorCode {
+func (u UpdatePlaylist) Handle(request requests.UpdatePlaylistRequest) *httperror.ErrorCode {
 	var playlist model.Playlist
-	err := u.repository.Get(&playlist, request.ID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.playlistRepository.Get(&playlist, request.ID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(playlist).IsZero() {
-		return wrapper.NotFoundError(errors.New("playlist not found"))
+		return httperror.NotFoundError(errors.New("playlist not found"))
 	}
 
 	playlist.Title = request.Title
 	playlist.Description = request.Description
 
-	err = u.repository.Update(&playlist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.playlistRepository.Update(&playlist); err != nil {
+		return httperror.DatabaseError(err)
 	}
 
-	err = u.messagePublisherService.Publish(topics.PlaylistUpdatedTopic, playlist)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := u.messagePublisherService.Publish(topics.PlaylistUpdatedTopic, playlist); err != nil {
+		return httperror.MessagePublisherError(err)
 	}
 
 	return nil

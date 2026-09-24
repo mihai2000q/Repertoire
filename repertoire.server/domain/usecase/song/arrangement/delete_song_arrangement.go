@@ -3,8 +3,9 @@ package arrangement
 import (
 	"errors"
 	"reflect"
+	"repertoire/server/data/database/transaction"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 	"slices"
 
@@ -12,35 +13,34 @@ import (
 )
 
 type DeleteSongArrangement struct {
-	songArrangementRepository repository.SongArrangementRepository
-	songRepository            repository.SongRepository
+	songRepository     repository.SongRepository
+	transactionManager transaction.Manager
 }
 
 func NewDeleteSongArrangement(
-	songArrangementRepository repository.SongArrangementRepository,
 	songRepository repository.SongRepository,
+	transactionManager transaction.Manager,
 ) DeleteSongArrangement {
 	return DeleteSongArrangement{
-		songArrangementRepository: songArrangementRepository,
-		songRepository:            songRepository,
+		songRepository:     songRepository,
+		transactionManager: transactionManager,
 	}
 }
 
-func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.ErrorCode {
+func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *httperror.ErrorCode {
 	var song model.Song
-	err := d.songRepository.GetWithArrangements(&song, songID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := d.songRepository.GetWithArrangements(&song, songID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	index := slices.IndexFunc(song.Arrangements, func(a model.SongArrangement) bool {
 		return a.ID == id
 	})
 	if index == -1 {
-		return wrapper.NotFoundError(errors.New("song arrangement not found"))
+		return httperror.NotFoundError(errors.New("song arrangement not found"))
 	}
 
 	// reorder the other arrangements
@@ -48,13 +48,19 @@ func (d DeleteSongArrangement) Handle(id uuid.UUID, songID uuid.UUID) *wrapper.E
 		song.Arrangements[i].Order = song.Arrangements[i].Order - 1
 	}
 
-	err = d.songRepository.UpdateWithAssociations(&song)
+	err := d.transactionManager.Execute(func(factory transaction.RepositoryFactory) error {
+		txSongRepo := factory.NewSongRepository()
+		txSongArrangementRepo := factory.NewSongArrangementRepository()
+		if err := txSongRepo.UpdateWithAssociations(&song); err != nil {
+			return err
+		}
+		if err := txSongArrangementRepo.Delete(id); err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
-		return wrapper.InternalServerError(err)
-	}
-	err = d.songArrangementRepository.Delete(id)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+		return httperror.DatabaseError(err)
 	}
 
 	return nil

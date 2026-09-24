@@ -38,6 +38,17 @@ describe('Delete Artist Modal', () => {
     expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument()
   })
 
+  it('should close when cancelling', async () => {
+    const user = userEvent.setup()
+    const onClose = vi.fn()
+
+    reduxRender(<DeleteArtistModal opened={true} onClose={onClose} artist={artist} />)
+
+    await user.click(screen.getByRole('button', { name: /cancel/i }))
+
+    expect(onClose).toHaveBeenCalledOnce()
+  })
+
   it('should delete artist and call onDelete', async () => {
     const user = userEvent.setup()
 

@@ -3,7 +3,7 @@ package section
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -22,15 +22,14 @@ func NewGetSongSectionTypes(
 	}
 }
 
-func (g GetSongSectionTypes) Handle(token string) (result []model.SongSectionType, e *wrapper.ErrorCode) {
+func (g GetSongSectionTypes) Handle(token string) (result []model.SongSectionType, e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
-	err := g.songSectionRepository.GetTypes(&result, userID)
-	if err != nil {
-		return result, wrapper.InternalServerError(err)
+	if err := g.songSectionRepository.GetTypes(&result, userID); err != nil {
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

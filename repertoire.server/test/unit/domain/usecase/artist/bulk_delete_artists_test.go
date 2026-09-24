@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -43,14 +44,14 @@ func TestBulkDeleteArtists_WhenGetArtistsFails_ShouldReturnInternalServerError(t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteArtists_WhenArtistsAreEmpty_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteArtists_WhenArtistsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	artistRepository := new(repository.ArtistRepositoryMock)
 	_uut := artist.NewBulkDeleteArtists(artistRepository, nil, nil)
@@ -74,7 +75,7 @@ func TestBulkDeleteArtists_WhenArtistsAreEmpty_ShouldReturnNotFoundError(t *test
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "artists not found", errCode.Error.Error())
 
@@ -88,7 +89,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServe
 	_uut := artist.NewBulkDeleteArtists(artistRepository, nil, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionArtistRepository := new(repository.ArtistRepositoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.BulkDeleteArtistsRequest{
 		IDs:        []uuid.UUID{uuid.New()},
@@ -107,11 +108,11 @@ func TestBulkDeleteArtists_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServe
 		Return(nil, mockArtists).
 		Once()
 
-	repositoryFactory.On("NewArtistRepository").Return(transactionArtistRepository).Once()
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("internal error")
-	transactionArtistRepository.On("DeleteAlbums", request.IDs).
+	txArtistRepo.On("DeleteAlbums", request.IDs).
 		Return(internalError).
 		Once()
 
@@ -119,14 +120,14 @@ func TestBulkDeleteArtists_WhenDeleteArtistAlbumsFails_ShouldReturnInternalServe
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
-	transactionArtistRepository.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestBulkDeleteArtists_WhenDeleteArtistSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -136,7 +137,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistSongsFails_ShouldReturnInternalServer
 	_uut := artist.NewBulkDeleteArtists(artistRepository, nil, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionArtistRepository := new(repository.ArtistRepositoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.BulkDeleteArtistsRequest{
 		IDs:       []uuid.UUID{uuid.New()},
@@ -155,11 +156,11 @@ func TestBulkDeleteArtists_WhenDeleteArtistSongsFails_ShouldReturnInternalServer
 		Return(nil, mockArtists).
 		Once()
 
-	repositoryFactory.On("NewArtistRepository").Return(transactionArtistRepository).Once()
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("internal error")
-	transactionArtistRepository.On("DeleteSongs", request.IDs).
+	txArtistRepo.On("DeleteSongs", request.IDs).
 		Return(internalError).
 		Once()
 
@@ -167,14 +168,14 @@ func TestBulkDeleteArtists_WhenDeleteArtistSongsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
-	transactionArtistRepository.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestBulkDeleteArtists_WhenDeleteArtistFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -184,7 +185,7 @@ func TestBulkDeleteArtists_WhenDeleteArtistFails_ShouldReturnInternalServerError
 	_uut := artist.NewBulkDeleteArtists(artistRepository, nil, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionArtistRepository := new(repository.ArtistRepositoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.BulkDeleteArtistsRequest{
 		IDs: []uuid.UUID{uuid.New()},
@@ -202,11 +203,11 @@ func TestBulkDeleteArtists_WhenDeleteArtistFails_ShouldReturnInternalServerError
 		Return(nil, mockArtists).
 		Once()
 
-	repositoryFactory.On("NewArtistRepository").Return(transactionArtistRepository).Once()
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 	internalError := errors.New("internal error")
-	transactionArtistRepository.On("Delete", request.IDs).
+	txArtistRepo.On("Delete", request.IDs).
 		Return(internalError).
 		Once()
 
@@ -214,14 +215,14 @@ func TestBulkDeleteArtists_WhenDeleteArtistFails_ShouldReturnInternalServerError
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	artistRepository.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
-	transactionArtistRepository.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -232,7 +233,7 @@ func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	_uut := artist.NewBulkDeleteArtists(artistRepository, messagePublisherService, transactionManager)
 
 	repositoryFactory := new(transaction.RepositoryFactoryMock)
-	transactionArtistRepository := new(repository.ArtistRepositoryMock)
+	txArtistRepo := new(repository.ArtistRepositoryMock)
 
 	request := requests.BulkDeleteArtistsRequest{
 		IDs: []uuid.UUID{uuid.New()},
@@ -250,10 +251,10 @@ func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *t
 		Return(nil, mockArtists).
 		Once()
 
-	repositoryFactory.On("NewArtistRepository").Return(transactionArtistRepository).Once()
+	repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
 	transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
-	transactionArtistRepository.On("Delete", request.IDs).
+	txArtistRepo.On("Delete", request.IDs).
 		Return(nil).
 		Once()
 
@@ -266,7 +267,7 @@ func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -274,7 +275,7 @@ func TestBulkDeleteArtists_WhenPublishFails_ShouldReturnInternalServerError(t *t
 	messagePublisherService.AssertExpectations(t)
 	transactionManager.AssertExpectations(t)
 	repositoryFactory.AssertExpectations(t)
-	transactionArtistRepository.AssertExpectations(t)
+	txArtistRepo.AssertExpectations(t)
 }
 
 func TestBulkDeleteArtists_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
@@ -319,7 +320,7 @@ func TestBulkDeleteArtists_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			_uut := artist.NewBulkDeleteArtists(artistRepository, messagePublisherService, transactionManager)
 
 			repositoryFactory := new(transaction.RepositoryFactoryMock)
-			transactionArtistRepository := new(repository.ArtistRepositoryMock)
+			txArtistRepo := new(repository.ArtistRepositoryMock)
 
 			var ids []uuid.UUID
 			for _, art := range tt.artists {
@@ -342,21 +343,21 @@ func TestBulkDeleteArtists_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 				Return(nil, &tt.artists).
 				Once()
 
-			repositoryFactory.On("NewArtistRepository").Return(transactionArtistRepository).Once()
+			repositoryFactory.On("NewArtistRepository").Return(txArtistRepo).Once()
 			transactionManager.On("Execute", mock.Anything).Return(nil, repositoryFactory).Once()
 
 			if tt.withAlbums {
-				transactionArtistRepository.On("DeleteAlbums", request.IDs).
+				txArtistRepo.On("DeleteAlbums", request.IDs).
 					Return(nil).
 					Once()
 			}
 			if tt.withSongs {
-				transactionArtistRepository.On("DeleteSongs", request.IDs).
+				txArtistRepo.On("DeleteSongs", request.IDs).
 					Return(nil).
 					Once()
 			}
 
-			transactionArtistRepository.On("Delete", request.IDs).
+			txArtistRepo.On("Delete", request.IDs).
 				Return(nil).
 				Once()
 
@@ -374,7 +375,7 @@ func TestBulkDeleteArtists_WhenSuccessful_ShouldDeleteArtist(t *testing.T) {
 			messagePublisherService.AssertExpectations(t)
 			transactionManager.AssertExpectations(t)
 			repositoryFactory.AssertExpectations(t)
-			transactionArtistRepository.AssertExpectations(t)
+			txArtistRepo.AssertExpectations(t)
 		})
 	}
 }

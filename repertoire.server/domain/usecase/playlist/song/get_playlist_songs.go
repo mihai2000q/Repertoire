@@ -3,27 +3,28 @@ package song
 import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 )
 
 type GetPlaylistSongs struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewGetPlaylistSongs(repository repository.PlaylistRepository) GetPlaylistSongs {
+func NewGetPlaylistSongs(playlistRepository repository.PlaylistRepository) GetPlaylistSongs {
 	return GetPlaylistSongs{
-		repository: repository,
+		playlistRepository: playlistRepository,
 	}
 }
 
-func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (result wrapper.WithTotalCount[model.Song], e *wrapper.ErrorCode) {
+func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (result pagination.WithTotalCount[model.Song], e *httperror.ErrorCode) {
 	if len(request.OrderBy) == 0 {
 		request.OrderBy = []string{"song_track_no"}
 	}
 
 	var playlistSongs []model.PlaylistSong
-	err := g.repository.GetPlaylistSongsWithSongs(
+	err := g.playlistRepository.GetPlaylistSongsWithSongs(
 		&playlistSongs,
 		request.ID,
 		request.CurrentPage,
@@ -31,12 +32,12 @@ func (g GetPlaylistSongs) Handle(request requests.GetPlaylistSongsRequest) (resu
 		request.OrderBy,
 	)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
-	err = g.repository.GetPlaylistSongsCount(&result.TotalCount, request.ID)
+	err = g.playlistRepository.GetPlaylistSongsCount(&result.TotalCount, request.ID)
 	if err != nil {
-		return result, wrapper.InternalServerError(err)
+		return result, httperror.DatabaseError(err)
 	}
 
 	var songs []model.Song

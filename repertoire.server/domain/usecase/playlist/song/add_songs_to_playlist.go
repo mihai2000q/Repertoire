@@ -4,37 +4,39 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/api/responses"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
-	"slices"
 
 	"github.com/google/uuid"
 )
 
 type AddSongsToPlaylist struct {
-	repository repository.PlaylistRepository
+	playlistRepository repository.PlaylistRepository
 }
 
-func NewAddSongsToPlaylist(repository repository.PlaylistRepository) AddSongsToPlaylist {
-	return AddSongsToPlaylist{repository: repository}
+func NewAddSongsToPlaylist(playlistRepository repository.PlaylistRepository) AddSongsToPlaylist {
+	return AddSongsToPlaylist{playlistRepository: playlistRepository}
 }
 
 func (a AddSongsToPlaylist) Handle(
 	request requests.AddSongsToPlaylistRequest,
-) (*responses.AddSongsToPlaylistResponse, *wrapper.ErrorCode) {
+) (*responses.AddSongsToPlaylistResponse, *httperror.ErrorCode) {
 	var playlistSongs []model.PlaylistSong
-	err := a.repository.GetPlaylistSongs(&playlistSongs, request.ID)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.playlistRepository.GetPlaylistSongs(&playlistSongs, request.ID); err != nil {
+		return nil, httperror.DatabaseError(err)
+	}
+
+	// map for easy lookup
+	songIDsMap := make(map[uuid.UUID]bool)
+	for _, ps := range playlistSongs {
+		songIDsMap[ps.SongID] = true
 	}
 
 	var duplicates []uuid.UUID
 	var newPlaylistSongs []model.PlaylistSong
 	currentTrackNo := uint(len(playlistSongs)) + 1
 	for _, songID := range request.SongIDs {
-		if slices.ContainsFunc(playlistSongs, func(p model.PlaylistSong) bool {
-			return p.SongID == songID
-		}) {
+		if songIDsMap[songID] {
 			duplicates = append(duplicates, songID)
 			if request.ForceAdd != nil && !(*request.ForceAdd) {
 				continue
@@ -55,9 +57,8 @@ func (a AddSongsToPlaylist) Handle(
 		return &responses.AddSongsToPlaylistResponse{Success: false, Duplicates: duplicates}, nil
 	}
 
-	err = a.repository.AddSongs(&newPlaylistSongs)
-	if err != nil {
-		return nil, wrapper.InternalServerError(err)
+	if err := a.playlistRepository.AddSongs(&newPlaylistSongs); err != nil {
+		return nil, httperror.DatabaseError(err)
 	}
 
 	var addedSongs []uuid.UUID

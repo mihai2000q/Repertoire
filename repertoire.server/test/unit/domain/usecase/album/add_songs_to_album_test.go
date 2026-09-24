@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/album"
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/unit/data/repository"
@@ -16,6 +16,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -38,7 +39,7 @@ func TestAddSongsToAlbum_WhenGetAlbumWithSongsFails_ShouldReturnInternalServerEr
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -64,7 +65,7 @@ func TestAddSongsToAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 
@@ -82,23 +83,55 @@ func TestAddSongsToAlbum_WhenGetAllSongsFails_ShouldReturnInternalServerError(t 
 		SongIDs: []uuid.UUID{uuid.New()},
 	}
 
-	internalError := errors.New("internal error")
-	songRepository.On("GetAllByIDs", mock.Anything, request.SongIDs).
-		Return(internalError).
-		Once()
-
 	mockAlbum := &model.Album{ArtistID: &[]uuid.UUID{uuid.New()}[0]}
 	albumRepository.On("GetWithSongs", mock.IsType(mockAlbum), request.ID).
 		Return(nil, mockAlbum).
+		Once()
+
+	internalError := errors.New("internal error")
+	songRepository.On("GetAllByIDs", mock.Anything, request.SongIDs).
+		Return(internalError).
 		Once()
 
 	// when
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
+
+	albumRepository.AssertExpectations(t)
+	songRepository.AssertExpectations(t)
+}
+
+func TestAddSongsToAlbum_WhenSongsLenIsNotTheSameAsRequest_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	albumRepository := new(repository.AlbumRepositoryMock)
+	songRepository := new(repository.SongRepositoryMock)
+	_uut := album.NewAddSongsToAlbum(albumRepository, songRepository, nil)
+
+	request := requests.AddSongsToAlbumRequest{
+		ID:      uuid.New(),
+		SongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	mockAlbum := &model.Album{ArtistID: &[]uuid.UUID{uuid.New()}[0]}
+	albumRepository.On("GetWithSongs", mock.IsType(mockAlbum), request.ID).
+		Return(nil, mockAlbum).
+		Once()
+
+	songRepository.On("GetAllByIDs", mock.Anything, request.SongIDs).
+		Return(nil).
+		Once()
+
+	// when
+	errCode := _uut.Handle(request)
+
+	// then
+	require.NotNil(t, errCode)
+	assert.Equal(t, http.StatusNotFound, errCode.Code)
+	assert.Equal(t, "songs not found", errCode.Error.Error())
 
 	albumRepository.AssertExpectations(t)
 	songRepository.AssertExpectations(t)
@@ -130,7 +163,7 @@ func TestAddSongsToAlbum_WhenAlbumAndSongArtistDoesNotMatch_ShouldReturnConflict
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
@@ -164,7 +197,7 @@ func TestAddSongsToAlbum_WhenAlbumDoesNotHaveArtistButSongHasArtist_ShouldReturn
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" and album do not share the same artist", errCode.Error.Error())
 
@@ -198,7 +231,7 @@ func TestAddSongsToAlbum_WhenOneSongHasAlbum_ShouldReturnConflictError(t *testin
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusConflict, errCode.Code)
 	assert.Equal(t, "song "+request.SongIDs[0].String()+" already has an album", errCode.Error.Error())
 
@@ -237,7 +270,7 @@ func TestAddSongsToAlbum_WhenUpdateSongsFails_ShouldReturnInternalServerError(t 
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -281,7 +314,7 @@ func TestAddSongsToAlbum_WhenPublishFails_ShouldReturnInternalServerError(t *tes
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -310,7 +343,7 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 			&[]model.Song{{ID: songID}},
 			&model.Album{
 				ID:          id,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}},
 			},
 		},
@@ -320,10 +353,10 @@ func TestAddSongsToAlbum_WhenIsValid_ShouldNotReturnAnyError(t *testing.T) {
 				ID:      id,
 				SongIDs: []uuid.UUID{songID},
 			},
-			&[]model.Song{{ID: songID, ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0]}},
+			&[]model.Song{{ID: songID, ReleaseDate: &[]date.Date{date.Date(time.Now())}[0]}},
 			&model.Album{
 				ID:          id,
-				ReleaseDate: &[]internal.Date{internal.Date(time.Now())}[0],
+				ReleaseDate: &[]date.Date{date.Date(time.Now())}[0],
 				Songs:       []model.Song{{}, {}, {}},
 				ArtistID:    &artistID,
 			},

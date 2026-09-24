@@ -1,4 +1,4 @@
-package album
+package search
 
 import (
 	"repertoire/server/internal"

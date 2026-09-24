@@ -4,12 +4,13 @@ import (
 	"io"
 	"repertoire/server/api/requests"
 	"repertoire/server/domain/usecase/search"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 )
 
 type SearchService interface {
-	Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[any], *wrapper.ErrorCode)
-	MeiliWebhook(requestBody io.ReadCloser) *wrapper.ErrorCode
+	Get(request requests.SearchGetRequest, token string) (pagination.WithTotalCount[any], *httperror.ErrorCode)
+	MeiliWebhook(requestBody io.ReadCloser) *httperror.ErrorCode
 }
 
 type searchService struct {
@@ -24,10 +25,10 @@ func NewSearchService(get search.Get, meiliWebhook search.MeiliWebhook) SearchSe
 	}
 }
 
-func (s searchService) Get(request requests.SearchGetRequest, token string) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
+func (s searchService) Get(request requests.SearchGetRequest, token string) (pagination.WithTotalCount[any], *httperror.ErrorCode) {
 	return s.get.Handle(request, token)
 }
 
-func (s searchService) MeiliWebhook(requestBody io.ReadCloser) *wrapper.ErrorCode {
+func (s searchService) MeiliWebhook(requestBody io.ReadCloser) *httperror.ErrorCode {
 	return s.meiliWebhook.Handle(requestBody)
 }

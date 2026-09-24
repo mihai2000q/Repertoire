@@ -20,16 +20,16 @@ type CreateArtistRequest struct {
 
 type AddAlbumsToArtistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
-	AlbumIDs []uuid.UUID `validate:"min=1"`
+	AlbumIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type AddSongsToArtistRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type AddPerfectRehearsalsToArtistsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type UpdateArtistRequest struct {
@@ -40,16 +40,16 @@ type UpdateArtistRequest struct {
 
 type RemoveAlbumsFromArtistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
-	AlbumIDs []uuid.UUID `validate:"min=1"`
+	AlbumIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type RemoveSongsFromArtistRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type BulkDeleteArtistsRequest struct {
-	IDs        []uuid.UUID `validate:"min=1"`
+	IDs        []uuid.UUID `validate:"unique,min=1"`
 	WithAlbums bool        `form:"withAlbums"`
 	WithSongs  bool        `form:"withSongs"`
 }
@@ -65,7 +65,7 @@ type DeleteArtistRequest struct {
 type CreateBandMemberRequest struct {
 	Name     string      `validate:"required,max=100"`
 	Color    *string     `validate:"omitempty,color"`
-	RoleIDs  []uuid.UUID `validate:"min=1"`
+	RoleIDs  []uuid.UUID `validate:"unique,min=1"`
 	ArtistID uuid.UUID   `validate:"required"`
 }
 
@@ -73,7 +73,7 @@ type UpdateBandMemberRequest struct {
 	ID      uuid.UUID   `validate:"required"`
 	Name    string      `validate:"required,max=100"`
 	Color   *string     `validate:"omitempty,color"`
-	RoleIDs []uuid.UUID `validate:"min=1"`
+	RoleIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type MoveBandMemberRequest struct {

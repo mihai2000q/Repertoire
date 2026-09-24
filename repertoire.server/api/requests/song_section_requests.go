@@ -2,28 +2,22 @@ package requests
 
 import "github.com/google/uuid"
 
+type GetSongSectionsRequest struct {
+	SongID uuid.UUID `form:"songId" validate:"required"`
+}
+
 type CreateSongSectionRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	TypeID       uuid.UUID `validate:"required"`
-	BandMemberID *uuid.UUID
-	InstrumentID *uuid.UUID
+	SongID uuid.UUID                      `validate:"required"`
+	Name   string                         `validate:"required,max=30"`
+	TypeID uuid.UUID                      `validate:"required"`
+	Parts  []CreateSongSectionPartRequest `validate:"unique_ids=PartID,dive"`
 }
 
 type UpdateSongSectionRequest struct {
-	ID           uuid.UUID `validate:"required"`
-	Name         string    `validate:"required,max=30"`
-	Confidence   uint      `validate:"max=100"`
-	Rehearsals   uint
-	TypeID       uuid.UUID `validate:"required"`
-	BandMemberID *uuid.UUID
-	InstrumentID *uuid.UUID
-}
-
-type UpdateAllSongSectionsRequest struct {
-	SongID       uuid.UUID `validate:"required"`
-	InstrumentID *uuid.UUID
-	BandMemberID *uuid.UUID
+	ID      uuid.UUID   `validate:"required"`
+	Name    string      `validate:"required,max=30"`
+	TypeID  uuid.UUID   `validate:"required"`
+	PartIDs []uuid.UUID `validate:"unique"`
 }
 
 type MoveSongSectionRequest struct {
@@ -32,17 +26,19 @@ type MoveSongSectionRequest struct {
 	SongID uuid.UUID `validate:"required"`
 }
 
-type BulkRehearsalsSongSectionsRequest struct {
-	Sections []BulkRehearsalsSongSectionRequest `validate:"min=1,dive"`
-	SongID   uuid.UUID                          `validate:"required"`
-}
-
 type BulkDeleteSongSectionsRequest struct {
-	IDs    []uuid.UUID `validate:"min=1"`
-	SongID uuid.UUID   `validate:"required"`
+	IDs     []uuid.UUID `validate:"unique,min=1"`
+	SongID  uuid.UUID   `validate:"required"`
+	PartIDs []uuid.UUID
 }
 
-type BulkRehearsalsSongSectionRequest struct {
-	ID         uuid.UUID `validate:"required"`
-	Rehearsals uint
+type CreateSongSectionPartRequest struct {
+	PartID        *uuid.UUID                `validate:"excluded_with=NewPart"`
+	NewPart       *CreateNewSongPartRequest `validate:"excluded_with=PartID"`
+	BandMemberIDs []uuid.UUID               `validate:"unique,excluded_without_all=PartID NewPart"`
+}
+
+type CreateNewSongPartRequest struct {
+	Name         string `validate:"required,max=30"`
+	InstrumentID *uuid.UUID
 }

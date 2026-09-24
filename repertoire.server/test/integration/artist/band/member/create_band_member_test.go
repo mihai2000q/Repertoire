@@ -52,6 +52,24 @@ func TestCreateBandMember_WhenArtistIsNotBand_ShouldReturnConflictError(t *testi
 	assert.Equal(t, http.StatusConflict, w.Code)
 }
 
+func TestCreateBandMember_WhenRolesAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.CreateBandMemberRequest{
+		ArtistID: artistData.Artists[0].ID,
+		Name:     "Guitarist 1-New",
+		RoleIDs:  []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/band-members", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestCreateBandMember_WhenSuccessful_ShouldCreateMember(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)

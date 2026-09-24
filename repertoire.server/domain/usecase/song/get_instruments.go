@@ -3,31 +3,33 @@ package song
 import (
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
 type GetInstruments struct {
-	repository repository.SongRepository
-	jwtService service.JwtService
+	songRepository repository.SongRepository
+	jwtService     service.JwtService
 }
 
-func NewGetInstruments(repository repository.SongRepository, jwtService service.JwtService) GetInstruments {
+func NewGetInstruments(
+	songRepository repository.SongRepository,
+	jwtService service.JwtService,
+) GetInstruments {
 	return GetInstruments{
-		repository: repository,
-		jwtService: jwtService,
+		songRepository: songRepository,
+		jwtService:     jwtService,
 	}
 }
 
-func (g GetInstruments) Handle(token string) (result []model.Instrument, e *wrapper.ErrorCode) {
+func (g GetInstruments) Handle(token string) (result []model.Instrument, e *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return result, errCode
 	}
 
-	err := g.repository.GetInstruments(&result, userID)
-	if err != nil {
-		return result, wrapper.InternalServerError(err)
+	if err := g.songRepository.GetInstruments(&result, userID); err != nil {
+		return result, httperror.DatabaseError(err)
 	}
 
 	return result, nil

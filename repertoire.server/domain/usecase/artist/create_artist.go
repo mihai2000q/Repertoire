@@ -4,8 +4,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
 	"repertoire/server/data/service"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/internal/message/topics"
-	"repertoire/server/internal/wrapper"
 	"repertoire/server/model"
 
 	"github.com/google/uuid"
@@ -13,23 +13,23 @@ import (
 
 type CreateArtist struct {
 	jwtService              service.JwtService
-	repository              repository.ArtistRepository
+	artistRepository        repository.ArtistRepository
 	messagePublisherService service.MessagePublisherService
 }
 
 func NewCreateArtist(
 	jwtService service.JwtService,
-	repository repository.ArtistRepository,
+	artistRepository repository.ArtistRepository,
 	messagePublisherService service.MessagePublisherService,
 ) CreateArtist {
 	return CreateArtist{
 		jwtService:              jwtService,
-		repository:              repository,
+		artistRepository:        artistRepository,
 		messagePublisherService: messagePublisherService,
 	}
 }
 
-func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string) (uuid.UUID, *wrapper.ErrorCode) {
+func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string) (uuid.UUID, *httperror.ErrorCode) {
 	userID, errCode := c.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
 		return uuid.Nil, errCode
@@ -41,14 +41,12 @@ func (c CreateArtist) Handle(request requests.CreateArtistRequest, token string)
 		IsBand: request.IsBand,
 		UserID: userID,
 	}
-	err := c.repository.Create(&artist)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.artistRepository.Create(&artist); err != nil {
+		return uuid.Nil, httperror.DatabaseError(err)
 	}
 
-	err = c.messagePublisherService.Publish(topics.ArtistCreatedTopic, artist)
-	if err != nil {
-		return uuid.Nil, wrapper.InternalServerError(err)
+	if err := c.messagePublisherService.Publish(topics.ArtistCreatedTopic, artist); err != nil {
+		return uuid.Nil, httperror.MessagePublisherError(err)
 	}
 
 	return artist.ID, nil

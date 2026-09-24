@@ -5,7 +5,8 @@ import (
 	"repertoire/server/api/requests"
 	"repertoire/server/data/service"
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"strings"
 )
@@ -28,10 +29,10 @@ func NewGet(
 func (g Get) Handle(
 	request requests.SearchGetRequest,
 	token string,
-) (wrapper.WithTotalCount[any], *wrapper.ErrorCode) {
+) (pagination.WithTotalCount[any], *httperror.ErrorCode) {
 	userID, errCode := g.jwtService.GetUserIdFromJwt(token)
 	if errCode != nil {
-		return wrapper.WithTotalCount[any]{}, errCode
+		return pagination.WithTotalCount[any]{}, errCode
 	}
 
 	if len(request.IDs) > 0 {
@@ -63,7 +64,7 @@ func (g Get) Handle(
 	)
 
 	if errCode != nil {
-		return wrapper.WithTotalCount[any]{}, errCode
+		return pagination.WithTotalCount[any]{}, errCode
 	}
 
 	var results []any
@@ -123,7 +124,7 @@ func (g Get) Handle(
 		}
 	}
 
-	return wrapper.WithTotalCount[any]{
+	return pagination.WithTotalCount[any]{
 		Models:     results,
 		TotalCount: searchResult.TotalCount,
 	}, nil

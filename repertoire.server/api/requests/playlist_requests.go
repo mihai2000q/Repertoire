@@ -24,18 +24,18 @@ type CreatePlaylistRequest struct {
 
 type AddAlbumsToPlaylistRequest struct {
 	ID       uuid.UUID   `validate:"required"`
-	AlbumIDs []uuid.UUID `validate:"min=1"`
+	AlbumIDs []uuid.UUID `validate:"unique,min=1"`
 	ForceAdd *bool
 }
 
 type AddArtistsToPlaylistRequest struct {
 	ID        uuid.UUID   `validate:"required"`
-	ArtistIDs []uuid.UUID `validate:"min=1"`
+	ArtistIDs []uuid.UUID `validate:"unique,min=1"`
 	ForceAdd  *bool
 }
 
 type AddPerfectRehearsalsToPlaylistsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type UpdatePlaylistRequest struct {
@@ -45,7 +45,7 @@ type UpdatePlaylistRequest struct {
 }
 
 type BulkDeletePlaylistsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 // Songs
@@ -65,7 +65,7 @@ type AddSongsToPlaylistRequest struct {
 
 type AddPerfectPlaylistSongRehearsalsRequest struct {
 	PlaylistID uuid.UUID   `validate:"required"`
-	IDs        []uuid.UUID `validate:"min=1"`
+	IDs        []uuid.UUID `validate:"unique,min=1"`
 }
 
 type ShufflePlaylistSongsRequest struct {
@@ -80,5 +80,5 @@ type MoveSongFromPlaylistRequest struct {
 
 type RemoveSongsFromPlaylistRequest struct {
 	ID              uuid.UUID   `validate:"required"`
-	PlaylistSongIDs []uuid.UUID `validate:"min=1"`
+	PlaylistSongIDs []uuid.UUID `validate:"unique,min=1"`
 }

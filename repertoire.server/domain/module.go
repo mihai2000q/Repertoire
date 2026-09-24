@@ -6,6 +6,7 @@ import (
 	"repertoire/server/domain/provider"
 	"repertoire/server/domain/service"
 	"repertoire/server/domain/usecase"
+	"repertoire/server/domain/validator"
 
 	"go.uber.org/fx"
 )
@@ -26,10 +27,15 @@ var services = fx.Options(
 	fx.Provide(service.NewPlaylistService),
 	fx.Provide(service.NewSearchService),
 	fx.Provide(service.NewSongArrangementService),
+	fx.Provide(service.NewSongPartService),
 	fx.Provide(service.NewSongSectionService),
 	fx.Provide(service.NewSongService),
 	fx.Provide(service.NewUserDataService),
 	fx.Provide(service.NewUserService),
+)
+
+var validators = fx.Options(
+	fx.Provide(validator.NewBandMemberValidator),
 )
 
 var Module = fx.Options(
@@ -38,4 +44,5 @@ var Module = fx.Options(
 	message.Module,
 	usecase.Module,
 	services,
+	validators,
 )

@@ -32,14 +32,14 @@ const songsFilters: Filter[] = [
     value: true
   },
 
+  { property: SongProperty.Parts, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
+  { property: SongProperty.Parts, operator: FilterOperator.LessThanOrEqual, isSet: false },
+
   { property: SongProperty.Sections, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.Sections, operator: FilterOperator.LessThanOrEqual, isSet: false },
 
   { property: SongProperty.Solos, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.Solos, operator: FilterOperator.LessThanOrEqual, isSet: false },
-
-  { property: SongProperty.Riffs, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
-  { property: SongProperty.Riffs, operator: FilterOperator.LessThanOrEqual, isSet: false },
 
   { property: SongProperty.Rehearsals, operator: FilterOperator.GreaterThanOrEqual, isSet: false },
   { property: SongProperty.Rehearsals, operator: FilterOperator.LessThanOrEqual, isSet: false },
@@ -71,14 +71,14 @@ export const songsFiltersMetadataMap: (metadata: SongFiltersMetadata) => [string
   [SongProperty.BPM + FilterOperator.GreaterThanOrEqual, metadata.minBpm],
   [SongProperty.BPM + FilterOperator.LessThanOrEqual, metadata.maxBpm],
 
+  [SongProperty.Parts + FilterOperator.GreaterThanOrEqual, metadata.minPartsCount],
+  [SongProperty.Parts + FilterOperator.LessThanOrEqual, metadata.maxPartsCount],
+
   [SongProperty.Sections + FilterOperator.GreaterThanOrEqual, metadata.minSectionsCount],
   [SongProperty.Sections + FilterOperator.LessThanOrEqual, metadata.maxSectionsCount],
 
   [SongProperty.Solos + FilterOperator.GreaterThanOrEqual, metadata.minSolosCount],
   [SongProperty.Solos + FilterOperator.LessThanOrEqual, metadata.maxSolosCount],
-
-  [SongProperty.Riffs + FilterOperator.GreaterThanOrEqual, metadata.minRiffsCount],
-  [SongProperty.Riffs + FilterOperator.LessThanOrEqual, metadata.maxRiffsCount],
 
   [SongProperty.Rehearsals + FilterOperator.GreaterThanOrEqual, metadata.minRehearsals],
   [SongProperty.Rehearsals + FilterOperator.LessThanOrEqual, metadata.maxRehearsals],

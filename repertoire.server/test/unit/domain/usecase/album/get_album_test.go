@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestGetAlbum_WhenGetAlbumFails_ShouldReturnInternalServerError(t *testing.T
 
 	// then
 	assert.Empty(t, resultAlbum)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -59,7 +60,7 @@ func TestGetAlbum_WhenAlbumIsEmpty_ShouldReturnNotFoundError(t *testing.T) {
 
 	// then
 	assert.Empty(t, resultAlbum)
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "album not found", errCode.Error.Error())
 

@@ -22,9 +22,9 @@ const songsOrders: Order[] = [
     nullable: true,
     checked: false
   },
+  { label: 'Parts', property: SongProperty.Parts, checked: false },
   { label: 'Sections', property: SongProperty.Sections, checked: false },
   { label: 'Solos', property: SongProperty.Solos, checked: false },
-  { label: 'Riffs', property: SongProperty.Riffs, checked: false },
   { label: 'Rehearsals', property: SongProperty.Rehearsals, checked: false },
   { label: 'Confidence', property: SongProperty.Confidence, checked: false },
   { label: 'Progress', property: SongProperty.Progress, checked: false },

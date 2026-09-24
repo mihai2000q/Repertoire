@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"repertoire/server/internal/enums"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/pagination"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
 	searchData "repertoire/server/test/integration/test/data/search"
@@ -38,7 +38,7 @@ func TestSearchGet_WhenSuccessful_ShouldReturnSearchResults(t *testing.T) {
 	// then
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response wrapper.WithTotalCount[any]
+	var response pagination.WithTotalCount[any]
 	_ = json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, int64(expectedTotalCount), response.TotalCount)

@@ -1,7 +1,7 @@
 package requests
 
 import (
-	"repertoire/server/internal"
+	"repertoire/server/internal/date"
 
 	"github.com/google/uuid"
 )
@@ -24,24 +24,24 @@ type GetAlbumFiltersMetadataRequest struct {
 
 type CreateAlbumRequest struct {
 	Title       string `validate:"required,max=100"`
-	ReleaseDate *internal.Date
+	ReleaseDate *date.Date
 	ArtistID    *uuid.UUID `validate:"omitempty,excluded_with=ArtistName"`
 	ArtistName  *string    `validate:"omitempty,excluded_with=ArtistID,max=100"`
 }
 
 type AddSongsToAlbumRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type AddPerfectRehearsalsToAlbumsRequest struct {
-	IDs []uuid.UUID `validate:"min=1"`
+	IDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type UpdateAlbumRequest struct {
 	ID          uuid.UUID `validate:"required"`
 	Title       string    `validate:"required,max=100"`
-	ReleaseDate *internal.Date
+	ReleaseDate *date.Date
 	ArtistID    *uuid.UUID
 }
 
@@ -53,11 +53,11 @@ type MoveSongFromAlbumRequest struct {
 
 type RemoveSongsFromAlbumRequest struct {
 	ID      uuid.UUID   `validate:"required"`
-	SongIDs []uuid.UUID `validate:"min=1"`
+	SongIDs []uuid.UUID `validate:"unique,min=1"`
 }
 
 type BulkDeleteAlbumsRequest struct {
-	IDs       []uuid.UUID `validate:"min=1"`
+	IDs       []uuid.UUID `validate:"unique,min=1"`
 	WithSongs bool
 }
 

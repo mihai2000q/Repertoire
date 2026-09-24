@@ -13,7 +13,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"gorm.io/gorm"
 )
 
 func TestGetSong_WhenUserIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
@@ -45,19 +44,13 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 	_ = json.Unmarshal(w.Body.Bytes(), &responseSong)
 
 	db := utils.GetDatabase(t)
-	db.Joins("Settings").
-		Joins("Settings.DefaultInstrument").
+	db.
+		Joins("Settings").
 		Joins("Settings.DefaultBandMember").
-		Joins("Album").
-		Joins("Artist").
+		Joins("Settings.DefaultInstrument").
 		Joins("GuitarTuning").
-		Preload("Sections", func(db *gorm.DB) *gorm.DB {
-			return db.Order("song_sections.order")
-		}).
-		Preload("Sections.SongSectionType").
-		Preload("Sections.Instrument").
-		Preload("Sections.BandMember").
-		Preload("Sections.BandMember.Roles").
+		Joins("Artist").
+		Joins("Album").
 		Preload("Artist.BandMembers").
 		Preload("Artist.BandMembers.Roles").
 		Find(&song, song.ID)
@@ -66,7 +59,6 @@ func TestGetSong_WhenSuccessful_ShouldReturnSong(t *testing.T) {
 		t,
 		song,
 		responseSong,
-		true,
 		true,
 		true,
 		true,

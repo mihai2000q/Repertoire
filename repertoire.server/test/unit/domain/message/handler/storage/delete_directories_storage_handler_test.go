@@ -4,13 +4,14 @@ import (
 	"encoding/json"
 	"errors"
 	"repertoire/server/domain/message/handler/storage"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/test/unit/data/logger"
 	"repertoire/server/test/unit/data/service"
 	"testing"
 
 	"github.com/ThreeDotsLabs/watermill/message"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturnError(t *testing.T) {
@@ -22,7 +23,7 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturn
 
 	internalError := errors.New("internal error")
 	storageService.On("DeleteDirectories", directories).
-		Return(wrapper.InternalServerError(internalError)).
+		Return(httperror.InternalServerError(internalError)).
 		Once()
 
 	// when
@@ -32,6 +33,7 @@ func TestDeleteDirectoriesStorageHandler_WhenDeleteDirectoriesFails_ShouldReturn
 
 	// then
 	assert.Error(t, err)
+	require.NotNil(t, err)
 	assert.Equal(t, err.Error(), internalError.Error())
 
 	storageService.AssertExpectations(t)

@@ -25,12 +25,11 @@ func NewArtistCreatedHandler(messagePublisherService service.MessagePublisherSer
 
 func (a ArtistCreatedHandler) Handle(msg *watermillMessage.Message) error {
 	var artist model.Artist
-	err := json.Unmarshal(msg.Payload, &artist)
-	if err != nil {
+	if err := json.Unmarshal(msg.Payload, &artist); err != nil {
 		return err
 	}
 
-	err = a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, []any{artist.ToSearch()})
+	err := a.messagePublisherService.Publish(topics.AddToSearchEngineTopic, []any{artist.ToSearch()})
 	if err != nil {
 		return err
 	}

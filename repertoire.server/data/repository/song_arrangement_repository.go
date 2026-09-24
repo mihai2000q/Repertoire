@@ -9,7 +9,7 @@ import (
 )
 
 type SongArrangementRepository interface {
-	GetAllBySongWithSectionOccurrences(
+	GetAllBySongWithPartOccurrences(
 		arrangements *[]model.SongArrangement,
 		ids []uuid.UUID,
 		songID uuid.UUID,
@@ -31,25 +31,24 @@ func NewSongArrangementRepository(client database.Client) SongArrangementReposit
 	}
 }
 
-func (s songArrangementRepository) GetAllBySongWithSectionOccurrences(
+func (s songArrangementRepository) GetAllBySongWithPartOccurrences(
 	arrangements *[]model.SongArrangement,
 	ids []uuid.UUID,
 	songID uuid.UUID,
 ) error {
 	return s.client.
-		Preload("SectionOccurrences").
+		Preload("PartOccurrences").
 		Where("song_id = ?", songID).
-		Find(&arrangements, ids).
+		Find(arrangements, ids).
 		Error
 }
 
 func (s songArrangementRepository) GetAllBySong(arrangements *[]model.SongArrangement, songID uuid.UUID) error {
 	return s.client.Model(&model.SongArrangement{}).
-		Preload("SectionOccurrences", func(db *gorm.DB) *gorm.DB {
+		Preload("PartOccurrences", func(db *gorm.DB) *gorm.DB {
 			return db.
-				Joins("Section").
-				Joins("Section.SongSectionType").
-				Order("\"Section\".order")
+				Joins("Part").
+				Order("\"Part\".song_order")
 		}).
 		Where(model.SongArrangement{SongID: songID}).
 		Order("\"order\"").
@@ -65,13 +64,13 @@ func (s songArrangementRepository) CountBySong(count *int64, songID uuid.UUID) e
 }
 
 func (s songArrangementRepository) Create(arrangement *model.SongArrangement) error {
-	return s.client.Create(&arrangement).Error
+	return s.client.Create(arrangement).Error
 }
 
 func (s songArrangementRepository) UpdateAllWithAssociations(arrangements *[]model.SongArrangement) error {
 	return s.client.Transaction(func(tx *gorm.DB) error {
 		for _, arrangement := range *arrangements {
-			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Updates(&arrangement).Error
+			err := tx.Session(&gorm.Session{FullSaveAssociations: true}).Save(&arrangement).Error
 			if err != nil {
 				return err
 			}

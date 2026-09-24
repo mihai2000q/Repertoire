@@ -16,17 +16,30 @@ import (
 	"gorm.io/gorm"
 )
 
-func TestRemoveSongsFromPlaylist_WhenSongIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+func TestRemoveSongsFromPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	request := requests.RemoveSongsFromPlaylistRequest{
-		ID: playlistData.Playlists[0].ID,
-		PlaylistSongIDs: []uuid.UUID{
-			playlistData.PlaylistsSongs[3].ID,
-			playlistData.PlaylistsSongs[1].ID,
-			uuid.New(),
-		},
+		ID:              uuid.New(),
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().PUT(w, "/api/playlists/songs/remove", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestRemoveSongsFromPlaylist_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.RemoveSongsFromPlaylistRequest{
+		ID:              playlistData.Playlists[1].ID,
+		PlaylistSongIDs: []uuid.UUID{uuid.New()},
 	}
 
 	// when
@@ -42,7 +55,7 @@ func TestRemoveSongsFromPlaylist_WhenSuccessful_ShouldDeleteSongsFromPlaylist(t 
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
 
 	playlist := playlistData.Playlists[0]
-	oldSongsLength := len(slices.DeleteFunc(playlistData.PlaylistsSongs, func(playlistSong model.PlaylistSong) bool {
+	oldSongsLength := len(slices.DeleteFunc(slices.Clone(playlistData.PlaylistsSongs), func(playlistSong model.PlaylistSong) bool {
 		return playlistSong.PlaylistID != playlist.ID
 	}))
 

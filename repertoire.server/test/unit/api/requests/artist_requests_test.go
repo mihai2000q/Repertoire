@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValidateGetArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing.T) {
@@ -102,7 +103,7 @@ func TestValidateGetArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReque
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -166,7 +167,7 @@ func TestValidateGetArtistFiltersMetadataRequest_WhenSingleFieldIsInvalid_Should
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetArtistFiltersMetadataRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -223,7 +224,7 @@ func TestValidateCreateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -249,6 +250,8 @@ func TestValidateAddAlbumsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	albumID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddAlbumsToArtistRequest
@@ -269,6 +272,12 @@ func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			"AlbumIDs",
 			"min",
 		},
+		{
+			"Album IDs is invalid because it requires the ids to be unique",
+			requests.AddAlbumsToArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{albumID, albumID}},
+			"AlbumIDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -279,7 +288,7 @@ func TestValidateAddAlbumsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddAlbumsToArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -305,6 +314,8 @@ func TestValidateAddSongsToArtistRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddSongsToArtistRequest
@@ -325,6 +336,12 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			"SongIDs",
 			"min",
 		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.AddSongsToArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -335,7 +352,7 @@ func TestValidateAddSongsToArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddSongsToArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -360,6 +377,8 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenIsValid_ShouldReturnNil(t *tes
 }
 
 func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.AddPerfectRehearsalsToArtistsRequest
@@ -373,6 +392,12 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldRet
 			"IDs",
 			"min",
 		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.AddPerfectRehearsalsToArtistsRequest{IDs: []uuid.UUID{id, id}},
+			"IDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -383,7 +408,7 @@ func TestAddPerfectRehearsalsToArtistsRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "AddPerfectRehearsalsToArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -465,7 +490,7 @@ func TestValidateUpdateArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -491,6 +516,8 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *te
 }
 
 func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	albumID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.RemoveAlbumsFromArtistRequest
@@ -511,6 +538,12 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRe
 			"AlbumIDs",
 			"min",
 		},
+		{
+			"Album IDs is invalid because it requires the ids to be unique",
+			requests.RemoveAlbumsFromArtistRequest{ID: uuid.New(), AlbumIDs: []uuid.UUID{albumID, albumID}},
+			"AlbumIDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -521,7 +554,7 @@ func TestValidateRemoveAlbumsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRe
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveAlbumsFromArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -547,6 +580,8 @@ func TestValidateRemoveSongsFromArtistRequest_WhenIsValid_ShouldReturnNil(t *tes
 }
 
 func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	songID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.RemoveSongsFromArtistRequest
@@ -567,6 +602,12 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			"SongIDs",
 			"min",
 		},
+		{
+			"Song IDs is invalid because it requires the ids to be unique",
+			requests.RemoveSongsFromArtistRequest{ID: uuid.New(), SongIDs: []uuid.UUID{songID, songID}},
+			"SongIDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -577,7 +618,7 @@ func TestValidateRemoveSongsFromArtistRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "RemoveSongsFromArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -604,6 +645,8 @@ func TestValidateBulkDeleteArtistsRequest_WhenIsValid_ShouldReturnNil(t *testing
 }
 
 func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkDeleteArtistsRequest
@@ -617,6 +660,12 @@ func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			"ID",
 			"min",
 		},
+		{
+			"IDs is invalid because it requires the ids to be unique",
+			requests.BulkDeleteArtistsRequest{IDs: []uuid.UUID{id, id}},
+			"ID",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -627,7 +676,7 @@ func TestValidateBulkDeleteArtistsRequest_WhenSingleFieldIsInvalid_ShouldReturnB
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkDeleteArtistsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -693,7 +742,7 @@ func TestValidateDeleteArtistRequest_WhenSingleFieldIsInvalid_ShouldReturnBadReq
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "DeleteArtistRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -746,6 +795,8 @@ func TestValidateCreateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	roleID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.CreateBandMemberRequest
@@ -829,6 +880,16 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			"RoleIDs",
 			"min",
 		},
+		{
+			"Role IDs is invalid because it requires the ids to be unique",
+			requests.CreateBandMemberRequest{
+				Name:     validBandMemberName,
+				RoleIDs:  []uuid.UUID{roleID, roleID},
+				ArtistID: uuid.New(),
+			},
+			"RoleIDs",
+			"unique",
+		},
 		// Artist ID Test Cases
 		{
 			"Artist ID is invalid because it's required",
@@ -850,7 +911,7 @@ func TestValidateCreateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -877,6 +938,8 @@ func TestValidateUpdateBandMemberRequest_WhenIsValid_ShouldReturnNil(t *testing.
 }
 
 func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	roleID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.UpdateBandMemberRequest
@@ -926,6 +989,16 @@ func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			"RoleIDs",
 			"min",
 		},
+		{
+			"Role IDs is invalid because it requires the ids to be unique",
+			requests.UpdateBandMemberRequest{
+				ID:      uuid.New(),
+				Name:    validBandMemberName,
+				RoleIDs: []uuid.UUID{roleID, roleID},
+			},
+			"RoleIDs",
+			"unique",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -936,7 +1009,7 @@ func TestValidateUpdateBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBa
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -1012,7 +1085,7 @@ func TestValidateMoveBandMemberRequest_WhenSingleFieldIsInvalid_ShouldReturnBadR
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveBandMemberRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

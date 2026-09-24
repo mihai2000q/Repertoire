@@ -148,6 +148,9 @@ func TestSongCreated_WhenSuccessful_ShouldPublishMessage(t *testing.T) {
 				}
 				if albumIndex != nil {
 					albumSearch := utils.UnmarshalDocument[model.AlbumSearch](documents[*albumIndex])
+					if test.song.Artist != nil {
+						test.song.Album.Artist = test.song.Artist
+					}
 					assertion.AlbumSearch(t, albumSearch, *test.song.Album)
 				}
 			})

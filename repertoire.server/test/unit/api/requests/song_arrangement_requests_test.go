@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 var validArrangementName = "Perfect Rehearsal"
@@ -54,7 +55,7 @@ func TestValidateGetSongArrangementsRequest_WhenSingleFieldIsInvalid_ShouldRetur
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "GetSongArrangementsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -125,7 +126,7 @@ func TestValidateCreateSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRet
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "CreateSongArrangementRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -159,10 +160,10 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenIsValid_ShouldReturnNil(t
 					{
 						ID:   uuid.New(),
 						Name: validArrangementName,
-						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{
-							{SectionID: uuid.New(), Occurrences: 1},
-							{SectionID: uuid.New(), Occurrences: 0},
-							{SectionID: uuid.New(), Occurrences: 3},
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+							{PartID: uuid.New(), Occurrences: 1},
+							{PartID: uuid.New(), Occurrences: 0},
+							{PartID: uuid.New(), Occurrences: 3},
 						},
 					},
 				},
@@ -185,6 +186,9 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenIsValid_ShouldReturnNil(t
 }
 
 func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_ShouldReturnBadRequest(t *testing.T) {
+	id := uuid.New()
+	partID := uuid.New()
+
 	tests := []struct {
 		name                 string
 		request              requests.BulkUpdateSongArrangementsRequest
@@ -215,6 +219,18 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 			},
 			"Requests",
 			"min",
+		},
+		{
+			"Requests are invalid because it requires the ids to be unique",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{ID: id, Name: validArrangementName},
+					{ID: id, Name: validArrangementName},
+				},
+			},
+			"Requests",
+			"unique_ids",
 		},
 		// Requests - ID Test Cases
 		{
@@ -260,20 +276,39 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 			"Requests[0].Name",
 			"max",
 		},
+		// Requests - Occurrences
+		{
+			"Occurrences are invalid because it requires the part ids to be unique",
+			requests.BulkUpdateSongArrangementsRequest{
+				SongID: uuid.New(),
+				Requests: []requests.UpdateSongArrangementRequest{
+					{
+						ID:   uuid.New(),
+						Name: validArrangementName,
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{
+							{PartID: partID},
+							{PartID: partID},
+						},
+					},
+				},
+			},
+			"Requests[0].Occurrences",
+			"unique_ids",
+		},
 		// Requests - Occurrences - ID Test Cases
 		{
-			"Occurrences are invalid because the first element has an empty SectionID",
+			"Occurrences are invalid because the first element has an empty PartID",
 			requests.BulkUpdateSongArrangementsRequest{
 				SongID: uuid.New(),
 				Requests: []requests.UpdateSongArrangementRequest{
 					{
 						ID:          uuid.New(),
 						Name:        validArrangementName,
-						Occurrences: []requests.UpdateSongSectionOccurrencesRequest{{SectionID: uuid.Nil, Occurrences: 1}},
+						Occurrences: []requests.UpdateSongPartOccurrencesRequest{{PartID: uuid.Nil, Occurrences: 1}},
 					},
 				},
 			},
-			"Requests[0].Occurrences[0].SectionID",
+			"Requests[0].Occurrences[0].PartID",
 			"required",
 		},
 	}
@@ -286,7 +321,7 @@ func TestValidateBulkUpdateSongArrangementsRequest_WhenSingleFieldIsInvalid_Shou
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "BulkUpdateSongArrangementsRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -338,7 +373,7 @@ func TestValidateUpdateDefaultSongArrangementRequest_WhenSingleFieldIsInvalid_Sh
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "UpdateDefaultSongArrangementRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")
@@ -402,7 +437,7 @@ func TestValidateMoveSongArrangementRequest_WhenSingleFieldIsInvalid_ShouldRetur
 			errCode := _uut.Validate(tt.request)
 
 			// then
-			assert.NotNil(t, errCode)
+			require.NotNil(t, errCode)
 			assert.Len(t, errCode.Error, 1)
 			assert.Contains(t, errCode.Error.Error(), "MoveSongArrangementRequest."+tt.expectedInvalidField)
 			assert.Contains(t, errCode.Error.Error(), "'"+tt.expectedFailedTag+"' tag")

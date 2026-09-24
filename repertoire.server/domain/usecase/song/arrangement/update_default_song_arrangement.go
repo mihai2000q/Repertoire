@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"repertoire/server/api/requests"
 	"repertoire/server/data/repository"
-	"repertoire/server/internal/wrapper"
+	"repertoire/server/internal/httperror"
 	"repertoire/server/model"
 )
 
@@ -17,21 +17,19 @@ func NewUpdateDefaultSongArrangement(songRepository repository.SongRepository) U
 	return UpdateDefaultSongArrangement{songRepository: songRepository}
 }
 
-func (g UpdateDefaultSongArrangement) Handle(request requests.UpdateDefaultSongArrangementRequest) *wrapper.ErrorCode {
+func (g UpdateDefaultSongArrangement) Handle(request requests.UpdateDefaultSongArrangementRequest) *httperror.ErrorCode {
 	var song model.Song
-	err := g.songRepository.Get(&song, request.SongID)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := g.songRepository.Get(&song, request.SongID); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	if reflect.ValueOf(song).IsZero() {
-		return wrapper.NotFoundError(errors.New("song not found"))
+		return httperror.NotFoundError(errors.New("song not found"))
 	}
 
 	song.DefaultArrangementID = request.ID
 
-	err = g.songRepository.Update(&song)
-	if err != nil {
-		return wrapper.InternalServerError(err)
+	if err := g.songRepository.Update(&song); err != nil {
+		return httperror.DatabaseError(err)
 	}
 	return nil
 }

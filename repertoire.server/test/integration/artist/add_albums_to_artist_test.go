@@ -16,6 +16,40 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestAddAlbumsToArtist_WhenArtistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.AddAlbumsToArtistRequest{
+		ID:       uuid.New(),
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/add-albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestAddAlbumsToArtist_WhenAlbumsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)
+
+	request := requests.AddAlbumsToArtistRequest{
+		ID:       artistData.Artists[0].ID,
+		AlbumIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/artists/add-albums", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestAddAlbumsToArtist_WhenAlbumAlreadyHasArtist_ShouldReturnConflictError(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, artistData.Users, artistData.SeedData)

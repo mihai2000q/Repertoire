@@ -1,4 +1,3 @@
-import { Menu } from '@mantine/core'
 import { IconTrash } from '@tabler/icons-react'
 import AddToPlaylistMenuItem from '../../../components/menu/item/AddToPlaylistMenuItem.tsx'
 import { ContextMenu } from '../../../components/menu/ContextMenu.tsx'
@@ -23,7 +22,6 @@ function AlbumsContextMenu({ children }: { children: ReactNode }) {
   return (
     <>
       <ContextMenu
-        aria-label={'albums-context-menu'}
         opened={openedMenu}
         onClose={closeMenu}
         onOpen={openMenu}
@@ -31,7 +29,7 @@ function AlbumsContextMenu({ children }: { children: ReactNode }) {
       >
         <ContextMenu.Target>{children}</ContextMenu.Target>
 
-        <ContextMenu.Dropdown>
+        <ContextMenu.Dropdown aria-label={'albums-context-menu'}>
           <AddToPlaylistMenuItem
             ids={selectedIds}
             type={'albums'}
@@ -44,11 +42,15 @@ function AlbumsContextMenu({ children }: { children: ReactNode }) {
             onSuccess={clearSelection}
             type={'albums'}
           />
-          <Menu.Divider />
+          <ContextMenu.Divider />
 
-          <Menu.Item c={'red'} leftSection={<IconTrash size={14} />} onClick={openDeleteWarning}>
+          <ContextMenu.Item
+            c={'red'}
+            leftSection={<IconTrash size={14} />}
+            onClick={openDeleteWarning}
+          >
             Delete
-          </Menu.Item>
+          </ContextMenu.Item>
         </ContextMenu.Dropdown>
       </ContextMenu>
 

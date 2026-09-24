@@ -18,6 +18,40 @@ import (
 	"gorm.io/gorm"
 )
 
+func TestAddArtistsToPlaylist_WhenPlaylistIsNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.AddArtistsToPlaylistRequest{
+		ID:        uuid.New(),
+		ArtistIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/add-artists", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
+func TestAddArtistsToPlaylist_WhenSongsAreNotFound_ShouldReturnNotFoundError(t *testing.T) {
+	// given
+	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)
+
+	request := requests.AddArtistsToPlaylistRequest{
+		ID:        playlistData.Playlists[1].ID,
+		ArtistIDs: []uuid.UUID{uuid.New()},
+	}
+
+	// when
+	w := httptest.NewRecorder()
+	core.NewTestHandler().POST(w, "/api/playlists/add-artists", request)
+
+	// then
+	assert.Equal(t, http.StatusNotFound, w.Code)
+}
+
 func TestAddArtistsToPlaylist_WhenWithDuplicatesButWithoutForceAdd_ShouldReturnNoSuccess(t *testing.T) {
 	// given
 	utils.SeedAndCleanupData(t, playlistData.Users, playlistData.SeedData)

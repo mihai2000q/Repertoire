@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestBulkDeleteAlbums_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *testing.T) {
@@ -33,7 +34,7 @@ func TestBulkDeleteAlbums_WhenGetAlbumsFails_ShouldReturnInternalServerError(t *
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -59,31 +60,34 @@ func TestBulkDeleteAlbums_WhenGetAlbumsWithSongsFails_ShouldReturnInternalServer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
 	albumRepository.AssertExpectations(t)
 }
 
-func TestBulkDeleteAlbums_WhenAlbumsAreLen0_ShouldReturnNotFoundError(t *testing.T) {
+func TestBulkDeleteAlbums_WhenAlbumsLenIsNotTheSameAsRequestLen_ShouldReturnNotFoundError(t *testing.T) {
 	// given
 	albumRepository := new(repository.AlbumRepositoryMock)
 	_uut := album.NewBulkDeleteAlbums(albumRepository, nil)
 
 	request := requests.BulkDeleteAlbumsRequest{
-		IDs: []uuid.UUID{uuid.New()},
+		IDs: []uuid.UUID{uuid.New(), uuid.New()},
 	}
 
+	mockAlbums := []model.Album{
+		{ID: request.IDs[0]},
+	}
 	albumRepository.On("GetAllByIDs", new([]model.Album), request.IDs).
-		Return(nil).
+		Return(nil, &mockAlbums).
 		Once()
 
 	// when
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusNotFound, errCode.Code)
 	assert.Equal(t, "albums not found", errCode.Error.Error())
 
@@ -111,7 +115,7 @@ func TestBulkDeleteAlbums_WhenDeleteAlbumsFails_ShouldReturnInternalServerError(
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -140,7 +144,7 @@ func TestBulkDeleteAlbums_WhenDeleteAlbumsWithSongsFails_ShouldReturnInternalSer
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 
@@ -173,7 +177,7 @@ func TestBulkDeleteAlbums_WhenPublishFails_ShouldReturnInternalServerError(t *te
 	errCode := _uut.Handle(request)
 
 	// then
-	assert.NotNil(t, errCode)
+	require.NotNil(t, errCode)
 	assert.Equal(t, http.StatusInternalServerError, errCode.Code)
 	assert.Equal(t, internalError, errCode.Error)
 

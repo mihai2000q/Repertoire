@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"os"
-	"repertoire/server/internal"
+	"repertoire/server/internal/env"
 	"repertoire/server/internal/message/topics"
 	"repertoire/server/model"
 	"repertoire/server/test/integration/test/core"
@@ -54,8 +54,8 @@ func GetCentrifugoClient(t *testing.T) *centrifuge.Client {
 	return client
 }
 
-func GetEnv() internal.Env {
-	return internal.NewEnv()
+func GetEnv() env.Env {
+	return env.NewEnv()
 }
 
 // Meilisearch
